@@ -1,0 +1,137 @@
+@page "/users"
+@attribute [Authorize(Roles = Roles.AdminAndSuper)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Auth
+@using NHManager.Blazor.Constants
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["Users"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["Users"]</MudText>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" sm="8">
+                <MudTextField @bind-Value="_searchString" Placeholder="@Loc["SearchUsers"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="4" Class="d-flex justify-end align-center">
+                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/users/create">@Loc["NewUser"]</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudTable Items="@_users" Filter="new Func<ApplicationUser,bool>(FilterFunc)" Dense="true" Hover="true" @ref="_table">
+        <HeaderContent>
+            <MudTh>@Loc["Username"]</MudTh>
+            <MudTh>@Loc["Email"]</MudTh>
+            <MudTh>@Loc["Role"]</MudTh>
+            <MudTh>@Loc["Worker"]</MudTh>
+            <MudTh>@Loc["Status"]</MudTh>
+            <MudTh Style="width: 150px;">@Loc["Actions"]</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@Loc["Username"]">@context.UserName</MudTd>
+            <MudTd DataLabel="@Loc["Email"]">@context.Email</MudTd>
+            <MudTd DataLabel="@Loc["Role"]">@context.Role</MudTd>
+            <MudTd DataLabel="@Loc["Worker"]">@context.WorkerFullName</MudTd>
+            <MudTd DataLabel="@Loc["Status"]">
+                @if (context.IsLocked)
+                {
+                    <MudChip T="string" Color="Color.Error" Size="Size.Small">@Loc["Locked"]</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Color="Color.Success" Size="Size.Small">@Loc["Active"]</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="@Loc["Actions"]">
+                <MudTooltip Text="@Loc["Edit"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" Href="@($"/users/edit/{context.Id}")" />
+                </MudTooltip>
+                <MudTooltip Text="@(context.IsLocked ? Loc["Unlock"] : Loc["Lock"])">
+                    <MudIconButton Icon="@(context.IsLocked ? Icons.Material.Filled.LockOpen : Icons.Material.Filled.Lock)" Size="Size.Small" Color="@(context.IsLocked ? Color.Success : Color.Warning)" OnClick="@(() => ToggleLock(context))" />
+                </MudTooltip>
+                <MudTooltip Text="@Loc["Delete"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteUser(context))" />
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+         <NoRecordsContent>
+            <MudText>@string.Format(Loc["NotFound"].Value, Loc["Users"].Value)</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+@code {
+    private List<ApplicationUser> _users = new();
+    private MudTable<ApplicationUser> _table = new();
+    private string _searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _users = await AuthService.GetAllUsersAsync();
+    }
+
+    private bool FilterFunc(ApplicationUser user) => FilterFunc(user, _searchString);
+
+    private bool FilterFunc(ApplicationUser user, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        
+        if (user.UserName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (user.WorkerFullName != null && user.WorkerFullName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        return false;
+    }
+
+    private async Task ToggleLock(ApplicationUser user)
+    {
+         var result = await AuthService.ToggleLockAsync(user.Id);
+         if (result.Success)
+         {
+             Snackbar.Add(result.Message, Severity.Success);
+             _users = await AuthService.GetAllUsersAsync();
+         }
+         else
+         {
+             Snackbar.Add(result.Message, Severity.Error);
+         }
+    }
+
+    private async Task DeleteUser(ApplicationUser user)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            string.Format(Loc["DeleteTitle"].Value, Loc["User"].Value), 
+            string.Format(Loc["DeleteConfirmation"].Value, Loc["User"].Value, user.UserName), 
+            yesText: Loc["Delete"], cancelText: Loc["Cancel"]);
+        
+        if (result == true)
+        {
+             var deleteResult = await AuthService.DeleteUserAsync(user.Id);
+             if (deleteResult.Success)
+             {
+                 Snackbar.Add(deleteResult.Message, Severity.Success);
+                 _users = await AuthService.GetAllUsersAsync();
+             }
+             else
+             {
+                 Snackbar.Add(deleteResult.Message, Severity.Error);
+             }
+        }
+    }
+}

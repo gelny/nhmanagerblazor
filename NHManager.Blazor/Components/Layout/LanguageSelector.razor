@@ -1,0 +1,22 @@
+@using System.Globalization
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<MudMenu Icon="@Icons.Material.Filled.Language" Color="Color.Inherit" Dense="true">
+    <MudMenuItem OnClick="@(() => ChangeLanguage("cs"))">Čeština</MudMenuItem>
+    <MudMenuItem OnClick="@(() => ChangeLanguage("pl"))">Polski</MudMenuItem>
+</MudMenu>
+
+@code {
+    private void ChangeLanguage(string culture)
+    {
+        var uri = new Uri(Navigation.Uri)
+            .GetComponents(UriComponents.PathAndQuery, UriFormat.Unescaped);
+
+        var query = System.Web.HttpUtility.ParseQueryString(string.Empty);
+        query["culture"] = culture;
+        query["redirectUri"] = uri;
+        
+        Navigation.NavigateTo($"/culture/set?{query}", forceLoad: true);
+    }
+}

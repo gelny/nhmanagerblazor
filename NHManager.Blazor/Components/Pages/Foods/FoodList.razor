@@ -1,0 +1,118 @@
+@page "/foods"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IFoodService FoodService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["Foods"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["Foods"]</MudText>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" sm="8">
+                <!-- Search implemented client-side on full list -->
+                <MudTextField @bind-Value="_searchString" Placeholder="@Loc["SearchFoods"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="4" Class="d-flex justify-end align-center">
+                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/foods/create">@Loc["NewFood"]</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudTable Items="@_foods" Filter="new Func<Food,bool>(FilterFunc)" Dense="true" Hover="true" @ref="_table">
+        <HeaderContent>
+            <MudTh>@Loc["NameEN"]</MudTh>
+            <MudTh>@Loc["NameCZ"]</MudTh>
+            <MudTh>@string.Format("{0} ({1})", Loc["Energy"].Value, Loc["Kcal"].Value)</MudTh>
+            <MudTh>@string.Format("{0} ({1})", Loc["Energy"].Value, Loc["KJ"].Value)</MudTh>
+            <MudTh>@Loc["Protein"]</MudTh>
+            <MudTh>@Loc["Carbohydrate"]</MudTh>
+            <MudTh>@Loc["Fat"]</MudTh>
+            <MudTh Style="width: 120px;">@Loc["Actions"]</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@Loc["NameEN"]">@context.Name</MudTd>
+            <MudTd DataLabel="@Loc["NameCZ"]">@context.Name_CZ</MudTd>
+            <MudTd DataLabel="@string.Format("{0} ({1})", Loc["Energy"].Value, Loc["Kcal"].Value)">@context.EnergyKcal</MudTd>
+            <MudTd DataLabel="@string.Format("{0} ({1})", Loc["Energy"].Value, Loc["KJ"].Value)">@context.EnergyKJ</MudTd>
+            <MudTd DataLabel="@Loc["Protein"]">@context.Protein</MudTd>
+            <MudTd DataLabel="@Loc["Carbohydrate"]">@context.Carbohydrate</MudTd>
+            <MudTd DataLabel="@Loc["Fat"]">@context.Fat</MudTd>
+            <MudTd DataLabel="@Loc["Actions"]">
+                <MudTooltip Text="@Loc["Edit"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" Href="@($"/foods/edit/{context.Id}")" />
+                </MudTooltip>
+                <MudTooltip Text="@Loc["Delete"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteFood(context))" />
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+         <NoRecordsContent>
+            <MudText>@string.Format(Loc["NotFound"].Value, Loc["Foods"].Value)</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+@code {
+    private List<Food> _foods = new();
+    private MudTable<Food> _table = new();
+    private string _searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _foods = await FoodService.GetAllAsync();
+    }
+
+    private bool FilterFunc(Food food) => FilterFunc(food, _searchString);
+
+    private bool FilterFunc(Food food, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        
+        if (food.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (food.Name_CZ.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        return false;
+    }
+
+    private async Task DeleteFood(Food food)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            string.Format(Loc["DeleteTitle"].Value, Loc["Food"].Value), 
+            string.Format(Loc["DeleteConfirmation"].Value, Loc["Food"].Value, food.Name_CZ), 
+            yesText: Loc["Delete"], cancelText: Loc["Cancel"]);
+        
+        if (result == true)
+        {
+             try
+             {
+                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                 var userName = authState.User.Identity?.Name ?? "System";
+                 
+                 await FoodService.DeleteAsync(food.Id, userName);
+                 Snackbar.Add(string.Format(Loc["DeletedSuccess"].Value, Loc["Food"].Value), Severity.Success);
+                 _foods = await FoodService.GetAllAsync();
+             }
+             catch (Exception ex)
+             {
+                 Snackbar.Add(string.Format(Loc["ErrorDeleting"].Value, ex.Message), Severity.Error);
+             }
+        }
+    }
+}

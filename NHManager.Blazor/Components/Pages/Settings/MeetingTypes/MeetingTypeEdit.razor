@@ -1,0 +1,65 @@
+@page "/settings/meeting-types/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AdminAndSuper)]
+@inject IMeetingTypeService MeetingTypeService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@using NHManager.Blazor.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> Loc
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>@Loc["EditMeetingType"] - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_meetingType == null)
+{
+    <MudAlert Severity="Severity.Warning">@Loc["NotFound", Loc["MeetingType"]]</MudAlert>
+}
+else
+{
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["EditMeetingType"]: @_meetingType.Name</MudText>
+
+    <MudPaper Class="pa-6">
+        <EditForm Model="_meetingType" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_meetingType.Name" Label="@Loc["Name"]" Required="true" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_meetingType.Abbreviation" Label="@Loc["Abbreviation"]" Required="true" MaxLength="5" Variant="Variant.Outlined" />
+                </MudItem>
+                
+                <MudItem xs="12" sm="6">
+                   <MudColorPicker Label="@Loc["Color"]" @bind-Text="_meetingType.Color" Style="@($"color: {_meetingType.Color};")" Placeholder="@Loc["Color"]" ColorPickerView="ColorPickerView.Palette" Palette="CustomPalette" />
+                </MudItem>
+                 <MudItem xs="12" sm="6" Class="d-flex align-center">
+                    <div style="@($"width: 40px; height: 40px; background-color: {_meetingType.Color}; border: 1px solid #ccc; border-radius: 4px;")"></div>
+                    <MudText Class="ml-4">@Loc["CurrentColor"]: @_meetingType.Color</MudText>
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/settings/meeting-types">@Loc["Cancel"]</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Loc["Save"]
+                </MudButton>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+}
+
+

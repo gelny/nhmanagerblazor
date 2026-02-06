@@ -1,0 +1,138 @@
+@page "/storage-test"
+@using Microsoft.AspNetCore.Components.Server.ProtectedBrowserStorage
+@inject ProtectedLocalStorage LocalStorage
+@inject ProtectedSessionStorage SessionStorage
+
+<PageTitle>Storage Test</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Small" Class="mt-8">
+    <MudText Typo="Typo.h3" Class="mb-4">Storage Test</MudText>
+    
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.h5">Local Storage</MudText>
+        <MudTextField @bind-Value="_localValue" Label="Value to Save" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveLocal" Class="mt-2">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="LoadLocal" Class="mt-2 ml-2">Load</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteLocal" Class="mt-2 ml-2">Delete</MudButton>
+        <MudText Class="mt-2">Loaded Value: <b>@_loadedLocalValue</b></MudText>
+        <MudText Class="mt-2" Color="Color.Info">@_localStatus</MudText>
+    </MudPaper>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudText Typo="Typo.h5">Session Storage</MudText>
+        <MudTextField @bind-Value="_sessionValue" Label="Value to Save" />
+        <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="SaveSession" Class="mt-2">Save</MudButton>
+        <MudButton Variant="Variant.Filled" Color="Color.Secondary" OnClick="LoadSession" Class="mt-2 ml-2">Load</MudButton>
+         <MudButton Variant="Variant.Filled" Color="Color.Error" OnClick="DeleteSession" Class="mt-2 ml-2">Delete</MudButton>
+        <MudText Class="mt-2">Loaded Value: <b>@_loadedSessionValue</b></MudText>
+         <MudText Class="mt-2" Color="Color.Info">@_sessionStatus</MudText>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    private string _localValue = "";
+    private string _loadedLocalValue = "";
+    private string _localStatus = "";
+
+    private string _sessionValue = "";
+    private string _loadedSessionValue = "";
+    private string _sessionStatus = "";
+
+    private async Task SaveLocal()
+    {
+        try
+        {
+            await LocalStorage.SetAsync("TestKey", _localValue);
+            _localStatus = "Saved to Local Storage";
+        }
+        catch (Exception ex)
+        {
+            _localStatus = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task LoadLocal()
+    {
+        try
+        {
+            var result = await LocalStorage.GetAsync<string>("TestKey");
+            if (result.Success)
+            {
+                _loadedLocalValue = result.Value ?? "(null)";
+                _localStatus = "Loaded from Local Storage";
+            }
+            else
+            {
+                _loadedLocalValue = "(not found)";
+                _localStatus = "Not found in Local Storage";
+            }
+        }
+        catch (Exception ex)
+        {
+            _localStatus = $"Error: {ex.Message}";
+        }
+    }
+
+     private async Task DeleteLocal()
+    {
+        try
+        {
+            await LocalStorage.DeleteAsync("TestKey");
+            _localStatus = "Deleted from Local Storage";
+            _loadedLocalValue = "";
+        }
+        catch (Exception ex)
+        {
+            _localStatus = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task SaveSession()
+    {
+        try
+        {
+            await SessionStorage.SetAsync("TestKey", _sessionValue);
+            _sessionStatus = "Saved to Session Storage";
+        }
+        catch (Exception ex)
+        {
+            _sessionStatus = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task LoadSession()
+    {
+        try
+        {
+            var result = await SessionStorage.GetAsync<string>("TestKey");
+            if (result.Success)
+            {
+                _loadedSessionValue = result.Value ?? "(null)";
+                _sessionStatus = "Loaded from Session Storage";
+            }
+            else
+            {
+                _loadedSessionValue = "(not found)";
+                _sessionStatus = "Not found in Session Storage";
+            }
+        }
+        catch (Exception ex)
+        {
+            _sessionStatus = $"Error: {ex.Message}";
+        }
+    }
+
+    private async Task DeleteSession()
+    {
+        try
+        {
+            await SessionStorage.DeleteAsync("TestKey");
+            _sessionStatus = "Deleted from Session Storage";
+            _loadedSessionValue = "";
+        }
+        catch (Exception ex)
+        {
+            _sessionStatus = $"Error: {ex.Message}";
+        }
+    }
+}

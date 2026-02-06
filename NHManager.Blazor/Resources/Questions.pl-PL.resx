@@ -1,0 +1,647 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Q_DontKnow" xml:space="preserve">
+    <value>Nie wiem</value>
+  </data>
+  <data name="Q_1_1" xml:space="preserve">
+    <value>Moim celem jest redukcja wagi</value>
+  </data>
+  <data name="Q_1_2" xml:space="preserve">
+    <value>Moim celem jest przybieranie na wadze</value>
+  </data>
+  <data name="Q_1_3" xml:space="preserve">
+    <value>Moim celem jest utrzymanie wagi (nie chcę ani redukować, ani przybierać)</value>
+  </data>
+  <data name="Q_1_4" xml:space="preserve">
+    <value>Ile kilogramów chcesz schudnąć (przybrać)? [kg]</value>
+  </data>
+  <data name="Q_1_5" xml:space="preserve">
+    <value>Moim celem jest szybkie schudnięcie</value>
+  </data>
+  <data name="Q_1_6" xml:space="preserve">
+    <value>Moim celem jest wolniejsze schudnięcie, ale z naciskiem na trwały wynik</value>
+  </data>
+  <data name="Q_1_7" xml:space="preserve">
+    <value>Moim celem jest pozbycie się problemów towarzyszących prediabetes lub cukrzycy typu 2</value>
+  </data>
+  <data name="Q_1_8" xml:space="preserve">
+    <value>Moim celem jest pozbycie się problemów towarzyszących cukrzycy typu 1</value>
+  </data>
+  <data name="Q_1_9" xml:space="preserve">
+    <value>Moim celem jest zmniejszenie ilości przyjmowanych leków</value>
+  </data>
+  <data name="Q_1_10" xml:space="preserve">
+    <value>Moim celem jest zdrowe odżywianie</value>
+  </data>
+  <data name="Q_1_11" xml:space="preserve">
+    <value>Moim celem jest poprawa kondycji fizycznej</value>
+  </data>
+  <data name="Q_1_12" xml:space="preserve">
+    <value>Moim celem jest podobać się sobie</value>
+  </data>
+  <data name="Q_1_13" xml:space="preserve">
+    <value>Co mi najbardziej pomoże w osiągnięciu celu: (np. pomoże mi przygotowywanie obiadów w domu)</value>
+  </data>
+  <data name="Q_1_14" xml:space="preserve">
+    <value>Co może mi przeszkodzić w osiągnięciu celu: (np. słodycze w szafce w domu)</value>
+  </data>
+  <data name="Q_1_15" xml:space="preserve">
+    <value>Co zrobię jako pierwsze: (np. kupię zdrową żywność)</value>
+  </data>
+  <data name="Q_2_1" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną cukrzycę typu 1?</value>
+  </data>
+  <data name="Q_2_2" xml:space="preserve">
+    <value>Czy masz zdiagnozowany stan przedcukrzycowy? (ryzyko cukrzycy)</value>
+  </data>
+  <data name="Q_2_3" xml:space="preserve">
+    <value>Czy masz podwyższony poziom cukru we krwi? (powyżej 5,6 mmol/l)</value>
+  </data>
+  <data name="Q_2_4" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną cukrzycę typu 2?</value>
+  </data>
+  <data name="Q_2_5" xml:space="preserve">
+    <value>Jeśli masz zdiagnozowaną cukrzycę typu 2, w jaki sposób ją leczysz?</value>
+  </data>
+  <data name="Q_2_6" xml:space="preserve">
+    <value>Czy bierzesz leki na regulację poziomu tłuszczów we krwi? (statyny – np. leki na cholesterol, fibraty, np. Lipanthyl, Atoris, Rosucard, Ezetrol)</value>
+  </data>
+  <data name="Q_2_7" xml:space="preserve">
+    <value>Czy masz podwyższony poziom LDL (“złego”) cholesterolu (równy lub wyższy niż 3 mmol/l) i/lub obniżony poziom HDL (“dobrego”) cholesterolu (mniej niż 1,2 mmol/l u kobiet, 1 mmol/l u mężczyzn)?</value>
+  </data>
+  <data name="Q_2_8" xml:space="preserve">
+    <value>Czy masz podwyższony poziom trójglicerydów we krwi? (wartość równa lub wyższa niż 1,7 mmol/l)</value>
+  </data>
+  <data name="Q_2_9" xml:space="preserve">
+    <value>Czy bierzesz leki na nadciśnienie?</value>
+  </data>
+  <data name="Q_2_10" xml:space="preserve">
+    <value>Czy przeszedłeś/przeszłaś któreś z następujących chorób – udar mózgu, choroba niedokrwienna serca (dławica piersiowa) lub zawał mięśnia sercowego, choroba niedokrwienna kończyn dolnych?</value>
+  </data>
+  <data name="Q_2_11" xml:space="preserve">
+    <value>Czy przeszedłeś/przeszłaś przeszczep i teraz bierzesz leki immunosupresyjne (leki na tłumienie odporności)?</value>
+  </data>
+  <data name="Q_2_12" xml:space="preserve">
+    <value>Czy przeszedłeś/przeszłaś przeszczep nerki?</value>
+  </data>
+  <data name="Q_2_13" xml:space="preserve">
+    <value>Czy masz niewydolność nerek?</value>
+  </data>
+  <data name="Q_2_14" xml:space="preserve">
+    <value>Czy masz niewydolność serca?</value>
+  </data>
+  <data name="Q_2_15" xml:space="preserve">
+    <value>Czy chodzisz na dializy nerek?</value>
+  </data>
+  <data name="Q_2_16" xml:space="preserve">
+    <value>Czy przeszedłeś/przeszłaś lub przechodzisz chorobę nowotworową i jesteś teraz w remisji? (zakończone leczenie, regularne kontrole)</value>
+  </data>
+  <data name="Q_2_17" xml:space="preserve">
+    <value>Czy kiedykolwiek zdiagnozowano u Ciebie nowotwór piersi, jajnika lub jajowodu?</value>
+  </data>
+  <data name="Q_2_18" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną dnę lub podwyższony poziom kwasu moczowego?</value>
+  </data>
+  <data name="Q_2_19" xml:space="preserve">
+    <value>Jeśli masz zdiagnozowaną dnę lub podwyższony poziom kwasu moczowego, czy bierzesz leki na jego obniżenie?</value>
+  </data>
+  <data name="Q_2_20" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną chorobę tarczycy?</value>
+  </data>
+  <data name="Q_2_21" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną niedoczynność tarczycy? (bierzesz leki Letrox, Euthyrox)</value>
+  </data>
+  <data name="Q_2_22" xml:space="preserve">
+    <value>Jeśli masz zdiagnozowaną inną chorobę tarczycy, opisz, jaka to choroba:</value>
+  </data>
+  <data name="Q_2_23" xml:space="preserve">
+    <value>Czy masz podwyższone wyniki prób wątrobowych? (wartości enzymów wątrobowych ALT, AST, ALP i/lub GGT)</value>
+  </data>
+  <data name="Q_2_24" xml:space="preserve">
+    <value>Czy masz problemy z woreczkiem żółciowym lub masz usunięty woreczek żółciowy? (ostre zapalenie woreczka żółciowego, kamienie żółciowe, kolka żółciowa)</value>
+  </data>
+  <data name="Q_2_25" xml:space="preserve">
+    <value>Czy bierzesz leki na rozrzedzenie krwi? (np. warfaryna, anopyryna, godasal)</value>
+  </data>
+  <data name="Q_2_26" xml:space="preserve">
+    <value>Jeśli bierzesz leki na rozrzedzenie krwi, czy bierzesz konkretnie warfarynę?</value>
+  </data>
+  <data name="Q_2_27" xml:space="preserve">
+    <value>Czy cierpisz na chorobę Crohna?</value>
+  </data>
+  <data name="Q_2_28" xml:space="preserve">
+    <value>Czy cierpisz na wrzodziejące zapalenie jelita grubego?</value>
+  </data>
+  <data name="Q_2_29" xml:space="preserve">
+    <value>Czy cierpisz na ból stawów?</value>
+  </data>
+  <data name="Q_2_30" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną chorobę refluksową przełyku lub cierpisz na zgagę?</value>
+  </data>
+  <data name="Q_2_31" xml:space="preserve">
+    <value>Czy masz jakieś problemy skórne?</value>
+  </data>
+  <data name="Q_2_32" xml:space="preserve">
+    <value>Jeśli masz inne problemy skórne, opisz je, proszę:</value>
+  </data>
+  <data name="Q_2_33" xml:space="preserve">
+    <value>Czy bierzesz jakieś leki?</value>
+  </data>
+  <data name="Q_2_34" xml:space="preserve">
+    <value>Jeśli bierzesz jakiekolwiek leki, podaj ich pełną nazwę, dawkowanie i czas, przez jaki je bierzesz:</value>
+  </data>
+  <data name="Q_2_35" xml:space="preserve">
+    <value>Jeśli bierzesz leki, czy któryś z nich zawiera substancję czynną metotreksat? (np. leki na choroby nowotworowe, łuszczycę lub reumatoidalne zapalenie stawów, np. Aldesta, Methotrexat, Metoject, Injexate, Nordimet, Trexan)</value>
+  </data>
+  <data name="Q_2_36" xml:space="preserve">
+    <value>Czy bierzesz jakieś suplementy diety?</value>
+  </data>
+  <data name="Q_2_37" xml:space="preserve">
+    <value>Jeśli bierzesz jakiekolwiek suplementy diety, podaj ich pełną nazwę, dawkowanie i czas, przez jaki je bierzesz:</value>
+  </data>
+  <data name="Q_2_38" xml:space="preserve">
+    <value>Czy masz zaleconą przez lekarza jakąś specjalną dietę (np. bezresztkową, niskobiałkową)?</value>
+  </data>
+  <data name="Q_2_39" xml:space="preserve">
+    <value>Jeśli masz zaleconą przez lekarza dietę, napisz, proszę, jaką dietę zalecił lekarz i na czym ona polega?</value>
+  </data>
+  <data name="Q_2_40" xml:space="preserve">
+    <value>Jeśli cierpisz na inne choroby, które nie zostały wymienione w kwestionariuszu, wypisz je, proszę:</value>
+  </data>
+  <data name="Q_3_1" xml:space="preserve">
+    <value>Czy cierpisz na częste zmęczenie? (w ciągu dnia, rano po przebudzeniu)</value>
+  </data>
+  <data name="Q_3_2" xml:space="preserve">
+    <value>Czy cierpisz na bezsenność lub niską jakość snu? (problemy z zasypianiem, nocne przebudzenia, uczucie niewyspania rano)</value>
+  </data>
+  <data name="Q_3_3" xml:space="preserve">
+    <value>O której godzinie najczęściej chodzisz spać?</value>
+  </data>
+  <data name="Q_3_4" xml:space="preserve">
+    <value>O której godzinie najczęściej wstajesz?</value>
+  </data>
+  <data name="Q_3_5" xml:space="preserve">
+    <value>Czy cierpisz na biegunkę? (normalny stolec jest nie tylko regularny, ale także twardy i jednocześnie łatwy do wydalenia, jeśli masz dziennie 3 lub więcej wodnistych stolców, mówimy o biegunce)</value>
+  </data>
+  <data name="Q_3_6" xml:space="preserve">
+    <value>Czy cierpisz na zaparcia? (normalny stolec jest nie tylko regularny, ale także twardy i jednocześnie łatwy do wydalenia, jeśli stolec jest trudny do wydalenia, mówimy o zaparciach)</value>
+  </data>
+  <data name="Q_3_7" xml:space="preserve">
+    <value>Czy cierpisz na inne problemy trawienne? (zgaga, bóle brzucha)</value>
+  </data>
+  <data name="Q_3_8" xml:space="preserve">
+    <value>Czy bierzesz hormonalne środki antykoncepcyjne? (jeśli tak, podaj ich nazwę i jak długo je bierzesz)</value>
+  </data>
+  <data name="Q_3_9" xml:space="preserve">
+    <value>Czy jesteś w ciąży / w okresie połogu?</value>
+  </data>
+  <data name="Q_3_10" xml:space="preserve">
+    <value>Czy karmisz piersią?</value>
+  </data>
+  <data name="Q_3_11" xml:space="preserve">
+    <value>Czy cierpisz na zespół napięcia przedmiesiączkowego? (np. zmiany nastroju, depresja, wzdęcia, brak koncentracji lub ból głowy w okresie między owulacją a miesiączką)</value>
+  </data>
+  <data name="Q_3_12" xml:space="preserve">
+    <value>Czy kiedykolwiek byłaś w ciąży?</value>
+  </data>
+  <data name="Q_3_13" xml:space="preserve">
+    <value>Czy masz/miałaś cukrzycę ciążową?</value>
+  </data>
+  <data name="Q_3_14" xml:space="preserve">
+    <value>Czy planujesz ciążę w ciągu najbliższych dwóch lat?</value>
+  </data>
+  <data name="Q_3_15" xml:space="preserve">
+    <value>Czy bierzesz hormonalną terapię zastępczą? (np. hormony w okresie menopauzy)</value>
+  </data>
+  <data name="Q_3_16" xml:space="preserve">
+    <value>Czy cierpisz na uderzenia gorąca lub inne objawy menopauzy?</value>
+  </data>
+  <data name="Q_3_17" xml:space="preserve">
+    <value>Czy często latasz samolotem i/lub masz długotrwałe unieruchomienie? (gips, przywiązanie do łóżka)</value>
+  </data>
+  <data name="Q_3_18" xml:space="preserve">
+    <value>Czy palisz?</value>
+  </data>
+  <data name="Q_4_1" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają cukrzycę typu 2?</value>
+  </data>
+  <data name="Q_4_2" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają zawał serca / udar mózgu?</value>
+  </data>
+  <data name="Q_4_3" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają wysoki poziom cholesterolu?</value>
+  </data>
+  <data name="Q_4_4" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają nadwagę lub otyłość?</value>
+  </data>
+  <data name="Q_4_5" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają nowotwór?</value>
+  </data>
+  <data name="Q_4_6" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają nowotwór piersi / jajników / jajowodów?</value>
+  </data>
+  <data name="Q_4_7" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają nowotwór piersi u mężczyzny?</value>
+  </data>
+  <data name="Q_4_8" xml:space="preserve">
+    <value>Czy w rodzinie były częstsze poronienia? (spontaniczne, nie planowane przerwanie ciąży)</value>
+  </data>
+  <data name="Q_4_9" xml:space="preserve">
+    <value>Czy w rodzinie były przedwczesne porody? (spontaniczne, nie planowane przez lekarza)</value>
+  </data>
+  <data name="Q_4_10" xml:space="preserve">
+    <value>Czy Twoi rodzice, rodzeństwo lub dziadkowie mieli/mają chorobę zakrzepowo-zatorową?</value>
+  </data>
+  <data name="Q_4_11" xml:space="preserve">
+    <value>Czy ktoś w Twojej rodzinie leczy się na choroby serca i naczyń? (choroby obejmują również nadciśnienie i wysoki poziom cholesterolu)</value>
+  </data>
+  <data name="Q_4_12" xml:space="preserve">
+    <value>Czy u Twoich rodziców, rodzeństwa lub dziadków występowało/zdiagnozowano zwężenie naczyń kończyn dolnych?</value>
+  </data>
+  <data name="Q_5_1" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną nietolerancję laktozy (cukru mlecznego) lub alergię na mleko? (odpowiadaj “tak” tylko w przypadku, gdy nietolerancja/alergia jest zdiagnozowana przez lekarza)</value>
+  </data>
+  <data name="Q_5_2" xml:space="preserve">
+    <value>Czy bezpośrednio po spożyciu produktów mlecznych lub mleka masz problemy trawienne?</value>
+  </data>
+  <data name="Q_5_3" xml:space="preserve">
+    <value>Czy w Twojej rodzinie występuje nietolerancja laktozy? (rodzice, dziadkowie, rodzeństwo)</value>
+  </data>
+  <data name="Q_5_4" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną nietolerancję lub alergię na gluten? (odpowiadaj “tak” tylko w przypadku, gdy alergia jest zdiagnozowana przez lekarza)</value>
+  </data>
+  <data name="Q_5_5" xml:space="preserve">
+    <value>Czy bezpośrednio po spożyciu produktów zawierających gluten masz problemy trawienne?</value>
+  </data>
+  <data name="Q_5_6" xml:space="preserve">
+    <value>Czy w Twojej rodzinie występuje celiakia? (rodzice, dziadkowie, rodzeństwo)</value>
+  </data>
+  <data name="Q_5_7" xml:space="preserve">
+    <value>Czy masz zdiagnozowaną nietolerancję histaminy?</value>
+  </data>
+  <data name="Q_5_8" xml:space="preserve">
+    <value>Jeśli masz nietolerancję na inne produkty spożywcze, wypisz je, proszę:</value>
+  </data>
+  <data name="Q_5_9" xml:space="preserve">
+    <value>Jeśli masz alergię na inne produkty spożywcze, wypisz je, proszę:</value>
+  </data>
+  <data name="Q_5_10" xml:space="preserve">
+    <value>Czy jesteś weganinem/weganką?</value>
+  </data>
+  <data name="Q_5_11" xml:space="preserve">
+    <value>Czy jesteś wegetarianinem/wegetarianką?</value>
+  </data>
+  <data name="Q_5_12" xml:space="preserve">
+    <value>Czy jesz mięso co najmniej 4 razy w tygodniu?</value>
+  </data>
+  <data name="Q_5_13" xml:space="preserve">
+    <value>Czy jesz ryby?</value>
+  </data>
+  <data name="Q_5_14" xml:space="preserve">
+    <value>Czy jesz jajka i potrawy z nich (np. pastę jajeczną) zwykle więcej niż raz w tygodniu?</value>
+  </data>
+  <data name="Q_5_15" xml:space="preserve">
+    <value>Czy spożywasz mleko, produkty mleczne (fermentowane produkty mleczne, jogurty, twarogi, śmietany, sery) i potrawy z nich (np. sosy śmietanowe) więcej niż 3 razy w tygodniu?</value>
+  </data>
+  <data name="Q_5_16" xml:space="preserve">
+    <value>Czy lubisz ostre potrawy?</value>
+  </data>
+  <data name="Q_5_17" xml:space="preserve">
+    <value>Czy masz nieodpartą ochotę na słodycze?</value>
+  </data>
+  <data name="Q_5_18" xml:space="preserve">
+    <value>Wypisz produkty, których nie jesz/które nie powinny być uwzględnione w jadłospisie:</value>
+  </data>
+  <data name="Q_6_1" xml:space="preserve">
+    <value>ŚNIADANIE: (na przykład „1 gruba kromka chleba Šumava z cienką warstwą masła i plasterkiem sera 30% eidam, 3 plasterki ogórka; kawa z półtłustym mlekiem i 1 łyżeczką cukru", “nic”)</value>
+  </data>
+  <data name="Q_6_2" xml:space="preserve">
+    <value>PRZEKĄSKA PRZEDPOŁUDNIOWA: (na przykład „1 duże jabłko i 3 kostki mlecznej czekolady", “nic”)</value>
+  </data>
+  <data name="Q_6_3" xml:space="preserve">
+    <value>OBIAD: (na przykład „ćwiartka pieczonego kurczaka ze skórą, sos, 2 średnie ziemniaki polane masłem, a po obiedzie 1 mały ptyś", “nic”)</value>
+  </data>
+  <data name="Q_6_4" xml:space="preserve">
+    <value>PRZEKĄSKA POPOŁUDNIOWA: (na przykład „150g kubek białego śmietanowego jogurtu, 1 łyżka dżemu; Latte", “nic”)</value>
+  </data>
+  <data name="Q_6_5" xml:space="preserve">
+    <value>KOLACJA: (na przykład „1 gruba kromka chleba żytniego z twarogową pastą z szczypiorkiem, 1 gotowane jajko, pół czerwonej papryki", “nic”)</value>
+  </data>
+  <data name="Q_6_6" xml:space="preserve">
+    <value>DRUGA KOLACJA: (na przykład „pół kawałka sera i 2 dcl czerwonego wina", “nic”)</value>
+  </data>
+  <data name="Q_6_7" xml:space="preserve">
+    <value>Czy przy obecnym sposobie odżywiania często odczuwasz głód?</value>
+  </data>
+  <data name="Q_6_8" xml:space="preserve">
+    <value>Jakie porcje dzienne chcesz mieć w jadłospisie?</value>
+  </data>
+  <data name="Q_6_9" xml:space="preserve">
+    <value>Jaką ilość napojów bezalkoholowych pijesz dziennie</value>
+  </data>
+  <data name="Q_6_10" xml:space="preserve">
+    <value>Napisz, proszę, jakie napoje najczęściej pijesz: (np. woda niegazowana, smakowe wody mineralne, sok, coca-cola, herbata)</value>
+  </data>
+  <data name="Q_6_11" xml:space="preserve">
+    <value>Czy pijesz kawę?</value>
+  </data>
+  <data name="Q_6_12" xml:space="preserve">
+    <value>Jak często pijesz kawę?</value>
+  </data>
+  <data name="Q_6_13" xml:space="preserve">
+    <value>Jeśli pijesz kawę, opisz, proszę, jaką kawę pijesz: (np. z 1 łyżeczką cukru, z pełnotłustym mlekiem, espresso, turek)</value>
+  </data>
+  <data name="Q_6_14" xml:space="preserve">
+    <value>Czy często słodzisz napoje i potrawy cukrem (min. 3 razy w tygodniu)?</value>
+  </data>
+  <data name="Q_6_15" xml:space="preserve">
+    <value>Czy pijesz co najmniej raz w tygodniu słodkie i kaloryczne napoje bezalkoholowe? (coca-cola, zamienniki coca-coli, soki, słodkie wody mineralne, mrożone herbaty)</value>
+  </data>
+  <data name="Q_6_16" xml:space="preserve">
+    <value>Czy spożywasz alkoholowe napoje więcej niż 2 razy w tygodniu? (piwo, wino, drinki, mocny alkohol)</value>
+  </data>
+  <data name="Q_6_17" xml:space="preserve">
+    <value>Czy masz siedzącą pracę? (jeśli masz pracę, w której na przemian siedzisz i się ruszasz, wybierz według częstszej przewagi)</value>
+  </data>
+  <data name="Q_6_18" xml:space="preserve">
+    <value>Czy często spędzasz dłuższy czas w samochodzie w podróży? (często oznacza kilka razy w tygodniu)</value>
+  </data>
+  <data name="Q_6_19" xml:space="preserve">
+    <value>Czy pracujesz na zmiany?</value>
+  </data>
+  <data name="Q_6_20" xml:space="preserve">
+    <value>Jeśli tak, wybierz sposób zmiany zmian:</value>
+  </data>
+  <data name="Q_6_21" xml:space="preserve">
+    <value>Czy w pracy regularnie jesz? (w razie potrzeby możesz coś zjeść)</value>
+  </data>
+  <data name="Q_6_22" xml:space="preserve">
+    <value>Czy masz możliwość podgrzania jedzenia w pracy?</value>
+  </data>
+  <data name="Q_6_23" xml:space="preserve">
+    <value>Czy gotujesz i jesteś w stanie przygotować większość posiłków w domu?</value>
+  </data>
+  <data name="Q_6_24" xml:space="preserve">
+    <value>Czy jesz w restauracjach więcej niż 2 razy w tygodniu? (w tym stołówki zakładowe)</value>
+  </data>
+  <data name="Q_6_25" xml:space="preserve">
+    <value>Czy jesz w fast foodach więcej niż 2 razy w tygodniu?</value>
+  </data>
+  <data name="Q_6_26" xml:space="preserve">
+    <value>Czy spożywasz niezdrowe jedzenie wieczorem (min. raz w tygodniu)? (za niezdrowe jedzenie wieczorem można uznać ogólnie niezdrowe produkty, dużą ilość jedzenia oraz produkty lub potrawy o wysokiej zawartości węglowodanów lub zbyt dużej ilości tłuszczu)</value>
+  </data>
+  <data name="Q_6_27" xml:space="preserve">
+    <value>Czy lubisz chodzić pieszo? (chodzenie 15 minut zamiast korzystania z transportu nie stanowi dla mnie problemu)</value>
+  </data>
+  <data name="Q_6_28" xml:space="preserve">
+    <value>Jak często i jaką aktywność fizyczną wykonujesz?</value>
+  </data>
+  <data name="Q_6_29" xml:space="preserve">
+    <value>Jakie aktywności fizyczne preferujesz? (np. bieganie, jazda na rowerze, pływanie, wybierz preferowane aktywności fizyczne, nawet jeśli obecnie nie uprawiasz aktywnie sportu)</value>
+  </data>
+  <data name="Q_6_30" xml:space="preserve">
+    <value>Czy cierpisz na ograniczoną ruchomość stawów lub ból stawów, który ogranicza Cię w aktywności fizycznej?</value>
+  </data>
+  <data name="Q_6_31" xml:space="preserve">
+    <value>Czy często jesteś w stresie?</value>
+  </data>
+  <data name="Q_6_32" xml:space="preserve">
+    <value>Jeśli często jesteś w stresie, co jest jego główną przyczyną?</value>
+  </data>
+  <data name="Q_6_33" xml:space="preserve">
+    <value>Czy próbowałeś/próbowałaś różnych diet bez trwałego efektu lub nawet przytyłeś/przytyłaś?</value>
+  </data>
+  <data name="Q_6_34" xml:space="preserve">
+    <value>Jeśli próbowałeś/próbowałaś diet, wypisz, proszę, jakie i z jakim rezultatem: (np. dieta keto pomogła mi schudnąć 5 kg, ale po miesiącu kilogramy wróciły)</value>
+  </data>
+  <data name="Q_7_1" xml:space="preserve">
+    <value>Gdzie najpierw zaczyna się odkładać tłuszcz?</value>
+  </data>
+  <data name="Q_7_2" xml:space="preserve">
+    <value>W których miejscach najpierw tracisz na wadze?</value>
+  </data>
+  <data name="Q_7_3" xml:space="preserve">
+    <value>Czy masz cellulit na pośladkach i nogach?</value>
+  </data>
+  <data name="Q_7_4" xml:space="preserve">
+    <value>Czy masz skurcze nóg?</value>
+  </data>
+  <data name="Q_7_5" xml:space="preserve">
+    <value>Czy masz bóle nóg? (skala: 1 = wcale–10 = często)</value>
+  </data>
+  <data name="Q_7_6" xml:space="preserve">
+    <value>Jeśli oceniłeś/aś ból nóg na 6 - 10, wybierz, proszę, kiedy ból występuje.</value>
+  </data>
+  <data name="Q_7_7" xml:space="preserve">
+    <value>Czy masz obrzęki nóg?</value>
+  </data>
+  <data name="Q_7_8" xml:space="preserve">
+    <value>Czy masz żylaki?</value>
+  </data>
+  <data name="Q_7_9" xml:space="preserve">
+    <value>Czy miałeś/aś w przeszłości zapalenie żylaków?</value>
+  </data>
+  <data name="Q_7_10" xml:space="preserve">
+    <value>Czy cierpisz na hipermobilność stawów? (zwiększony zakres ruchomości stawów)</value>
+  </data>
+  <data name="Q_7_11" xml:space="preserve">
+    <value>Czy chcesz przekazać swojemu specjaliście coś jeszcze, co nie zostało uwzględnione w ankiecie, a co wpłynie na Twój plan żywieniowy?</value>
+  </data>
+  <data name="Q_6_35" xml:space="preserve">
+    <value>Czy chcesz mieć śniadanie w swoim menu?</value>
+  </data>
+  <data name="Q_6_36" xml:space="preserve">
+    <value>Czy chcesz mieć drugie śniadanie w swoim menu?</value>
+  </data>
+  <data name="Q_6_37" xml:space="preserve">
+    <value>Czy chcesz mieć obiad w swoim menu?</value>
+  </data>
+  <data name="Q_6_38" xml:space="preserve">
+    <value>Czy chcesz mieć podwieczorek w swoim menu?</value>
+  </data>
+  <data name="Q_6_39" xml:space="preserve">
+    <value>Czy chcesz mieć kolację w swoim menu?</value>
+  </data>
+  <data name="Q_6_40" xml:space="preserve">
+    <value>Czy chcesz mieć drugą kolację w swoim menu?</value>
+  </data>
+  <data name="Q_2_5_0" xml:space="preserve"><value>TYLKO DIETA</value></data>
+  <data name="Q_2_5_1" xml:space="preserve"><value>DIETA I LEKI</value></data>
+  <data name="Q_2_5_2" xml:space="preserve"><value>DIETA I INSULINA</value></data>
+  <data name="Q_2_5_3" xml:space="preserve"><value>NIE MAM</value></data>
+  <data name="Q_2_18_0" xml:space="preserve"><value>TAK DNY</value></data>
+  <data name="Q_2_18_1" xml:space="preserve"><value>TAK KWAS MOCZOWY</value></data>
+  <data name="Q_2_18_2" xml:space="preserve"><value>NIE WARTOŚĆ NIE WIEM</value></data>
+  <data name="Q_2_31_0" xml:space="preserve"><value>TAK, TRĄDZIK</value></data>
+  <data name="Q_2_31_1" xml:space="preserve"><value>TAK, ALE INNE</value></data>
+  <data name="Q_2_31_2" xml:space="preserve"><value>NIE</value></data>
+  <data name="Q_6_8_0" xml:space="preserve"><value>ŚNIADANIE</value></data>
+  <data name="Q_6_8_1" xml:space="preserve"><value>DRUGIE ŚNIADANIE</value></data>
+  <data name="Q_6_8_2" xml:space="preserve"><value>OBIAD</value></data>
+  <data name="Q_6_8_3" xml:space="preserve"><value>PODWIECZOREK</value></data>
+  <data name="Q_6_8_4" xml:space="preserve"><value>KOLACJA</value></data>
+  <data name="Q_6_8_5" xml:space="preserve"><value>DRUGA KOLACJA</value></data>
+  <data name="Q_6_20_0" xml:space="preserve"><value>ZMIANA DZIENNA X NOCNA</value></data>
+  <data name="Q_6_20_1" xml:space="preserve"><value>TYLKO NOCNA</value></data>
+  <data name="Q_6_20_2" xml:space="preserve"><value>TRZYZMIANOWY SYSTEM</value></data>
+  <data name="Q_6_20_3" xml:space="preserve"><value>INNE</value></data>
+  <data name="Q_6_32_0" xml:space="preserve"><value>ZATRUDNIENIE</value></data>
+  <data name="Q_6_32_1" xml:space="preserve"><value>FINANSE</value></data>
+  <data name="Q_6_32_2" xml:space="preserve"><value>RELACJE</value></data>
+  <data name="Q_6_32_3" xml:space="preserve"><value>WYGLĄD</value></data>
+  <data name="Q_6_32_4" xml:space="preserve"><value>INNE</value></data>
+  <data name="Q_6_12_0" xml:space="preserve"><value>NIEPRZEDZIELNIE</value></data>
+  <data name="Q_6_12_1" xml:space="preserve"><value>1 x DZIENNIE</value></data>
+  <data name="Q_6_12_2" xml:space="preserve"><value>2 - 3 x DZIENNIE</value></data>
+  <data name="Q_6_12_3" xml:space="preserve"><value>CO NAJMNIEJ 4 x DZIENNIE</value></data>
+  <data name="Q_7_1_0" xml:space="preserve"><value>UDA I POŚLADKI</value></data>
+  <data name="Q_7_1_1" xml:space="preserve"><value>SYMETRYCZNIE</value></data>
+  <data name="Q_7_1_2" xml:space="preserve"><value>BRZUCH</value></data>
+  <data name="Q_7_2_0" xml:space="preserve"><value>TWARZ I PIERSI</value></data>
+  <data name="Q_7_2_1" xml:space="preserve"><value>SYMETRYCZNIE</value></data>
+  <data name="Q_7_2_2" xml:space="preserve"><value>POŚLADKI I NOGI</value></data>
+  <data name="Q_7_2_3" xml:space="preserve"><value>NIE WIEM</value></data>
+  <data name="Q_7_3_0" xml:space="preserve"><value>TAK, WIDOCZNE</value></data>
+  <data name="Q_7_3_1" xml:space="preserve"><value>TAK, PRZY NACISKANIU SKÓRY</value></data>
+  <data name="Q_7_3_2" xml:space="preserve"><value>NIE</value></data>
+  <data name="Q_7_4_0" xml:space="preserve"><value>TAK</value></data>
+  <data name="Q_7_4_1" xml:space="preserve"><value>TAK TYLKO PRZY SPORCIE</value></data>
+  <data name="Q_7_4_2" xml:space="preserve"><value>NIE</value></data>
+  <data name="Q_7_5_0" xml:space="preserve"><value>1</value></data>
+  <data name="Q_7_5_1" xml:space="preserve"><value>2</value></data>
+  <data name="Q_7_5_2" xml:space="preserve"><value>3</value></data>
+  <data name="Q_7_5_3" xml:space="preserve"><value>4</value></data>
+  <data name="Q_7_5_4" xml:space="preserve"><value>5</value></data>
+  <data name="Q_7_5_5" xml:space="preserve"><value>6</value></data>
+  <data name="Q_7_5_6" xml:space="preserve"><value>7</value></data>
+  <data name="Q_7_5_7" xml:space="preserve"><value>8</value></data>
+  <data name="Q_7_5_8" xml:space="preserve"><value>9</value></data>
+  <data name="Q_7_5_9" xml:space="preserve"><value>10</value></data>
+  <data name="Q_7_6_0" xml:space="preserve"><value>NIGDZIE</value></data>
+  <data name="Q_7_6_1" xml:space="preserve"><value>PRZY CHODZENIU</value></data>
+  <data name="Q_7_6_2" xml:space="preserve"><value>PRZY SIEDZENIU</value></data>
+  <data name="Q_7_6_3" xml:space="preserve"><value>NIE MOGĘ OKREŚLIĆ</value></data>
+  <data name="Q_7_7_0" xml:space="preserve"><value>CZĘSTO</value></data>
+  <data name="Q_7_7_1" xml:space="preserve"><value>CZASAMI</value></data>
+  <data name="Q_7_7_2" xml:space="preserve"><value>NIE MAM</value></data>
+  <data name="Q_7_8_0" xml:space="preserve"><value>TAK DUŻE I WIDOCZNE</value></data>
+  <data name="Q_7_8_1" xml:space="preserve"><value>TAK MIKROŻYLAKI (PAJĄCZKI)</value></data>
+  <data name="Q_7_8_2" xml:space="preserve"><value>NIE</value></data>
+</root>

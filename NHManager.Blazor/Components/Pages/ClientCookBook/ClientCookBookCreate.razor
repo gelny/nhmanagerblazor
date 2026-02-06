@@ -1,0 +1,464 @@
+@page "/clients/{ClientId:int}/cookbooks/create"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@inject IClientCookBookService ClientCookBookService
+@inject IClientService ClientService
+@inject IClientQuestionnaireService QuestionnaireService
+@inject IClientMeasurementService MeasurementService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+@inject IStringLocalizer<MyStrings> MyStringsLoc
+
+<PageTitle>@Loc["CreateCookBook"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["CreateCookBook"]</MudText>
+
+<MudPaper Class="pa-6">
+    <EditForm Model="_cookBook" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudDatePicker Label="@Loc["Date"]" @bind-Date="_date" Required="true" Variant="Variant.Outlined" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_cookBook.Description" Label="@Loc["Description"]" Variant="Variant.Outlined" />
+            </MudItem>
+
+             <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_cookBook.BRM_KJ_FromAnalysis" Label="@Loc["BRMFromAnalysis"]" Variant="Variant.Outlined" ReadOnly="true"/>
+            </MudItem>
+             <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_cookBook.BRM_KJ_FromQResult" Label="@Loc["BRMFromQuestionnaire"]" Variant="Variant.Outlined" ReadOnly="true"/>
+            </MudItem>
+
+            <MudItem xs="12">
+                 <MudDivider />
+            </MudItem>
+
+             <MudItem xs="12" sm="6">
+                <MudNumericField @bind-Value="_cookBook.BRM_KJ_Required" Label="@MyStringsLoc["Required_KJ"]" Variant="Variant.Outlined" Immediate="true" OnBlur="RecalculateTotals" />
+            </MudItem>
+            
+             <MudItem xs="12">
+                 <MudText Typo="Typo.subtitle1">@Loc["DietType"]</MudText>
+                 <MudRadioGroup T="int" @bind-Value="_cookBook.DietType" Name="dietType" Class="d-flex" @bind-Value:after="OnDietTypeChanged">
+                     <MudRadio Value="1" Color="Color.Primary" Dense="true">@Loc["DietType1"]</MudRadio>
+                     <MudRadio Value="2" Color="Color.Primary" Dense="true">@Loc["DietType2"]</MudRadio>
+                     <MudRadio Value="3" Color="Color.Primary" Dense="true">@Loc["DietType3"]</MudRadio>
+                     <MudRadio Value="4" Color="Color.Primary" Dense="true">@Loc["DietType4"]</MudRadio>
+                     <MudRadio Value="5" Color="Color.Primary" Dense="true">@Loc["DietType5"]</MudRadio>
+                 </MudRadioGroup>
+             </MudItem>
+
+             <MudItem xs="12" sm="4">
+                  <MudNumericField @bind-Value="_cookBook.FatProportion" Label="@MyStringsLoc["FatProportion"]" Variant="Variant.Outlined" Immediate="true" OnBlur="RecalculateTotals"/>
+             </MudItem>
+             <MudItem xs="12" sm="4">
+                  <MudNumericField @bind-Value="_cookBook.CarbohydrateProportion" Label="@MyStringsLoc["CarbohydrateProportion"]" Variant="Variant.Outlined" Immediate="true" OnBlur="RecalculateTotals"/>
+             </MudItem>
+             <MudItem xs="12" sm="4">
+                  <MudNumericField @bind-Value="_cookBook.ProteinProportion" Label="@MyStringsLoc["ProteinProportion"]" Variant="Variant.Outlined" Immediate="true" OnBlur="RecalculateTotals"/>
+             </MudItem>
+
+             <MudItem xs="12">
+                 <MudText Typo="Typo.subtitle1">@Loc["Meals"]</MudText>
+                 <MudStack Row="true" Wrap="Wrap.Wrap">
+                     <MudCheckBox @bind-Value="_cookBook.Breakfast" Label="@Loc["Breakfast"]" Color="Color.Primary" Dense="true" @bind-Value:after="OnMealsSelectionChanged"/>
+                     <MudCheckBox @bind-Value="_cookBook.MorningSnack" Label="@Loc["MorningSnack"]" Color="Color.Primary" Dense="true" @bind-Value:after="OnMealsSelectionChanged"/>
+                     <MudCheckBox @bind-Value="_cookBook.Lunch" Label="@Loc["Lunch"]" Color="Color.Primary" Dense="true" @bind-Value:after="OnMealsSelectionChanged"/>
+                     <MudCheckBox @bind-Value="_cookBook.AfternoonSnack" Label="@Loc["AfternoonSnack"]" Color="Color.Primary" Dense="true" @bind-Value:after="OnMealsSelectionChanged"/>
+                     <MudCheckBox @bind-Value="_cookBook.Dinner1" Label="@Loc["Dinner1"]" Color="Color.Primary" Dense="true" @bind-Value:after="OnMealsSelectionChanged"/>
+                    <MudCheckBox @bind-Value="_cookBook.Dinner2" Label="@Loc["Dinner2"]" Color="Color.Primary" Dense="true" @bind-Value:after="OnMealsSelectionChanged"/>
+                 </MudStack>
+             </MudItem>
+
+             <MudItem xs="12">
+                 <MudButton Variant="Variant.Filled" Color="Color.Primary" OnClick="ComputeMealProportions">@Loc["ComputeMealProportion"]</MudButton>
+             </MudItem>
+
+             <!-- Breakfast -->
+             @if(_cookBook.Breakfast) {
+                  <MudItem xs="12"><MudDivider /><MudText Typo="Typo.subtitle2">@Loc["Breakfast"]</MudText></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.BreakfastProportion" Label="%" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" OnBlur="RecalculateTotals"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.BreakfastFat" Label="@Loc["Fat"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.BreakfastCarbohydrate" Label="@Loc["Carbohydrate"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.BreakfastProtein" Label="@Loc["Protein"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="3"><MudNumericField @bind-Value="_cookBook.Breakfast_KJ" Label="@Loc["Energy"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+             }
+
+             <!-- Morning Snack -->
+             @if(_cookBook.MorningSnack) {
+                  <MudItem xs="12"><MudDivider /><MudText Typo="Typo.subtitle2">@Loc["MorningSnack"]</MudText></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.MorningSnackProportion" Label="%" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" OnBlur="RecalculateTotals"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.MorningSnackFat" Label="@Loc["Fat"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.MorningSnackCarbohydrate" Label="@Loc["Carbohydrate"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.MorningSnackProtein" Label="@Loc["Protein"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="3"><MudNumericField @bind-Value="_cookBook.MorningSnack_KJ" Label="@Loc["Energy"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+             }
+
+              <!-- Lunch -->
+             @if(_cookBook.Lunch) {
+                  <MudItem xs="12"><MudDivider /><MudText Typo="Typo.subtitle2">@Loc["Lunch"]</MudText></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.LunchProportion" Label="%" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" OnBlur="RecalculateTotals"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.LunchFat" Label="@Loc["Fat"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.LunchCarbohydrate" Label="@Loc["Carbohydrate"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.LunchProtein" Label="@Loc["Protein"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="3"><MudNumericField @bind-Value="_cookBook.Lunch_KJ" Label="@Loc["Energy"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+             }
+
+              <!-- Afternoon Snack -->
+             @if(_cookBook.AfternoonSnack) {
+                  <MudItem xs="12"><MudDivider /><MudText Typo="Typo.subtitle2">@Loc["AfternoonSnack"]</MudText></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.AfternoonSnackProportion" Label="%" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" OnBlur="RecalculateTotals"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.AfternoonSnackFat" Label="@Loc["Fat"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.AfternoonSnackCarbohydrate" Label="@Loc["Carbohydrate"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.AfternoonSnackProtein" Label="@Loc["Protein"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="3"><MudNumericField @bind-Value="_cookBook.AfternoonSnack_KJ" Label="@Loc["Energy"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+             }
+
+              <!-- Dinner1 -->
+             @if(_cookBook.Dinner1) {
+                  <MudItem xs="12"><MudDivider /><MudText Typo="Typo.subtitle2">@Loc["Dinner1"]</MudText></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner1Proportion" Label="%" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" OnBlur="RecalculateTotals"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner1Fat" Label="@Loc["Fat"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner1Carbohydrate" Label="@Loc["Carbohydrate"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner1Protein" Label="@Loc["Protein"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="3"><MudNumericField @bind-Value="_cookBook.Dinner1_KJ" Label="@Loc["Energy"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+             }
+
+              <!-- Dinner2 -->
+             @if(_cookBook.Dinner2) {
+                  <MudItem xs="12"><MudDivider /><MudText Typo="Typo.subtitle2">@Loc["Dinner2"]</MudText></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner2Proportion" Label="%" Variant="Variant.Outlined" Margin="Margin.Dense" Immediate="true" OnBlur="RecalculateTotals"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner2Fat" Label="@Loc["Fat"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner2Carbohydrate" Label="@Loc["Carbohydrate"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Dinner2Protein" Label="@Loc["Protein"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+                  <MudItem xs="3"><MudNumericField @bind-Value="_cookBook.Dinner2_KJ" Label="@Loc["Energy"]" Variant="Variant.Outlined" Margin="Margin.Dense" ReadOnly="true"/></MudItem>
+             }
+
+            <MudItem xs="12"><MudDivider Class="my-4"/></MudItem>
+
+             <!-- Totals -->
+              <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Total_Proportion" Label="@Loc["TotalProportion"]" Variant="Variant.Outlined" ReadOnly="true" Class="@TotalColorClass"/></MudItem>
+              <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Total_Fat" Label="@Loc["TotalFat"]" Variant="Variant.Outlined" ReadOnly="true"/></MudItem>
+              <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Total_Carbohydrate" Label="@Loc["TotalCarbohydrate"]" Variant="Variant.Outlined" ReadOnly="true"/></MudItem>
+              <MudItem xs="2"><MudNumericField @bind-Value="_cookBook.Total_Protein" Label="@Loc["TotalProtein"]" Variant="Variant.Outlined" ReadOnly="true"/></MudItem>
+              <MudItem xs="3"><MudNumericField @bind-Value="_cookBook.Total_KJ" Label="@Loc["TotalEnergy"]" Variant="Variant.Outlined" ReadOnly="true"/></MudItem>
+
+        </MudGrid>
+        
+        <MudDivider Class="my-6" />
+        
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="Cancel">@Loc["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @Loc["Save"]
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+
+    private ClientCookBook _cookBook = new ClientCookBook();
+    private DateTime? _date = DateTime.Today;
+    private bool _saving = false;
+    private string TotalColorClass => _cookBook.Total_Proportion == 100 ? "mud-text-success" : "mud-text-error";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _cookBook.ClientId = ClientId;
+        _cookBook.Date = DateTime.Today;
+        
+        await LoadLatestResults();
+
+        // Defaults if no prior data
+        if (_cookBook.DietType == 0)
+        {
+            _cookBook.DietType = 1;
+            OnDietTypeChanged();
+        }
+        
+        _cookBook.Breakfast = true;
+        _cookBook.Lunch = true;
+        _cookBook.Dinner1 = true;
+        _cookBook.BreakfastProportion = 25;
+        _cookBook.LunchProportion = 35; 
+        _cookBook.Dinner1Proportion = 25;
+        
+        // Initial Calculation
+        RecalculateTotals();
+    }
+
+    private async Task LoadLatestResults()
+    {
+        var qResult = await QuestionnaireService.GetLatestResultAsync(ClientId);
+        if (qResult != null) {
+            _cookBook.BRM_KJ_FromQResult = qResult.BRM_KJ;
+            _cookBook.BRM_KCAL_FromQResult = qResult.BRM_KCAL;
+             // Can take diet type from QResult too if needed
+            // _cookBook.DietType = qResult.DietType; 
+            _cookBook.BRM_KJ_Required = qResult.BRM_KJ;
+        }
+
+        var mResult = await MeasurementService.GetLatestResultAsync(ClientId);
+        if (mResult != null) {
+             _cookBook.BRM_KJ_FromAnalysis = mResult.BRM_KJ;
+             _cookBook.BRM_KCAL_FromAnalysis = mResult.BRM_KCAL;
+             // Analysis usually preferred over Questionnaire
+             if (_cookBook.BRM_KJ_Required == 0)
+                _cookBook.BRM_KJ_Required = mResult.BRM_KJ;
+        }
+    }
+
+    private void OnDietTypeChanged()
+    {
+        switch (_cookBook.DietType)
+        {
+            case 1:
+                _cookBook.FatProportion = 35;
+                _cookBook.CarbohydrateProportion = 45;
+                _cookBook.ProteinProportion = 20;
+                break;
+            case 2:
+                _cookBook.FatProportion = 30;
+                _cookBook.CarbohydrateProportion = 40;
+                _cookBook.ProteinProportion = 30;
+                break;
+            case 3:
+                 _cookBook.FatProportion = 37;
+                _cookBook.CarbohydrateProportion = 45;
+                _cookBook.ProteinProportion = 18;
+                break;
+            case 4:
+                _cookBook.FatProportion = 60;
+                _cookBook.CarbohydrateProportion = 20;
+                _cookBook.ProteinProportion = 20;
+                break;
+             case 5:
+                _cookBook.FatProportion = 35;
+                _cookBook.CarbohydrateProportion = 45;
+                _cookBook.ProteinProportion = 20;
+                break;
+            default:
+                // Default
+                break;
+        }
+        RecalculateTotals();
+    }
+
+    private void OnMealsSelectionChanged()
+    {
+        ComputeMealProportions();
+    }
+
+    private void ComputeMealProportions()
+    {
+        int count = 0;
+        if (_cookBook.Breakfast) count++;
+        if (_cookBook.MorningSnack) count++;
+        if (_cookBook.Lunch) count++;
+        if (_cookBook.AfternoonSnack) count++;
+        if (_cookBook.Dinner1) count++;
+        if (_cookBook.Dinner2) count++;
+
+        _cookBook.BreakfastProportion = 0;
+        _cookBook.MorningSnackProportion = 0;
+        _cookBook.LunchProportion = 0;
+        _cookBook.AfternoonSnackProportion = 0;
+        _cookBook.Dinner1Proportion = 0;
+        _cookBook.Dinner2Proportion = 0;
+
+        if (count == 6)
+        {
+            _cookBook.BreakfastProportion = 25;
+            _cookBook.MorningSnackProportion = 10;
+            _cookBook.LunchProportion = 30;
+            _cookBook.AfternoonSnackProportion = 10;
+            _cookBook.Dinner1Proportion = 20;
+            _cookBook.Dinner2Proportion = 5;
+        }
+        else if (count == 5)
+        {
+            int[] props = { 26, 11, 32, 11, 20 };
+            int i = 0;
+            if (_cookBook.Breakfast) _cookBook.BreakfastProportion = props[i++];
+            if (_cookBook.MorningSnack) _cookBook.MorningSnackProportion = props[i++];
+            if (_cookBook.Lunch) _cookBook.LunchProportion = props[i++];
+            if (_cookBook.AfternoonSnack) _cookBook.AfternoonSnackProportion = props[i++];
+            if (_cookBook.Dinner1) _cookBook.Dinner1Proportion = props[i++];
+            if (_cookBook.Dinner2) _cookBook.Dinner2Proportion = props[i++];
+        }
+        else if (count == 4)
+        {
+            int[] props = { 29, 35, 12, 24 };
+            int i = 0;
+            if (_cookBook.Breakfast) _cookBook.BreakfastProportion = props[i++];
+            if (_cookBook.MorningSnack) _cookBook.MorningSnackProportion = props[i++];
+            if (_cookBook.Lunch) _cookBook.LunchProportion = props[i++];
+            if (_cookBook.AfternoonSnack) _cookBook.AfternoonSnackProportion = props[i++];
+            if (_cookBook.Dinner1) _cookBook.Dinner1Proportion = props[i++];
+            if (_cookBook.Dinner2) _cookBook.Dinner2Proportion = props[i++];
+        }
+        else if (count == 3)
+        {
+            int[] props = { 33, 40, 27 };
+            int i = 0;
+            if (_cookBook.Breakfast) _cookBook.BreakfastProportion = props[i++];
+            if (_cookBook.MorningSnack) _cookBook.MorningSnackProportion = props[i++];
+            if (_cookBook.Lunch) _cookBook.LunchProportion = props[i++];
+            if (_cookBook.AfternoonSnack) _cookBook.AfternoonSnackProportion = props[i++];
+            if (_cookBook.Dinner1) _cookBook.Dinner1Proportion = props[i++];
+            if (_cookBook.Dinner2) _cookBook.Dinner2Proportion = props[i++];
+        }
+        else if (count == 2)
+        {
+            int[] props = { 45, 55 };
+            int i = 0;
+            if (_cookBook.Breakfast) _cookBook.BreakfastProportion = props[i++];
+            if (_cookBook.MorningSnack) _cookBook.MorningSnackProportion = props[i++];
+            if (_cookBook.Lunch) _cookBook.LunchProportion = props[i++];
+            if (_cookBook.AfternoonSnack) _cookBook.AfternoonSnackProportion = props[i++];
+            if (_cookBook.Dinner1) _cookBook.Dinner1Proportion = props[i++];
+            if (_cookBook.Dinner2) _cookBook.Dinner2Proportion = props[i++];
+        }
+        else if (count == 1)
+        {
+            int[] props = { 100 };
+            int i = 0;
+            if (_cookBook.Breakfast) _cookBook.BreakfastProportion = props[i++];
+            if (_cookBook.MorningSnack) _cookBook.MorningSnackProportion = props[i++];
+            if (_cookBook.Lunch) _cookBook.LunchProportion = props[i++];
+            if (_cookBook.AfternoonSnack) _cookBook.AfternoonSnackProportion = props[i++];
+            if (_cookBook.Dinner1) _cookBook.Dinner1Proportion = props[i++];
+            if (_cookBook.Dinner2) _cookBook.Dinner2Proportion = props[i++];
+        }
+
+        RecalculateTotals();
+    }
+
+    private void RecalculateTotals()
+    {
+        // Constants from JS
+        const decimal KJtoGFat = 37m;
+        const decimal KJtoGCarb = 17m;
+        const decimal KJtoGProtein = 17m;
+
+        decimal totalKJ = _cookBook.BRM_KJ_Required;
+        
+        // Helper
+        void CalculateMeal(ref int kj, ref int prot, ref int carb, ref int fat, decimal proportion)
+        {
+             if (proportion <= 0) {
+                 kj = 0; prot = 0; carb = 0; fat = 0;
+                 return;
+             }
+             decimal kjDec = Math.Round(totalKJ * (proportion / 100m));
+             kj = (int)kjDec;
+             prot = (int)Math.Round(kjDec * (_cookBook.ProteinProportion / 100m) / KJtoGProtein);
+             carb = (int)Math.Round(kjDec * (_cookBook.CarbohydrateProportion / 100m) / KJtoGCarb);
+             fat = (int)Math.Round(kjDec * (_cookBook.FatProportion / 100m) / KJtoGFat);
+        }
+
+        if (_cookBook.Breakfast) {
+             int k = _cookBook.Breakfast_KJ, p = _cookBook.BreakfastProtein, c = _cookBook.BreakfastCarbohydrate, f = _cookBook.BreakfastFat;
+             CalculateMeal(ref k, ref p, ref c, ref f, _cookBook.BreakfastProportion);
+             _cookBook.Breakfast_KJ = k; _cookBook.BreakfastProtein = p; _cookBook.BreakfastCarbohydrate = c; _cookBook.BreakfastFat = f;
+        } else {
+             _cookBook.Breakfast_KJ = 0; _cookBook.BreakfastProtein = 0; _cookBook.BreakfastCarbohydrate = 0; _cookBook.BreakfastFat = 0;
+        }
+
+         if (_cookBook.MorningSnack) {
+             int k = _cookBook.MorningSnack_KJ, p = _cookBook.MorningSnackProtein, c = _cookBook.MorningSnackCarbohydrate, f = _cookBook.MorningSnackFat;
+             CalculateMeal(ref k, ref p, ref c, ref f, _cookBook.MorningSnackProportion);
+             _cookBook.MorningSnack_KJ = k; _cookBook.MorningSnackProtein = p; _cookBook.MorningSnackCarbohydrate = c; _cookBook.MorningSnackFat = f;
+        } else {
+             _cookBook.MorningSnack_KJ = 0; _cookBook.MorningSnackProtein = 0; _cookBook.MorningSnackCarbohydrate = 0; _cookBook.MorningSnackFat = 0;
+        }
+
+         if (_cookBook.Lunch) {
+             int k = _cookBook.Lunch_KJ, p = _cookBook.LunchProtein, c = _cookBook.LunchCarbohydrate, f = _cookBook.LunchFat;
+             CalculateMeal(ref k, ref p, ref c, ref f, _cookBook.LunchProportion);
+             _cookBook.Lunch_KJ = k; _cookBook.LunchProtein = p; _cookBook.LunchCarbohydrate = c; _cookBook.LunchFat = f;
+        } else {
+             _cookBook.Lunch_KJ = 0; _cookBook.LunchProtein = 0; _cookBook.LunchCarbohydrate = 0; _cookBook.LunchFat = 0;
+        }
+
+         if (_cookBook.AfternoonSnack) {
+             int k = _cookBook.AfternoonSnack_KJ, p = _cookBook.AfternoonSnackProtein, c = _cookBook.AfternoonSnackCarbohydrate, f = _cookBook.AfternoonSnackFat;
+             CalculateMeal(ref k, ref p, ref c, ref f, _cookBook.AfternoonSnackProportion);
+             _cookBook.AfternoonSnack_KJ = k; _cookBook.AfternoonSnackProtein = p; _cookBook.AfternoonSnackCarbohydrate = c; _cookBook.AfternoonSnackFat = f;
+        } else {
+             _cookBook.AfternoonSnack_KJ = 0; _cookBook.AfternoonSnackProtein = 0; _cookBook.AfternoonSnackCarbohydrate = 0; _cookBook.AfternoonSnackFat = 0;
+        }
+
+         if (_cookBook.Dinner1) {
+             int k = _cookBook.Dinner1_KJ, p = _cookBook.Dinner1Protein, c = _cookBook.Dinner1Carbohydrate, f = _cookBook.Dinner1Fat;
+             CalculateMeal(ref k, ref p, ref c, ref f, _cookBook.Dinner1Proportion);
+             _cookBook.Dinner1_KJ = k; _cookBook.Dinner1Protein = p; _cookBook.Dinner1Carbohydrate = c; _cookBook.Dinner1Fat = f;
+        } else {
+             _cookBook.Dinner1_KJ = 0; _cookBook.Dinner1Protein = 0; _cookBook.Dinner1Carbohydrate = 0; _cookBook.Dinner1Fat = 0;
+        }
+
+         if (_cookBook.Dinner2) {
+             int k = _cookBook.Dinner2_KJ, p = _cookBook.Dinner2Protein, c = _cookBook.Dinner2Carbohydrate, f = _cookBook.Dinner2Fat;
+             CalculateMeal(ref k, ref p, ref c, ref f, _cookBook.Dinner2Proportion);
+             _cookBook.Dinner2_KJ = k; _cookBook.Dinner2Protein = p; _cookBook.Dinner2Carbohydrate = c; _cookBook.Dinner2Fat = f;
+        } else {
+             _cookBook.Dinner2_KJ = 0; _cookBook.Dinner2Protein = 0; _cookBook.Dinner2Carbohydrate = 0; _cookBook.Dinner2Fat = 0;
+        }
+        
+        // Sum Totals
+        _cookBook.Total_Proportion = _cookBook.BreakfastProportion + _cookBook.MorningSnackProportion + _cookBook.LunchProportion 
+                                     + _cookBook.AfternoonSnackProportion + _cookBook.Dinner1Proportion + _cookBook.Dinner2Proportion;
+
+        _cookBook.Total_KJ = _cookBook.Breakfast_KJ + _cookBook.MorningSnack_KJ + _cookBook.Lunch_KJ 
+                             + _cookBook.AfternoonSnack_KJ + _cookBook.Dinner1_KJ + _cookBook.Dinner2_KJ;
+
+        _cookBook.Total_Protein = _cookBook.BreakfastProtein + _cookBook.MorningSnackProtein + _cookBook.LunchProtein
+                                  + _cookBook.AfternoonSnackProtein + _cookBook.Dinner1Protein + _cookBook.Dinner2Protein;
+        
+        _cookBook.Total_Carbohydrate = _cookBook.BreakfastCarbohydrate + _cookBook.MorningSnackCarbohydrate + _cookBook.LunchCarbohydrate
+                                       + _cookBook.AfternoonSnackCarbohydrate + _cookBook.Dinner1Carbohydrate + _cookBook.Dinner2Carbohydrate;
+
+        _cookBook.Total_Fat = _cookBook.BreakfastFat + _cookBook.MorningSnackFat + _cookBook.LunchFat
+                              + _cookBook.AfternoonSnackFat + _cookBook.Dinner1Fat + _cookBook.Dinner2Fat;
+    }
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        try
+        {
+            if (_date.HasValue) _cookBook.Date = _date.Value;
+             await ClientCookBookService.CreateAsync(_cookBook);
+             Snackbar.Add(Loc["CreatedSuccess"], Severity.Success);
+             Navigation.NavigateTo($"/clients/{ClientId}?tab=cookbooks");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=cookbooks");
+    }
+}

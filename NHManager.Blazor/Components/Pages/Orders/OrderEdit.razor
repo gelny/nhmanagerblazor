@@ -1,0 +1,257 @@
+@page "/orders/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IOrderService OrderService
+@inject IClientService ClientService
+@inject IProductService ProductService
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["EditOrder"] - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_order == null)
+{
+    <MudAlert Severity="Severity.Warning">@string.Format(Loc["NotFound"].Value, Loc["Order"].Value)</MudAlert>
+}
+else
+{
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["EditOrder"] @Loc["Number"] @_order.Id</MudText>
+
+    <MudPaper Class="pa-6">
+        <EditForm Model="_order" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudAutocomplete T="Client" Label="@Loc["Client"]" @bind-Value="_selectedClient" SearchFunc="@SearchClients"
+                                     ToStringFunc="@(c => c == null ? null : $"{c.SurName} {c.FirstName}")"
+                                     Variant="Variant.Outlined" Required="false" />
+                </MudItem>
+                
+                <MudItem xs="12" sm="6">
+                    <MudSelect @bind-Value="_order.ConsultantId" Label="@Loc["Consultant"]" Variant="Variant.Outlined" T="int?">
+                        <MudSelectItem Value="@((int?)null)">@Loc["NotSelected"]</MudSelectItem>
+                        @foreach (var worker in _workers)
+                        {
+                            <MudSelectItem Value="@((int?)worker.Id)">@worker.FullName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+                
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker Label="@Loc["CreationDate"]" @bind-Date="_createDate" Variant="Variant.Outlined" />
+                </MudItem>
+                 <MudItem xs="12" sm="6">
+                    <MudTimePicker Label="@Loc["CreationTime"]" @bind-Time="_createTime" Variant="Variant.Outlined" />
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudText Typo="Typo.h6" Class="mb-2">@Loc["Items"]</MudText>
+            
+            <MudTable Items="_order.OrderItems" Hover="true" Dense="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>@Loc["Product"]</MudTh>
+                    <MudTh>@Loc["Quantity"]</MudTh>
+                    <MudTh>@Loc["PriceWithVAT"]</MudTh>
+                    <MudTh>@Loc["VAT_Percentage"]</MudTh>
+                    <MudTh>@Loc["Discount_Percentage"]</MudTh>
+                    <MudTh>@Loc["Total"]</MudTh>
+                    <MudTh>@Loc["Actions"]</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="itemContext">
+                    <MudTd>
+                        @if (itemContext.Product != null)
+                        {
+                            @itemContext.Product.Name
+                        }
+                        else
+                        {
+                            <MudAutocomplete T="Product" Label="@Loc["SelectProduct"]" Value="itemContext.Product" ValueChanged="@((Product p) => OnProductSelected(itemContext, p))" SearchFunc="@SearchProducts"
+                                             ToStringFunc="@(p => p == null ? null : $"{p.Name} ({p.PriceWithVAT} Kč)")"
+                                             Variant="Variant.Text" />
+                        }
+                    </MudTd>
+                    <MudTd>
+                        <MudNumericField @bind-Value="itemContext.Count" Min="1" Variant="Variant.Text" Margin="Margin.Dense" Immediate="true" />
+                    </MudTd>
+                    <MudTd>
+                        <MudNumericField @bind-Value="itemContext.PriceWithVAT" Format="F2" Variant="Variant.Text" Margin="Margin.Dense" Immediate="true" />
+                    </MudTd>
+                    <MudTd>
+                        <MudNumericField @bind-Value="itemContext.VAT" Min="0" Max="100" Variant="Variant.Text" Margin="Margin.Dense" Immediate="true" />
+                    </MudTd>
+                    <MudTd>
+                        <MudNumericField @bind-Value="itemContext.Discount" Min="0" Max="100" Variant="Variant.Text" Margin="Margin.Dense" Immediate="true" />
+                    </MudTd>
+                     <MudTd>
+                        @itemContext.TotalPrice.ToString("C2")
+                    </MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => RemoveItem(itemContext))" />
+                    </MudTd>
+                </RowTemplate>
+                 <FooterContent>
+                    <MudTd colspan="7">
+                        <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Text" Color="Color.Primary" OnClick="AddItem">@Loc["AddItem"]</MudButton>
+                    </MudTd>
+                </FooterContent>
+            </MudTable>
+             <MudText Typo="Typo.h6" Align="Align.Right" Class="mt-4">@Loc["OrderTotal"]: @(_order.OrderItems.Sum(x => x.TotalPrice).ToString("C2"))</MudText>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/orders">@Loc["Cancel"]</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Loc["Save"]
+                </MudButton>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Order? _order;
+    private Client? _selectedClient;
+    private List<Worker> _workers = new();
+    
+    // Cache for products
+    private List<Product> _allProductsCache = new();
+    
+    // Track deleted items to handle EF Core severed relationship
+    private List<int> _deletedItemIds = new();
+    
+    private DateTime? _createDate;
+    private TimeSpan? _createTime;
+
+    private bool _loading = true;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workers = await WorkerService.GetActiveAsync();
+        _allProductsCache = await ProductService.GetAllAsync(activeOnly: true); // Should get all involved products even if inactive? Ideally YES.
+        
+        _order = await OrderService.GetByIdAsync(Id);
+        
+        if (_order != null)
+        {
+            _createDate = _order.CreateDate.Date;
+            _createTime = _order.CreateDate.TimeOfDay;
+            
+            if (_order.ClientId.HasValue)
+            {
+                _selectedClient = _order.Client;
+            }
+        }
+        
+        _loading = false;
+    }
+
+    private async Task<IEnumerable<Client>> SearchClients(string value, CancellationToken token)
+    {
+        return await ClientService.GetAllAsync(value);
+    }
+    
+    private async Task<IEnumerable<Product>> SearchProducts(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+            return _allProductsCache;
+            
+        return _allProductsCache.Where(x => x.Name.Contains(value, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void AddItem()
+    {
+        if (_order != null)
+        {
+            _order.OrderItems.Add(new OrderItem { Count = 1, VAT = 21, OrderId = _order.Id }); 
+        }
+    }
+
+    private void RemoveItem(OrderItem item)
+    {
+        if (_order != null)
+        {
+            _order.OrderItems.Remove(item);
+            if(item.Id > 0)
+            {
+                _deletedItemIds.Add(item.Id);
+            }
+        }
+    }
+
+    private void OnProductSelected(OrderItem item, Product product)
+    {
+        if (product != null)
+        {
+            item.Product = product;
+            item.ProductId = product.Id;
+            item.PriceWithVAT = product.PriceWithVAT;
+            item.Price = product.Price;
+            item.VAT = product.VAT;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_order == null) return;
+        
+        _saving = true;
+        try
+        {
+             if (_createDate.HasValue && _createTime.HasValue)
+                _order.CreateDate = _createDate.Value.Date + _createTime.Value;
+
+            if (_selectedClient != null)
+                _order.ClientId = _selectedClient.Id;
+            else
+                _order.ClientId = null;
+                
+            foreach(var item in _order.OrderItems)
+            {
+                 // Ensure Product is not tracked as new or updated directly
+                 // item.Product = null; // REMOVED: potentially causes "association severed" error if tracked
+                 
+                 item.PriceWithVAT_string = item.PriceWithVAT.ToString();
+                 item.Price_string = item.Price.ToString();
+                 item.TotalPrice_string = item.TotalPrice.ToString();
+            }
+
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userName = authState.User.Identity?.Name ?? "System";
+
+            await OrderService.UpdateAsync(_order, userName, _deletedItemIds);
+             Snackbar.Add(string.Format(Loc["UpdatedSuccess"].Value, Loc["Order"].Value), Severity.Success);
+            Navigation.NavigateTo("/orders");
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add(string.Format(Loc["ErrorUpdating"].Value, ex.Message), Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

@@ -1,0 +1,225 @@
+@page "/clients/{ClientId:int}/measurements/create"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientMeasurementService MeasurementService
+@inject IClientService ClientService
+@inject IPhysicalActivityTypeService ActivityService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["NewMeasurement"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["NewMeasurement"] - @_clientName</MudText>
+
+<MudPaper Class="pa-6">
+    <EditForm Model="@_measurement" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+
+        <MudGrid>
+            <MudItem xs="12" md="6">
+                <MudDatePicker Label="@Loc["Date"]" 
+                               @bind-Date="_dateValue" 
+                               Required="true"
+                               Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField Label="@Loc["Description"]" 
+                              @bind-Value="_measurement.Description" 
+                              Lines="2"
+                              Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-6" />
+        <MudText Typo="Typo.h6" Class="mb-4">@Loc["Measurements"]</MudText>
+        
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["Weight"]" 
+                                 @bind-Value="_measurement.Weight" 
+                                 Min="0" Step="0.1M"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["Height"]" 
+                                 @bind-Value="_measurement.Height" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["FatPercentage"]" 
+                                 @bind-Value="_measurement.FatPercentage" 
+                                 Min="0" Max="100" Step="0.1M"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["WaterPercentage"]" 
+                                 @bind-Value="_measurement.WaterPercentage" 
+                                 Min="0" Max="100" Step="0.1M"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["BoneMass"]" 
+                                 @bind-Value="_measurement.BoneMass" 
+                                 Min="0" Step="0.1M"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["VisceralFat"]" 
+                                 @bind-Value="_measurement.VisceralFat" 
+                                 Min="0" Step="0.1M"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["LeanBodyMass"]" 
+                                 @bind-Value="_measurement.LeanBodyMass" 
+                                 Min="0" Step="0.1M"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-6" />
+        <MudText Typo="Typo.h6" Class="mb-4">@Loc["BodyCircumferences"]</MudText>
+        
+        <MudGrid>
+            <MudItem xs="12" md="3">
+                <MudNumericField Label="@Loc["WaistCircumference"]" 
+                                 @bind-Value="_measurement.WaistCircumference" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudNumericField Label="@Loc["HipCircumference"]" 
+                                 @bind-Value="_measurement.HipCircumference" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudNumericField Label="@Loc["ArmCircumference"]" 
+                                 @bind-Value="_measurement.ArmCircumference" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="3">
+                <MudNumericField Label="@Loc["ThighCircumference"]" 
+                                 @bind-Value="_measurement.ThighCircumference" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-6" />
+        <MudText Typo="Typo.h6" Class="mb-4">@Loc["OtherData"]</MudText>
+        
+        <MudGrid>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["SystolicBloodPressure"]" 
+                                 @bind-Value="_measurement.SystolicBloodPressure" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudNumericField Label="@Loc["DiastolicBloodPressure"]" 
+                                 @bind-Value="_measurement.DiastolicBloodPressure" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="4">
+                <MudSelect Label="@Loc["PhysicalActivity"]" 
+                           @bind-Value="_measurement.PhysicalActivityId" 
+                           Required="true"
+                           Variant="Variant.Outlined">
+                    @foreach (var activity in _activities)
+                    {
+                        <MudSelectItem Value="@activity.Id">@activity.Name</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudNumericField Label="@Loc["SatisfactionWeight"]" 
+                                 @bind-Value="_measurement.SatisfactionWeight" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" md="6">
+                <MudNumericField Label="@Loc["SatisfactionAge"]" 
+                                 @bind-Value="_measurement.SatisfactionAge" 
+                                 Min="0"
+                                 Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+
+        <MudDivider Class="my-6" />
+
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+            <MudButton Variant="Variant.Outlined" 
+                       Color="Color.Default" 
+                       Href="@($"/clients/{ClientId}?tab=measurements")">
+                @Loc["Cancel"]
+            </MudButton>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       ButtonType="ButtonType.Submit" 
+                       Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @Loc["Save"]
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    [Parameter] public int ClientId { get; set; }
+
+    private ClientMeasurement _measurement = new();
+    private List<PhysicalActivityType> _activities = new();
+    private string _clientName = "";
+    private DateTime? _dateValue = DateTime.Today;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = await ClientService.GetByIdAsync(ClientId);
+        if (client != null)
+        {
+            _clientName = client.FullName;
+        }
+
+        _activities = await ActivityService.GetAllAsync();
+        _measurement.ClientId = ClientId;
+        _measurement.Date = DateTime.Now;
+        if (_activities.Any())
+        {
+            _measurement.PhysicalActivityId = _activities.First().Id;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        
+        try
+        {
+            if (_dateValue.HasValue)
+            {
+                _measurement.Date = _dateValue.Value;
+            }
+            await MeasurementService.CreateAsync(_measurement);
+            Snackbar.Add(string.Format(Loc["CreatedSuccess"].Value, Loc["Measurement"].Value), Severity.Success);
+            Navigation.NavigateTo($"/clients/{ClientId}?tab=measurements");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(string.Format(Loc["ErrorCreating"].Value, ex.Message), Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

@@ -1,0 +1,65 @@
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@inject IClientRecipeService ClientRecipeService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> Loc
+
+<MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+    <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="@($"/clientrecipes/create?cookBookId={CookBookId}&type={Type}")">
+        @Loc["AddRecipe"]
+    </MudButton>
+</MudStack>
+
+@if (Recipes != null && Recipes.Any())
+{
+    <MudTable Items="Recipes" Hover="true" Dense="true">
+        <HeaderContent>
+            <MudTh>@Loc["Name"]</MudTh>
+            <MudTh>@Loc["Description"]</MudTh>
+            <MudTh>@Loc["Energy"] (kcal)</MudTh>
+             <MudTh>B</MudTh>
+             <MudTh>S</MudTh>
+             <MudTh>T</MudTh>
+            <MudTh>@Loc["Actions"]</MudTh>
+        </HeaderContent>
+        <RowTemplate Context="recipe">
+            <MudTd>@recipe.Name</MudTd>
+            <MudTd>@recipe.Description</MudTd>
+            <MudTd>@recipe.EnergyKcal</MudTd>
+             <MudTd>@recipe.Protein.ToString("F1")</MudTd>
+             <MudTd>@recipe.Carbohydrate.ToString("F1")</MudTd>
+             <MudTd>@recipe.Fat.ToString("F1")</MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" Href="@($"/clientrecipes/edit/{recipe.Id}")" />
+                <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => Delete(recipe.Id))" />
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+}
+else
+{
+    <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+}
+
+@code {
+    [Parameter]
+    public IEnumerable<ClientRecipe>? Recipes { get; set; }
+
+    [Parameter]
+    public int CookBookId { get; set; }
+
+    [Parameter]
+    public int Type { get; set; }
+
+    [Parameter]
+    public EventCallback<int> OnDelete { get; set; }
+
+    private async Task Delete(int id)
+    {
+        await OnDelete.InvokeAsync(id);
+    }
+}

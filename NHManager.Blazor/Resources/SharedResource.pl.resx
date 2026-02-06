@@ -1,0 +1,1028 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <data name="Dashboard" xml:space="preserve">
+    <value>Pulpit</value>
+  </data>
+  <data name="Clients" xml:space="preserve">
+    <value>Klienci</value>
+  </data>
+  <data name="Workers" xml:space="preserve">
+    <value>Pracownicy</value>
+  </data>
+  <data name="Orders" xml:space="preserve">
+    <value>Zamówienia</value>
+  </data>
+  <data name="Products" xml:space="preserve">
+    <value>Produkty</value>
+  </data>
+  <data name="Foods" xml:space="preserve">
+    <value>Żywność</value>
+  </data>
+  <data name="Recipes" xml:space="preserve">
+    <value>Przepisy</value>
+  </data>
+  <data name="Users" xml:space="preserve">
+    <value>Użytkownicy</value>
+  </data>
+  <data name="Scheduler" xml:space="preserve">
+    <value>Harmonogram</value>
+  </data>
+  <data name="Logout" xml:space="preserve">
+    <value>Wyloguj się</value>
+  </data>
+  <data name="Language" xml:space="preserve">
+    <value>Język</value>
+  </data>
+  <data name="Hello" xml:space="preserve">
+    <value>Witaj</value>
+  </data>
+  <data name="Meetings" xml:space="preserve">
+    <value>Spotkania</value>
+  </data>
+  <data name="Settings" xml:space="preserve">
+    <value>Ustawienia</value>
+  </data>
+  <data name="MeetingTypes" xml:space="preserve">
+    <value>Typy spotkań</value>
+  </data>
+  <data name="MeetingStates" xml:space="preserve">
+    <value>Statusy spotkań</value>
+  </data>
+  <data name="ActivityTypes" xml:space="preserve">
+    <value>Typy aktywności</value>
+  </data>
+  <data name="MeetingType" xml:space="preserve">
+    <value>Typ spotkania</value>
+  </data>
+  <data name="MeetingState" xml:space="preserve">
+    <value>Status spotkania</value>
+  </data>
+  <data name="ActivityType" xml:space="preserve">
+    <value>Typ aktywności</value>
+  </data>
+  <data name="Name" xml:space="preserve">
+    <value>Nazwa</value>
+  </data>
+  <data name="Abbreviation" xml:space="preserve">
+    <value>Skrót</value>
+  </data>
+  <data name="Color" xml:space="preserve">
+    <value>Kolor</value>
+  </data>
+  <data name="Actions" xml:space="preserve">
+    <value>Akcje</value>
+  </data>
+  <data name="New" xml:space="preserve">
+    <value>Nowy</value>
+  </data>
+  <data name="Edit" xml:space="preserve">
+    <value>Edytuj</value>
+  </data>
+  <data name="Delete" xml:space="preserve">
+    <value>Usuń</value>
+  </data>
+  <data name="Save" xml:space="preserve">
+    <value>Zapisz</value>
+  </data>
+  <data name="Cancel" xml:space="preserve">
+    <value>Anuluj</value>
+  </data>
+  <data name="Search" xml:space="preserve">
+    <value>Szukaj...</value>
+  </data>
+  <data name="CurrentColor" xml:space="preserve">
+    <value>Aktualny kolor</value>
+  </data>
+  <data name="DeleteConfirmation" xml:space="preserve">
+    <value>Czy na pewno chcesz usunąć {0} '{1}'?</value>
+  </data>
+  <data name="DeleteTitle" xml:space="preserve">
+    <value>Usuń {0}</value>
+  </data>
+  <data name="CreatedSuccess" xml:space="preserve">
+    <value>{0} został pomyślnie utworzony</value>
+  </data>
+  <data name="UpdatedSuccess" xml:space="preserve">
+    <value>{0} został pomyślnie zaktualizowany</value>
+  </data>
+  <data name="DeletedSuccess" xml:space="preserve">
+    <value>{0} został pomyślnie usunięty</value>
+  </data>
+  <data name="ErrorCreating" xml:space="preserve">
+    <value>Błąd podczas tworzenia: {0}</value>
+  </data>
+  <data name="ErrorUpdating" xml:space="preserve">
+    <value>Błąd podczas zapisywania: {0}</value>
+  </data>
+  <data name="ErrorDeleting" xml:space="preserve">
+    <value>Błąd podczas usuwania: {0}</value>
+  </data>
+  <data name="NotFound" xml:space="preserve">
+    <value>{0} nie został znaleziony.</value>
+  </data>
+  <data name="Yes" xml:space="preserve">
+    <value>Tak</value>
+  </data>
+  <data name="No" xml:space="preserve">
+    <value>Nie</value>
+  </data>
+  <data name="NewMeetingType" xml:space="preserve">
+    <value>Nowy typ spotkania</value>
+  </data>
+  <data name="NewMeetingState" xml:space="preserve">
+    <value>Nowy status spotkania</value>
+  </data>
+  <data name="NewActivityType" xml:space="preserve">
+    <value>Nowy typ aktywności</value>
+  </data>
+  <data name="EditMeetingType" xml:space="preserve">
+    <value>Edytuj typ spotkania</value>
+  </data>
+  <data name="EditMeetingState" xml:space="preserve">
+    <value>Edytuj status spotkania</value>
+  </data>
+  <data name="EditActivityType" xml:space="preserve">
+    <value>Edytuj typ aktywności</value>
+  </data>
+  <data name="WelcomeTitle" xml:space="preserve">
+    <value>Witamy w NHManager</value>
+  </data>
+  <data name="CalendarDesc" xml:space="preserve">
+    <value>Przeglądaj i zarządzaj swoimi spotkaniami w kalendarzu.</value>
+  </data>
+  <data name="OpenCalendar" xml:space="preserve">
+    <value>Otwórz kalendarz</value>
+  </data>
+  <data name="ClientsDesc" xml:space="preserve">
+    <value>Zarządzanie klientami i ich danymi zdrowotnymi.</value>
+  </data>
+  <data name="ViewClients" xml:space="preserve">
+    <value>Pokaż klientów</value>
+  </data>
+  <data name="MeetingsDesc" xml:space="preserve">
+    <value>Lista i zarządzanie wszystkimi spotkaniami.</value>
+  </data>
+  <data name="ViewMeetings" xml:space="preserve">
+    <value>Pokaż spotkania</value>
+  </data>
+  <data name="OrdersDesc" xml:space="preserve">
+    <value>Zarządzanie zamówieniami produktów.</value>
+  </data>
+  <data name="ViewOrders" xml:space="preserve">
+    <value>Pokaż zamówienia</value>
+  </data>
+  <data name="RecipesDesc" xml:space="preserve">
+    <value>Szablony przepisów do jadłospisów.</value>
+  </data>
+  <data name="ViewRecipes" xml:space="preserve">
+    <value>Pokaż przepisy</value>
+  </data>
+  <data name="Login" xml:space="preserve">
+    <value>Zaloguj</value>
+  </data>
+  <data name="NotFoundTitle" xml:space="preserve">
+    <value>Strona nie znaleziona</value>
+  </data>
+  <data name="NotFoundMessage" xml:space="preserve">
+    <value>Przepraszamy, ale żądana strona nie istnieje.</value>
+  </data>
+  <data name="ErrorTitle" xml:space="preserve">
+    <value>Błąd</value>
+  </data>
+  <data name="ErrorMessage" xml:space="preserve">
+    <value>Wystąpił błąd podczas przetwarzania żądania.</value>
+  </data>
+  <data name="FirstName" xml:space="preserve">
+    <value>Imię</value>
+  </data>
+  <data name="SurName" xml:space="preserve">
+    <value>Nazwisko</value>
+  </data>
+  <data name="Phone" xml:space="preserve">
+    <value>Telefon</value>
+  </data>
+  <data name="Email" xml:space="preserve">
+    <value>Email</value>
+  </data>
+  <data name="Street" xml:space="preserve">
+    <value>Ulica</value>
+  </data>
+  <data name="City" xml:space="preserve">
+    <value>Miasto</value>
+  </data>
+  <data name="PostalCode" xml:space="preserve">
+    <value>Kod pocztowy</value>
+  </data>
+  <data name="Country" xml:space="preserve">
+    <value>Kraj</value>
+  </data>
+  <data name="Notes" xml:space="preserve">
+    <value>Notatka</value>
+  </data>
+  <data name="DateOfBirth" xml:space="preserve">
+    <value>Data urodzenia</value>
+  </data>
+  <data name="Sex" xml:space="preserve">
+    <value>Płeć</value>
+  </data>
+  <data name="Male" xml:space="preserve">
+    <value>Mężczyzna</value>
+  </data>
+  <data name="Female" xml:space="preserve">
+    <value>Kobieta</value>
+  </data>
+  <data name="Consultant" xml:space="preserve">
+    <value>Konsultant</value>
+  </data>
+  <data name="Active" xml:space="preserve">
+    <value>Aktywny</value>
+  </data>
+  <data name="WorkerContract" xml:space="preserve">
+    <value>Umowa / Notatka</value>
+  </data>
+  <data name="NewClient" xml:space="preserve">
+    <value>Nowy klient</value>
+  </data>
+  <data name="EditClient" xml:space="preserve">
+    <value>Edytuj klienta</value>
+  </data>
+  <data name="DeleteClient" xml:space="preserve">
+    <value>Usuń klienta</value>
+  </data>
+  <data name="NewWorker" xml:space="preserve">
+    <value>Nowy pracownik</value>
+  </data>
+  <data name="EditWorker" xml:space="preserve">
+    <value>Edytuj pracownika</value>
+  </data>
+  <data name="DeleteWorker" xml:space="preserve">
+    <value>Usuń pracownika</value>
+  </data>
+  <data name="SearchClients" xml:space="preserve">
+    <value>Szukaj klientów...</value>
+  </data>
+  <data name="SearchWorkers" xml:space="preserve">
+    <value>Szukaj pracowników...</value>
+  </data>
+  <data name="NoneSelected" xml:space="preserve">
+    <value>-- Nie wybrano --</value>
+  </data>
+  <data name="Client" xml:space="preserve">
+    <value>Klient</value>
+  </data>
+  <data name="Worker" xml:space="preserve">
+    <value>Pracownik</value>
+  </data>
+  <data name="Username" xml:space="preserve">
+    <value>Nazwa użytkownika</value>
+  </data>
+  <data name="Password" xml:space="preserve">
+    <value>Hasło</value>
+  </data>
+  <data name="ConfirmPassword" xml:space="preserve">
+    <value>Potwierdź hasło</value>
+  </data>
+  <data name="Role" xml:space="preserve">
+    <value>Rola</value>
+  </data>
+  <data name="Admin" xml:space="preserve">
+    <value>Administrator</value>
+  </data>
+  <data name="SuperEmployee" xml:space="preserve">
+    <value>Super Pracownik</value>
+  </data>
+  <data name="Employee" xml:space="preserve">
+    <value>Pracownik</value>
+  </data>
+  <data name="Customer" xml:space="preserve">
+    <value>Klient</value>
+  </data>
+  <data name="LinkToWorker" xml:space="preserve">
+    <value>Połącz z pracownikiem</value>
+  </data>
+  <data name="NewUser" xml:space="preserve">
+    <value>Nowy użytkownik</value>
+  </data>
+  <data name="EditUser" xml:space="preserve">
+    <value>Edytuj użytkownika</value>
+  </data>
+  <data name="DeleteUser" xml:space="preserve">
+    <value>Usuń użytkownika</value>
+  </data>
+  <data name="Create" xml:space="preserve">
+    <value>Utwórz</value>
+  </data>
+  <data name="Price" xml:space="preserve">
+    <value>Cena</value>
+  </data>
+  <data name="PriceNoVAT" xml:space="preserve">
+    <value>Cena (netto)</value>
+  </data>
+  <data name="PriceWithVAT" xml:space="preserve">
+    <value>Cena (brutto)</value>
+  </data>
+  <data name="VAT" xml:space="preserve">
+    <value>VAT (%)</value>
+  </data>
+  <data name="Description" xml:space="preserve">
+    <value>Opis</value>
+  </data>
+  <data name="Stock" xml:space="preserve">
+    <value>Magazyn</value>
+  </data>
+  <data name="Energy" xml:space="preserve">
+    <value>Energia</value>
+  </data>
+  <data name="Protein" xml:space="preserve">
+    <value>Białko</value>
+  </data>
+  <data name="Carbohydrate" xml:space="preserve">
+    <value>Węglowodany</value>
+  </data>
+  <data name="Fat" xml:space="preserve">
+    <value>Tłuszcze</value>
+  </data>
+  <data name="Fiber" xml:space="preserve">
+    <value>Błonnik</value>
+  </data>
+  <data name="OrderDate" xml:space="preserve">
+    <value>Data zamówienia</value>
+  </data>
+  <data name="DeliveryDate" xml:space="preserve">
+    <value>Data dostawy</value>
+  </data>
+  <data name="Status" xml:space="preserve">
+    <value>Status</value>
+  </data>
+  <data name="Items" xml:space="preserve">
+    <value>Pozycje</value>
+  </data>
+  <data name="NewProduct" xml:space="preserve">
+    <value>Nowy produkt</value>
+  </data>
+  <data name="EditProduct" xml:space="preserve">
+    <value>Edytuj produkt</value>
+  </data>
+  <data name="DeleteProduct" xml:space="preserve">
+    <value>Usuń produkt</value>
+  </data>
+  <data name="NewFood" xml:space="preserve">
+    <value>Nowa żywność</value>
+  </data>
+  <data name="EditFood" xml:space="preserve">
+    <value>Edytuj żywność</value>
+  </data>
+  <data name="DeleteFood" xml:space="preserve">
+    <value>Usuń żywność</value>
+  </data>
+  <data name="NewRecipe" xml:space="preserve">
+    <value>Nowy przepis</value>
+  </data>
+  <data name="EditRecipe" xml:space="preserve">
+    <value>Edytuj przepis</value>
+  </data>
+  <data name="DeleteRecipe" xml:space="preserve">
+    <value>Usuń przepis</value>
+  </data>
+  <data name="NewOrder" xml:space="preserve">
+    <value>Nowe zamówienie</value>
+  </data>
+  <data name="EditOrder" xml:space="preserve">
+    <value>Edytuj zamówienie</value>
+  </data>
+  <data name="DeleteOrder" xml:space="preserve">
+    <value>Usuń zamówienie</value>
+  </data>
+  <data name="Product" xml:space="preserve">
+    <value>Produkt</value>
+  </data>
+  <data name="Food" xml:space="preserve">
+    <value>Żywność</value>
+  </data>
+  <data name="Recipe" xml:space="preserve">
+    <value>Przepis</value>
+  </data>
+  <data name="Order" xml:space="preserve">
+    <value>Zamówienie</value>
+  </data>
+  <data name="Unit" xml:space="preserve">
+    <value>Jednostka</value>
+  </data>
+  <data name="Amount" xml:space="preserve">
+    <value>Ilość</value>
+  </data>
+  <data name="SearchProducts" xml:space="preserve">
+    <value>Szukaj produktów...</value>
+  </data>
+  <data name="SearchFoods" xml:space="preserve">
+    <value>Szukaj żywności...</value>
+  </data>
+  <data name="SearchRecipes" xml:space="preserve">
+    <value>Szukaj przepisów...</value>
+  </data>
+  <data name="SearchOrders" xml:space="preserve">
+    <value>Szukaj zamówień...</value>
+  </data>
+  <data name="SearchUsers" xml:space="preserve">
+    <value>Szukaj użytkowników...</value>
+  </data>
+  <data name="Lock" xml:space="preserve">
+    <value>Zablokuj</value>
+  </data>
+  <data name="Unlock" xml:space="preserve">
+    <value>Odblokuj</value>
+  </data>
+  <data name="Locked" xml:space="preserve">
+    <value>Zablokowany</value>
+  </data>
+  <data name="UsernameCannotBeChanged" xml:space="preserve">
+    <value>Nazwa użytkownika nie może zostać zmieniona</value>
+  </data>
+  <data name="NameEN" xml:space="preserve">
+    <value>Nazwa (EN/Origin)</value>
+  </data>
+  <data name="NameCZ" xml:space="preserve">
+    <value>Nazwa (CZ)</value>
+  </data>
+  <data name="CalculatedAutomatically" xml:space="preserve">
+    <value>Obliczone automatycznie, można edytować</value>
+  </data>
+  <data name="Kcal" xml:space="preserve">
+    <value>kcal</value>
+  </data>
+  <data name="KJ" xml:space="preserve">
+    <value>kJ</value>
+  </data>
+  <data name="CreationDate" xml:space="preserve">
+    <value>Data utworzenia</value>
+  </data>
+  <data name="CreationTime" xml:space="preserve">
+    <value>Czas utworzenia</value>
+  </data>
+  <data name="SelectProduct" xml:space="preserve">
+    <value>Wybierz produkt</value>
+  </data>
+  <data name="Quantity" xml:space="preserve">
+    <value>Ilość</value>
+  </data>
+  <data name="VAT_Percentage" xml:space="preserve">
+    <value>VAT (%)</value>
+  </data>
+  <data name="Discount_Percentage" xml:space="preserve">
+    <value>Rabat (%)</value>
+  </data>
+  <data name="Total" xml:space="preserve">
+    <value>Razem</value>
+  </data>
+  <data name="AddItem" xml:space="preserve">
+    <value>Dodaj pozycję</value>
+  </data>
+  <data name="OrderTotal" xml:space="preserve">
+    <value>Suma zamówienia</value>
+  </data>
+  <data name="AllItemsMustHaveProduct" xml:space="preserve">
+    <value>Wszystkie pozycje muszą mieć wybrany produkt</value>
+  </data>
+  <data name="SuitableForMeals" xml:space="preserve">
+    <value>Odpowiednie dla posiłków</value>
+  </data>
+  <data name="Breakfast" xml:space="preserve">
+    <value>Śniadanie</value>
+  </data>
+  <data name="MorningSnack" xml:space="preserve">
+    <value>Drugie śniadanie</value>
+  </data>
+  <data name="Lunch" xml:space="preserve">
+    <value>Obiad</value>
+  </data>
+  <data name="AfternoonSnack" xml:space="preserve">
+    <value>Podwieczorek</value>
+  </data>
+  <data name="Dinner1" xml:space="preserve">
+    <value>Kolacja 1</value>
+  </data>
+  <data name="Dinner2" xml:space="preserve">
+    <value>Kolacja 2</value>
+  </data>
+  <data name="Ingredients" xml:space="preserve">
+    <value>Składniki</value>
+  </data>
+  <data name="Ingredient" xml:space="preserve">
+    <value>Składnik</value>
+  </data>
+  <data name="SelectIngredient" xml:space="preserve">
+    <value>Wybierz składnik</value>
+  </data>
+  <data name="AddIngredient" xml:space="preserve">
+    <value>Dodaj składnik</value>
+  </data>
+  <data name="TotalEnergyKcal" xml:space="preserve">
+    <value>Całkowita energia (kcal)</value>
+  </data>
+  <data name="TotalProtein" xml:space="preserve">
+    <value>Całkowite białko (g)</value>
+  </data>
+  <data name="TotalCarbohydrates" xml:space="preserve">
+    <value>Całkowite węglowodany (g)</value>
+  </data>
+  <data name="TotalFat" xml:space="preserve">
+    <value>Całkowite tłuszcze (g)</value>
+  </data>
+  <data name="NotSelected" xml:space="preserve">
+    <value>-- Nie wybrano --</value>
+  </data>
+
+  <data name="RememberMe" xml:space="preserve">
+    <value>Zapamiętaj mnie</value>
+  </data>
+  <data name="LoginAction" xml:space="preserve">
+    <value>Zaloguj się</value>
+  </data>
+  <data name="EnterUsernameAndPassword" xml:space="preserve">
+    <value>Wprowadź nazwę użytkownika i hasło</value>
+  </data>
+  <data name="LoginSuccess" xml:space="preserve">
+    <value>Logowanie udane</value>
+  </data>
+  <data name="LoginError" xml:space="preserve">
+    <value>Wystąpił błąd podczas logowania</value>
+  </data>
+  <data name="Measurements" xml:space="preserve">
+    <value>Pomiary</value>
+  </data>
+  <data name="NewMeasurement" xml:space="preserve">
+    <value>Nowy pomiar</value>
+  </data>
+  <data name="EditMeasurement" xml:space="preserve">
+    <value>Edytuj pomiar</value>
+  </data>
+  <data name="Weight" xml:space="preserve">
+    <value>Waga (kg)</value>
+  </data>
+  <data name="FatPercentage" xml:space="preserve">
+    <value>Procent tluszczu (%)</value>
+  </data>
+  <data name="WaterPercentage" xml:space="preserve">
+    <value>Procent wody (%)</value>
+  </data>
+  <data name="BoneMass" xml:space="preserve">
+    <value>Masa kosci (kg)</value>
+  </data>
+  <data name="VisceralFat" xml:space="preserve">
+    <value>Tluszcz trzewny</value>
+  </data>
+  <data name="LeanBodyMass" xml:space="preserve">
+    <value>Beztluszczowa masa ciala (kg)</value>
+  </data>
+  <data name="WaistCircumference" xml:space="preserve">
+    <value>Obwod talii (cm)</value>
+  </data>
+  <data name="HipCircumference" xml:space="preserve">
+    <value>Obwod bioder (cm)</value>
+  </data>
+  <data name="ArmCircumference" xml:space="preserve">
+    <value>Obwod ramienia (cm)</value>
+  </data>
+  <data name="ThighCircumference" xml:space="preserve">
+    <value>Obwod uda (cm)</value>
+  </data>
+  <data name="Height" xml:space="preserve">
+    <value>Wzrost (cm)</value>
+  </data>
+  <data name="SystolicBloodPressure" xml:space="preserve">
+    <value>Cisnienie skurczowe</value>
+  </data>
+  <data name="DiastolicBloodPressure" xml:space="preserve">
+    <value>Cisnienie rozkurczowe</value>
+  </data>
+  <data name="PhysicalActivity" xml:space="preserve">
+    <value>Aktywnosc fizyczna</value>
+  </data>
+  <data name="SatisfactionWeight" xml:space="preserve">
+    <value>Zadowolenie przy wadze</value>
+  </data>
+  <data name="SatisfactionAge" xml:space="preserve">
+    <value>Ile miales lat</value>
+  </data>
+  <data name="BMI" xml:space="preserve">
+    <value>BMI</value>
+  </data>
+  <data name="BMI_Result" xml:space="preserve">
+    <value>Wynik BMI</value>
+  </data>
+  <data name="BMI_Recommended" xml:space="preserve">
+    <value>Zalecane BMI</value>
+  </data>
+  <data name="MetabolicAge" xml:space="preserve">
+    <value>Wiek metaboliczny</value>
+  </data>
+  <data name="MetabolicAge_Result" xml:space="preserve">
+    <value>Wynik wieku metabolicznego</value>
+  </data>
+  <data name="MetabolicAge_Recommended" xml:space="preserve">
+    <value>Zalecany wiek metaboliczny</value>
+  </data>
+  <data name="VisceralFat_Result" xml:space="preserve">
+    <value>Wynik tluszczu trzewnego</value>
+  </data>
+  <data name="VisceralFat_Recommended" xml:space="preserve">
+    <value>Zalecany tluszcz trzewny</value>
+  </data>
+  <data name="FatPercentage_Result" xml:space="preserve">
+    <value>Wynik procentu tluszczu</value>
+  </data>
+  <data name="FatPercentage_RecommendedMin" xml:space="preserve">
+    <value>Min. zalecany procent tluszczu (%)</value>
+  </data>
+  <data name="FatPercentage_RecommendedMax" xml:space="preserve">
+    <value>Max. zalecany procent tluszczu (%)</value>
+  </data>
+  <data name="FatKG_RecommendedMin" xml:space="preserve">
+    <value>Min. zalecany tluszcz (kg)</value>
+  </data>
+  <data name="FatKG_RecommendedMax" xml:space="preserve">
+    <value>Max. zalecany tluszcz (kg)</value>
+  </data>
+  <data name="WaterPercentage_Result" xml:space="preserve">
+    <value>Wynik procentu wody</value>
+  </data>
+  <data name="WaterPercentage_RecommendedMin" xml:space="preserve">
+    <value>Min. zalecany procent wody (%)</value>
+  </data>
+  <data name="WaterPercentage_RecommendedMax" xml:space="preserve">
+    <value>Max. zalecany procent wody (%)</value>
+  </data>
+  <data name="LeanBodyMass_Result" xml:space="preserve">
+    <value>Wynik beztluszczowej masy ciala</value>
+  </data>
+  <data name="LeanBodyMass_RecommendedMin" xml:space="preserve">
+    <value>Min. zalecana beztluszczowa masa ciala (kg)</value>
+  </data>
+  <data name="LeanBodyMass_RecommendedMax" xml:space="preserve">
+    <value>Max. zalecana beztluszczowa masa ciala (kg)</value>
+  </data>
+  <data name="Weight_RecommendedMin" xml:space="preserve">
+    <value>Min. zalecana waga (kg)</value>
+  </data>
+  <data name="Weight_RecommendedMax" xml:space="preserve">
+    <value>Max. zalecana waga (kg)</value>
+  </data>
+  <data name="Minerals_Recommended" xml:space="preserve">
+    <value>Zalecane mineraly (kg)</value>
+  </data>
+  <data name="BMR_KJ" xml:space="preserve">
+    <value>Podstawowy metabolizm (kJ)</value>
+  </data>
+  <data name="BMR_KCAL" xml:space="preserve">
+    <value>Podstawowy metabolizm (kcal)</value>
+  </data>
+  <data name="MeasurementResults" xml:space="preserve">
+    <value>Wyniki pomiarow</value>
+  </data>
+  <data name="BodyCircumferences" xml:space="preserve">
+    <value>Obwody ciala</value>
+  </data>
+  <data name="OtherData" xml:space="preserve">
+    <value>Inne dane</value>
+  </data>
+  <data name="RecordNotFound" xml:space="preserve">
+    <value>Nie znaleziono rekordu</value>
+  </data>
+  <data name="NoRecordsFound" xml:space="preserve">
+    <value>Brak rekordow</value>
+  </data>
+  <data name="ClientDetail" xml:space="preserve">
+    <value>Szczegoly klienta</value>
+  </data>
+  <data name="DeleteClient" xml:space="preserve">
+    <value>Usun klienta</value>
+  </data>
+  <data name="DeleteMeasurement" xml:space="preserve">
+    <value>Usun pomiar</value>
+  </data>
+  <data name="ConfirmDeleteMeasurement" xml:space="preserve">
+    <value>Czy na pewno chcesz usunac ten pomiar?</value>
+  </data>
+  <data name="DeletedSuccess" xml:space="preserve">
+    <value>Pomyslnie usunieto</value>
+  </data>
+  <data name="Overview" xml:space="preserve">
+    <value>Przeglad</value>
+  </data>
+  <data name="Measurement" xml:space="preserve">
+    <value>Pomiar</value>
+  </data>
+  <data name="Events" xml:space="preserve">
+    <value>Zdarzenia</value>
+  </data>
+  <data name="NewEvent" xml:space="preserve">
+    <value>Nowe zdarzenie</value>
+  </data>
+  <data name="DeleteEvent" xml:space="preserve">
+    <value>Usun zdarzenie</value>
+  </data>
+  <data name="ConfirmDeleteEvent" xml:space="preserve">
+    <value>Czy na pewno chcesz usunac to zdarzenie?</value>
+  </data>
+  <data name="Documents" xml:space="preserve">
+    <value>Dokumenty</value>
+  </data>
+  <data name="NewDocument" xml:space="preserve">
+    <value>Nowy dokument</value>
+  </data>
+  <data name="DeleteDocument" xml:space="preserve">
+    <value>Usun dokument</value>
+  </data>
+  <data name="ConfirmDeleteDocument" xml:space="preserve">
+    <value>Czy na pewno chcesz usunac ten dokument?</value>
+  </data>
+  <data name="Biochemistry" xml:space="preserve">
+    <value>Biochemia</value>
+  </data>
+  <data name="NewBiochemistry" xml:space="preserve">
+    <value>Nowa biochemia</value>
+  </data>
+  <data name="DeleteBiochemistry" xml:space="preserve">
+    <value>Usun biochemie</value>
+  </data>
+  <data name="ConfirmDeleteBiochemistry" xml:space="preserve">
+    <value>Czy na pewno chcesz usunac ta biochemie?</value>
+  </data>
+  <data name="Analysis" xml:space="preserve">
+    <value>Analiza</value>
+  </data>
+  <data name="NewAnalysis" xml:space="preserve">
+    <value>Nowa analiza</value>
+  </data>
+  <data name="DeleteAnalysis" xml:space="preserve">
+    <value>Usun analize</value>
+  </data>
+  <data name="ConfirmDeleteAnalysis" xml:space="preserve">
+    <value>Czy na pewno chcesz usunac ta analize?</value>
+  </data>
+  <data name="Glucose" xml:space="preserve">
+    <value>Glukoza</value>
+  </data>
+  <data name="TotalCholesterol" xml:space="preserve">
+    <value>Cholesterol calkowity</value>
+  </data>
+  <data name="EditEvent" xml:space="preserve">
+    <value>Edytuj zdarzenie</value>
+  </data>
+  <data name="EditDocument" xml:space="preserve">
+    <value>Edytuj dokument</value>
+  </data>
+  <data name="EditBiochemistry" xml:space="preserve">
+    <value>Edytuj biochemie</value>
+  </data>
+  <data name="EditAnalysis" xml:space="preserve">
+    <value>Edytuj analize</value>
+  </data>
+  <data name="UploadFile" xml:space="preserve">
+    <value>Przeslij plik</value>
+  </data>
+  <data name="BasicValues" xml:space="preserve">
+    <value>Podstawowe wartosci</value>
+  </data>
+  <data name="LiverEnzymes" xml:space="preserve">
+    <value>Enzymy watrobowe</value>
+  </data>
+  <data name="OtherValues" xml:space="preserve">
+    <value>Inne wartosci</value>
+  </data>
+  <data name="BloodValues" xml:space="preserve">
+    <value>Wartosci krwi</value>
+  </data>
+  <data name="RiskFactors" xml:space="preserve">
+    <value>Czynniki ryzyka</value>
+  </data>
+  <data name="FamilyHeartDisease" xml:space="preserve">
+    <value>Choroba serca w rodzinie</value>
+  </data>
+  <data name="Smoker" xml:space="preserve">
+    <value>Palenie</value>
+  </data>
+  <data name="Hypertension" xml:space="preserve">
+    <value>Nadcisnienie</value>
+  </data>
+  <data name="Diabetes" xml:space="preserve">
+    <value>Cukrzyca</value>
+  </data>
+  <data name="Triglycerides" xml:space="preserve">
+    <value>Triglicerydy</value>
+  </data>
+  <data name="GlycatedHemoglobin" xml:space="preserve">
+    <value>Hemoglobina glikowana</value>
+  </data>
+  <data name="Homocysteine" xml:space="preserve">
+    <value>Homocysteina</value>
+  </data>
+  <data name="Creatinine" xml:space="preserve">
+    <value>Kreatynina</value>
+  </data>
+  <data name="UricAcid" xml:space="preserve">
+    <value>Kwas moczowy</value>
+  </data>
+  <data name="Urea" xml:space="preserve">
+    <value>Mocznik</value>
+  </data>
+  <data name="ViewResults" xml:space="preserve">
+    <value>Zobacz wyniki</value>
+  </data>
+  <data name="Evaluate" xml:space="preserve">
+    <value>Ocen</value>
+  </data>
+  <data name="EvaluationSuccess" xml:space="preserve">
+    <value>Ocena zakonczona sukcesem</value>
+  </data>
+  <data name="MeasurementResults" xml:space="preserve">
+    <value>Wyniki pomiaru</value>
+  </data>
+  <data name="AnalysisResults" xml:space="preserve">
+    <value>Wyniki analizy</value>
+  </data>
+  <data name="Value" xml:space="preserve">
+    <value>Wartosc</value>
+  </data>
+  <data name="Recommended" xml:space="preserve">
+    <value>Zalecane</value>
+  </data>
+  <data name="Result" xml:space="preserve">
+    <value>Wynik</value>
+  </data>
+  <data name="MetabolicAge" xml:space="preserve">
+    <value>Wiek metaboliczny</value>
+  </data>
+  <data name="VisceralFat" xml:space="preserve">
+    <value>Tluszcz trzewny</value>
+  </data>
+  <data name="WaistHipRatio" xml:space="preserve">
+    <value>Stosunek talia/biodra</value>
+  </data>
+  <data name="AtheroscleroticIndex" xml:space="preserve">
+    <value>Indeks aterogenny</value>
+  </data>
+  <data name="NoRiskFactors" xml:space="preserve">
+    <value>Brak czynnikow ryzyka</value>
+  </data>
+  <data name="Normal" xml:space="preserve">
+    <value>Normalny</value>
+  </data>
+  <data name="Elevated" xml:space="preserve">
+    <value>Podwyzszony</value>
+  </data>
+  <data name="High" xml:space="preserve">
+    <value>Wysoki</value>
+  </data>
+  <data name="NoResultsFound" xml:space="preserve">
+    <value>Nie znaleziono wynikow. Najpierw przeprowadz ocene.</value>
+  </data>
+  <data name="NewQuestionnaire" xml:space="preserve">
+    <value>Nowy kwestionariusz</value>
+  </data>
+  <data name="EditQuestionnaire" xml:space="preserve">
+    <value>Edytuj kwestionariusz</value>
+  </data>
+  <data name="PersonalGoals" xml:space="preserve">
+    <value>Cele osobiste</value>
+  </data>
+  <data name="PersonalGoals_Description" xml:space="preserve">
+    <value>Sekcja 1: Cele osobiste i motywacja</value>
+  </data>
+  <data name="Diagnosis" xml:space="preserve">
+    <value>Diagnozy</value>
+  </data>
+  <data name="Diagnosis_Description" xml:space="preserve">
+    <value>Sekcja 2: Istniejace diagnozy</value>
+  </data>
+  <data name="RiskFactors_Description" xml:space="preserve">
+    <value>Sekcja 3: Czynniki ryzyka</value>
+  </data>
+  <data name="FamilyHistory" xml:space="preserve">
+    <value>Wywiad rodzinny</value>
+  </data>
+  <data name="FamilyHistory_Description" xml:space="preserve">
+    <value>Sekcja 4: Wywiad rodzinny</value>
+  </data>
+  <data name="Preferences" xml:space="preserve">
+    <value>Preferencje</value>
+  </data>
+  <data name="Preferences_Description" xml:space="preserve">
+    <value>Sekcja 5: Preferencje smakowe</value>
+  </data>
+  <data name="Lifestyle" xml:space="preserve">
+    <value>Styl zycia</value>
+  </data>
+  <data name="Lifestyle_Description" xml:space="preserve">
+    <value>Sekcja 6: Styl zycia</value>
+  </data>
+  <data name="LymphaticSystem" xml:space="preserve">
+    <value>Uklad limfatyczny</value>
+  </data>
+  <data name="LymphaticSystem_Description" xml:space="preserve">
+    <value>Sekcja 7: Uklad limfatyczny</value>
+  </data>
+  <data name="SectionCompleted" xml:space="preserve">
+    <value>Sekcja ukonczona</value>
+  </data>
+  <data name="Goal_LoseWeight" xml:space="preserve">
+    <value>Celem jest utrata wagi</value>
+  </data>
+  <data name="Goal_GainWeight" xml:space="preserve">
+    <value>Celem jest przybranie na wadze</value>
+  </data>
+  <data name="Goal_MaintainWeight" xml:space="preserve">
+    <value>Celem jest utrzymanie wagi</value>
+  </data>
+  <data name="WeightChangeAmount" xml:space="preserve">
+    <value>O ile kg chcesz zmienic wage</value>
+  </data>
+  <data name="Goal_Motivation" xml:space="preserve">
+    <value>Co mi najbardziej pomoze</value>
+  </data>
+  <data name="Goal_Obstacles" xml:space="preserve">
+    <value>Co moze przeszkodzic w celu</value>
+  </data>
+  <data name="Goal_FirstStep" xml:space="preserve">
+    <value>Co zrobie jako pierwsze</value>
+  </data>
+  <data name="Diagnosis_Diabetes1" xml:space="preserve">
+    <value>Cukrzyca typu 1</value>
+  </data>
+  <data name="Diagnosis_Prediabetes" xml:space="preserve">
+    <value>Stan przedcukrzycowy</value>
+  </data>
+  <data name="Diagnosis_HighGlucose" xml:space="preserve">
+    <value>Podwyzszony poziom cukru</value>
+  </data>
+  <data name="Diagnosis_Diabetes2" xml:space="preserve">
+    <value>Cukrzyca typu 2</value>
+  </data>
+  <data name="SectionNotFullyImplemented" xml:space="preserve">
+    <value>Ta sekcja nie jest w pelni zaimplementowana w tej wersji.</value>
+  </data>
+  <data name="QuestionnaireResults" xml:space="preserve">
+    <value>Wyniki kwestionariusza</value>
+  </data>
+  <data name="EnergyNeeds" xml:space="preserve">
+    <value>Zapotrzebowanie energetyczne</value>
+  </data>
+  <data name="DietPlan" xml:space="preserve">
+    <value>Plan dietetyczny</value>
+  </data>
+  <data name="BRM_KJ" xml:space="preserve">
+    <value>Podstawowa przemiana materii (kJ)</value>
+  </data>
+  <data name="BRM_KCAL" xml:space="preserve">
+    <value>Podstawowa przemiana materii (kcal)</value>
+  </data>
+  <data name="BRM_FromMeasurement" xml:space="preserve">
+    <value>PPM z pomiaru</value>
+  </data>
+  <data name="DietType" xml:space="preserve">
+    <value>Typ diety</value>
+  </data>
+  <data name="ProteinProportion" xml:space="preserve">
+    <value>Udzial bialka</value>
+  </data>
+  <data name="CarbohydrateProportion" xml:space="preserve">
+    <value>Udzial weglowodanow</value>
+  </data>
+  <data name="FatProportion" xml:space="preserve">
+    <value>Udzial tluszczu</value>
+  </data>
+  <data name="StandardDiet" xml:space="preserve">
+    <value>Dieta standardowa</value>
+  </data>
+  <data name="LowCarbDiet" xml:space="preserve">
+    <value>Dieta niskoweglowodanowa</value>
+  </data>
+  <data name="HighProteinDiet" xml:space="preserve">
+    <value>Dieta wysokobialkowa</value>
+  </data>
+  <data name="Download" xml:space="preserve">
+    <value>Pobierz</value>
+  </data>
+  <data name="FileNotFound" xml:space="preserve">
+    <value>Plik nie znaleziony</value>
+  </data>
+  <data name="SelectOption" xml:space="preserve">
+    <value>Wybierz opcję</value>
+  </data>
+  <data name="Questionnaires" xml:space="preserve">
+    <value>Ankiety</value>
+  </data>
+  <data name="Yes_Intolerance" xml:space="preserve">
+    <value>TAK NIETOLERANCJĘ</value>
+  </data>
+  <data name="Yes_Allergy" xml:space="preserve">
+    <value>TAK, ALERGIĘ</value>
+  </data>
+  <data name="TastePreferences" xml:space="preserve">
+    <value>Preferencje smakowe</value>
+  </data>
+  <data name="Back" xml:space="preserve">
+    <value>Wróć</value>
+  </data>
+</root>
+

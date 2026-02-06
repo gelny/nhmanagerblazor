@@ -1,0 +1,99 @@
+@page "/workers/create"
+@attribute [Authorize(Roles = Roles.SuperEmployee)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["NewWorker"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["NewWorker"]</MudText>
+
+<MudPaper Class="pa-6">
+    <EditForm Model="_worker" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_worker.FirstName" Label="@Loc["FirstName"]" Required="true" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_worker.SurName" Label="@Loc["SurName"]" Required="true" Variant="Variant.Outlined" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_worker.Phone" Label="@Loc["Phone"]" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_worker.Email" Label="@Loc["Email"]" InputType="InputType.Email" Variant="Variant.Outlined" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_worker.Street" Label="@Loc["Street"]" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="_worker.City" Label="@Loc["City"]" Variant="Variant.Outlined" />
+            </MudItem>
+             <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="_worker.PostalCode" Label="@Loc["PostalCode"]" Variant="Variant.Outlined" />
+            </MudItem>
+             <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="_worker.Country" Label="@Loc["Country"]" Variant="Variant.Outlined" />
+            </MudItem>
+
+             <MudItem xs="12">
+                <MudTextField @bind-Value="_worker.WorkerContract" Label="@Loc["WorkerContract"]" Variant="Variant.Outlined" Lines="2" />
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudCheckBox @bind-Value="_worker.Active" Label="@Loc["Active"]" Color="Color.Primary" />
+            </MudItem>
+        </MudGrid>
+        
+        <MudDivider Class="my-6" />
+        
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/workers">@Loc["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @Loc["Save"]
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    private Worker _worker = new() { Active = true };
+    private bool _saving = false;
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userName = authState.User.Identity?.Name ?? "System";
+
+            await WorkerService.CreateAsync(_worker, userName);
+             Snackbar.Add(string.Format(Loc["CreatedSuccess"].Value, Loc["Worker"].Value), Severity.Success);
+            Navigation.NavigateTo("/workers");
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add(string.Format(Loc["ErrorCreating"].Value, ex.Message), Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

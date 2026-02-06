@@ -1,0 +1,192 @@
+@page "/scheduler"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@inject IMeetingService MeetingService
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IStringLocalizer<SharedResource> Loc
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+<PageTitle>@Loc["Scheduler"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="4">
+            <MudDatePicker Label="Datum" Date="_selectedDate" Variant="Variant.Outlined" DateChanged="OnDateChanged" />
+        </MudItem>
+         <MudItem xs="12" sm="6" md="8" Class="d-flex justify-end align-center">
+             <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="PreviousDay" Class="mr-2">Předchozí</MudButton>
+             <MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="NextDay">Další</MudButton>
+        </MudItem>
+    </MudGrid>
+
+    <MudDivider Class="my-4" />
+
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else
+    {
+        <MudPaper Height="800px" Class="overflow-auto relative">
+             <MudDropContainer T="Meeting" Items="_meetings" ItemsSelector="@((item,dropzone) => ItemSelector(item, dropzone))" ItemDropped="ItemDropped" Class="d-flex flex-column" Style="min-width: 1000px;">
+                <ChildContent>
+                     <!-- Header Row (Workers) -->
+                    <div class="d-flex flex-row" style="position: sticky; top: 0; z-index: 10; background-color: var(--mud-palette-background);">
+                        <div style="width: 80px; min-width: 80px; border-right: 1px solid var(--mud-palette-divider); padding: 8px; font-weight: bold;">Čas</div>
+                        @foreach (var worker in _workers)
+                        {
+                            <div class="d-flex justify-center align-center flex-grow-1" style="min-width: 200px; border-right: 1px solid var(--mud-palette-divider); padding: 8px; font-weight: bold; background-color: var(--mud-palette-background-grey);">
+                                @worker.FullName
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Time Slots -->
+                    @for (int hour = 7; hour < 19; hour++)
+                    {
+                        var h = hour;
+                        <div class="d-flex flex-row" style="border-bottom: 1px solid var(--mud-palette-divider); min-height: 100px;">
+                            <!-- Time Label -->
+                            <div class="d-flex justify-center align-center" style="width: 80px; min-width: 80px; border-right: 1px solid var(--mud-palette-divider); padding: 8px; font-weight: bold;">
+                                @($"{h:00}:00")
+                            </div>
+
+                            <!-- Worker Slots -->
+                            @foreach (var worker in _workers)
+                            {
+                                <MudDropZone T="Meeting" Identifier="@($"{worker.Id}_{h}")" Class="flex-grow-1 d-flex gap-2 p-2 flex-wrap" Style="min-width: 200px; border-right: 1px solid #e0e0e0; min-height: 100px; align-content: flex-start;" />
+                            }
+                        </div>
+                    }
+                </ChildContent>
+                <ItemRenderer>
+                    <MudPaper Elevation="2" Class="pa-2 ma-1" Style="@($"background-color: {context.MeetingType?.Color ?? "#fff"}; color: white; width: 100%; cursor: grab;")">
+                        <MudText Typo="Typo.body2"><b>@context.From.ToString("HH:mm")</b> - @context.Client?.SurName @context.Client?.FirstName</MudText>
+                        <MudText Typo="Typo.caption">@context.MeetingType?.Abbreviation</MudText>
+                    </MudPaper>
+                </ItemRenderer>
+            </MudDropContainer>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    private DateTime? _selectedDate = DateTime.Today;
+    private List<Worker> _workers = new();
+    private List<Meeting> _meetings = new();
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workers = await WorkerService.GetActiveAsync();
+        await LoadMeetings();
+    }
+
+    private async Task OnDateChanged(DateTime? date)
+    {
+        _selectedDate = date;
+        await LoadMeetings();
+    }
+    
+    private async Task PreviousDay()
+    {
+        if (_selectedDate.HasValue)
+        {
+            _selectedDate = _selectedDate.Value.AddDays(-1);
+            await LoadMeetings();
+        }
+    }
+    
+    private async Task NextDay()
+    {
+         if (_selectedDate.HasValue)
+        {
+            _selectedDate = _selectedDate.Value.AddDays(1);
+            await LoadMeetings();
+        }
+    }
+
+    private async Task LoadMeetings()
+    {
+        _loading = true;
+        if (_selectedDate.HasValue)
+        {
+            // Get meetings for the selected day (entire day)
+            var start = _selectedDate.Value.Date;
+            var end = start.AddDays(1).AddTicks(-1);
+            
+            _meetings = await MeetingService.GetByDateRangeAsync(start, end);
+        }
+        else 
+        {
+            _meetings = new List<Meeting>();
+        }
+        _loading = false;
+        StateHasChanged();
+    }
+
+    private bool ItemSelector(Meeting item, string dropzone)
+    {
+        // dropzone format: "{WorkerId}_{Hour}"
+        // Check if meeting belongs to this zone
+        if (item.ConsultantId == null) return false;
+        
+        var parts = dropzone.Split('_');
+        if (parts.Length != 2) return false;
+        
+        if (int.TryParse(parts[0], out int workerId) && int.TryParse(parts[1], out int hour))
+        {
+            return item.ConsultantId == workerId && item.From.Hour == hour;
+        }
+        
+        return false;
+    }
+
+    private async Task ItemDropped(MudItemDropInfo<Meeting> dropItem)
+    {
+        // Update meeting
+        var parts = dropItem.DropzoneIdentifier.Split('_');
+        if (parts.Length == 2 && int.TryParse(parts[0], out int workerId) && int.TryParse(parts[1], out int hour))
+        {
+             if (_selectedDate.HasValue)
+             {
+                 var meeting = dropItem.Item;
+                 if (meeting == null) return;
+                 
+                 // Calculate difference in time to keep duration
+                 var duration = meeting.To - meeting.From;
+                 
+                 var newStart = _selectedDate.Value.Date.AddHours(hour).AddMinutes(meeting.From.Minute); // Keep minute offset? Or snap to hour? 
+                 // Snapping to hour is better for this grid.
+                 newStart = _selectedDate.Value.Date.AddHours(hour); 
+
+                 meeting.ConsultantId = workerId;
+                 meeting.From = newStart;
+                 meeting.To = newStart + duration;
+
+                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                 var userName = authState.User.Identity?.Name ?? "System";
+                 
+                 try 
+                 {
+                     await MeetingService.UpdateAsync(meeting, userName);
+                     Snackbar.Add("Schůzka přesunuta", Severity.Success);
+                     // Refresh to ensure sort order? MudDropContainer handles UI update locally usually, but reload is safer for DB sync
+                     await LoadMeetings(); 
+                 }
+                 catch (Exception ex)
+                 {
+                     Snackbar.Add($"Chyba: {ex.Message}", Severity.Error);
+                     await LoadMeetings(); // Revert UI
+                 }
+             }
+        }
+    }
+}

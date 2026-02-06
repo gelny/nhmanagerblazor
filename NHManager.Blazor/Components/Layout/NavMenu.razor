@@ -1,0 +1,38 @@
+﻿@using NHManager.Blazor.Constants
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IStringLocalizer<SharedResource> Loc
+
+<MudNavMenu>
+    <AuthorizeView Roles="@Roles.AllEmployees">
+        <Authorized>
+            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">@Loc["Dashboard"]</MudNavLink>
+            <MudNavLink Href="/scheduler" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CalendarMonth">@Loc["Scheduler"]</MudNavLink>
+            <MudNavLink Href="/meetings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Event">@Loc["Meetings"]</MudNavLink>
+            <MudNavLink Href="/clients" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">@Loc["Clients"]</MudNavLink>
+            <MudNavLink Href="/orders" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ShoppingCart">@Loc["Orders"]</MudNavLink>
+            <MudNavLink Href="/recipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MenuBook">@Loc["Recipes"]</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="@Roles.SuperEmployee">
+        <Authorized>
+            <MudDivider Class="my-2" />
+            <MudNavLink Href="/products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Inventory">@Loc["Products"]</MudNavLink>
+            <MudNavLink Href="/foods" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Restaurant">@Loc["Foods"]</MudNavLink>
+            <MudNavLink Href="/workers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">@Loc["Workers"]</MudNavLink>
+            <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ManageAccounts">@Loc["Users"]</MudNavLink>
+        </Authorized>
+    </AuthorizeView>
+
+    <AuthorizeView Roles="@Roles.AdminAndSuper">
+        <Authorized>
+            <MudDivider Class="my-2" />
+            <MudNavGroup Title="@Loc["Settings"]" Icon="@Icons.Material.Filled.Settings">
+                <MudNavLink Href="/settings/meeting-types" Match="NavLinkMatch.Prefix">@Loc["MeetingTypes"]</MudNavLink>
+                <MudNavLink Href="/settings/meeting-states" Match="NavLinkMatch.Prefix">@Loc["MeetingStates"]</MudNavLink>
+                <MudNavLink Href="/settings/activity-types" Match="NavLinkMatch.Prefix">@Loc["ActivityTypes"]</MudNavLink>
+            </MudNavGroup>
+        </Authorized>
+    </AuthorizeView>
+</MudNavMenu>

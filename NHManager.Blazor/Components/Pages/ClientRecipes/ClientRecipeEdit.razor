@@ -1,0 +1,324 @@
+@page "/clientrecipes/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@inject IClientRecipeService ClientRecipeService
+@inject IClientCookBookService ClientCookBookService
+@inject IFoodService FoodService
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+@inject IStringLocalizer<MyStrings> MyStringsLoc
+@inject IDialogService DialogService
+
+<PageTitle>@Loc["EditClientRecipe"] - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_recipe == null)
+{
+    <MudAlert Severity="Severity.Warning">@Loc["NotFound"]</MudAlert>
+}
+else
+{
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["EditClientRecipe"]: @_recipe.Name</MudText>
+
+    <MudPaper Class="pa-6">
+        <EditForm Model="_recipe" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <MudItem xs="12" sm="8">
+                    <MudTextField @bind-Value="_recipe.Name" Label="@Loc["Name"]" Required="true" Variant="Variant.Outlined" />
+                </MudItem>
+                
+                <MudItem xs="12" sm="4">
+                    <MudSelect @bind-Value="_recipe.ConsultantId" Label="@Loc["Consultant"]" Variant="Variant.Outlined" T="int?">
+                        <MudSelectItem Value="@((int?)null)">@Loc["NotSelected"]</MudSelectItem>
+                        @foreach (var worker in _workers)
+                        {
+                            <MudSelectItem Value="@((int?)worker.Id)">@worker.FullName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_recipe.Description" Label="@Loc["Description"]" Variant="Variant.Outlined" Lines="3" />
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudText Typo="Typo.subtitle1">@Loc["SuitableForMeals"]:</MudText>
+                    <MudStack Row="true" Wrap="Wrap.Wrap">
+                        <MudCheckBox @bind-Value="_recipe.Breakfast" Label="@Loc["Breakfast"]" Color="Color.Primary" Dense="true" />
+                        <MudCheckBox @bind-Value="_recipe.MorningSnack" Label="@Loc["MorningSnack"]" Color="Color.Primary" Dense="true" />
+                        <MudCheckBox @bind-Value="_recipe.Lunch" Label="@Loc["Lunch"]" Color="Color.Primary" Dense="true" />
+                        <MudCheckBox @bind-Value="_recipe.AfternoonSnack" Label="@Loc["AfternoonSnack"]" Color="Color.Primary" Dense="true" />
+                        <MudCheckBox @bind-Value="_recipe.Dinner1" Label="@Loc["Dinner1"]" Color="Color.Primary" Dense="true" />
+                        <MudCheckBox @bind-Value="_recipe.Dinner2" Label="@Loc["Dinner2"]" Color="Color.Primary" Dense="true" />
+                    </MudStack>
+                </MudItem>
+
+                <MudItem xs="12">
+                     <MudGrid>
+                        <MudItem xs="6" md="2">
+                            <MudField Label="@MyStringsLoc["Required_KCAL"]" Variant="Variant.Outlined">@_recipe.Required_KCAL</MudField>
+                        </MudItem>
+                        <MudItem xs="6" md="2">
+                            <MudField Label="@MyStringsLoc["Required_KJ"]" Variant="Variant.Outlined">@_recipe.Required_KJ</MudField>
+                        </MudItem>
+                        <MudItem xs="6" md="2">
+                            <MudField Label="@MyStringsLoc["Protein_Required"]" Variant="Variant.Outlined">@_recipe.Protein_Required</MudField>
+                        </MudItem>
+                         <MudItem xs="6" md="2">
+                            <MudField Label="@MyStringsLoc["Carbohydrate_Required"]" Variant="Variant.Outlined">@_recipe.Carbohydrate_Required</MudField>
+                        </MudItem>
+                        <MudItem xs="6" md="2">
+                            <MudField Label="@MyStringsLoc["Fat_Required"]" Variant="Variant.Outlined">@_recipe.Fat_Required</MudField>
+                        </MudItem>
+                    </MudGrid>
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudText Typo="Typo.h6" Class="mb-2">@Loc["Ingredients"]</MudText>
+            
+            <MudTable Items="_recipe.ClientRecipeItems" Hover="true" Dense="true" Elevation="0">
+                <HeaderContent>
+                    <MudTh>@Loc["Ingredient"]</MudTh>
+                    <MudTh>@Loc["Amount"]</MudTh>
+                    <MudTh>@Loc["Unit"]</MudTh>
+                    <MudTh>@string.Format("{0} ({1})", Loc["Energy"].Value, Loc["Kcal"].Value)</MudTh>
+                    <MudTh>@Loc["Protein"]</MudTh>
+                    <MudTh>@Loc["Carbohydrate"]</MudTh>
+                    <MudTh>@Loc["Fat"]</MudTh>
+                    <MudTh>@Loc["Actions"]</MudTh>
+                </HeaderContent>
+                <RowTemplate Context="recipeItem">
+                    <MudTd>
+                        @if (recipeItem.Food != null)
+                        {
+                            @recipeItem.Food.Name_CZ
+                        }
+                        else
+                        {
+                             <MudAutocomplete T="Food" Label="@Loc["SelectIngredient"]" Value="recipeItem.Food" ValueChanged="@((Food f) => OnFoodSelected(recipeItem, f))" SearchFunc="@SearchFoods"
+                                             ToStringFunc="@(f => f == null ? null : $"{f.Name_CZ} ({f.EnergyKcal} kcal/100g)")"
+                                             Variant="Variant.Text" />
+                        }
+                    </MudTd>
+                    <MudTd>
+                        <MudNumericField Value="recipeItem.Count" ValueChanged="@((int c) => OnCountChanged(recipeItem, c))" Min="0" Variant="Variant.Text" margin="Margin.Dense" Immediate="true" />
+                    </MudTd>
+                    <MudTd>
+                        <MudSelect @bind-Value="recipeItem.Unit" Variant="Variant.Text" Margin="Margin.Dense" T="int">
+                            <MudSelectItem Value="1">g</MudSelectItem>
+                            <MudSelectItem Value="2">ml</MudSelectItem>
+                        </MudSelect>
+                    </MudTd>
+                    <MudTd>@recipeItem.EnergyKcal</MudTd>
+                    <MudTd>@recipeItem.Protein.ToString("F1")</MudTd>
+                    <MudTd>@recipeItem.Carbohydrate.ToString("F1")</MudTd>
+                    <MudTd>@recipeItem.Fat.ToString("F1")</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => RemoveItem(recipeItem))" />
+                    </MudTd>
+                </RowTemplate>
+                 <FooterContent>
+                    <MudTd colspan="8">
+                        <MudButton StartIcon="@Icons.Material.Filled.Add" Variant="Variant.Text" Color="Color.Primary" OnClick="AddItem">@Loc["AddIngredient"]</MudButton>
+                    </MudTd>
+                </FooterContent>
+            </MudTable>
+
+            <MudDivider Class="my-4" />
+            
+            <MudGrid>
+                 <MudItem xs="12" sm="3">
+                    <MudField Label="@Loc["TotalEnergyKcal"]" Variant="Variant.Outlined" Class="@GetColorClass(_recipe.EnergyKcal, _recipe.Required_KCAL)">
+                        @_recipe.EnergyKcal / @_recipe.Required_KCAL
+                    </MudField>
+                </MudItem>
+                <MudItem xs="12" sm="3">
+                    <MudField Label="@Loc["TotalProtein"]" Variant="Variant.Outlined" Class="@GetColorClass(_recipe.Protein, _recipe.Protein_Required)">
+                        @_recipe.Protein.ToString("F1") / @_recipe.Protein_Required
+                    </MudField>
+                </MudItem>
+                <MudItem xs="12" sm="3">
+                     <MudField Label="@Loc["TotalCarbohydrates"]" Variant="Variant.Outlined" Class="@GetColorClass(_recipe.Carbohydrate, _recipe.Carbohydrate_Required)">
+                        @_recipe.Carbohydrate.ToString("F1") / @_recipe.Carbohydrate_Required
+                    </MudField>
+                </MudItem>
+                <MudItem xs="12" sm="3">
+                     <MudField Label="@Loc["TotalFat"]" Variant="Variant.Outlined" Class="@GetColorClass(_recipe.Fat, _recipe.Fat_Required)">
+                         @_recipe.Fat.ToString("F1") / @_recipe.Fat_Required
+                    </MudField>
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.SpaceBetween">
+                <MudButton Variant="Variant.Outlined" Color="Color.Success" OnClick="SaveToCookbook" StartIcon="@Icons.Material.Filled.MenuBook">@Loc["ExportToCatalog"]</MudButton>
+                
+                <MudStack Row="true" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="Cancel">@Loc["Cancel"]</MudButton>
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        @Loc["Save"]
+                    </MudButton>
+                </MudStack>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private ClientRecipe? _recipe;
+    private List<Worker> _workers = new();
+    private List<Food> _allFoodsCache = new();
+    private bool _loading = true;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workers = await WorkerService.GetActiveAsync();
+        _allFoodsCache = await FoodService.GetAllAsync();
+        _recipe = await ClientRecipeService.GetByIdAsync(Id);
+        _loading = false;
+    }
+
+    private string GetColorClass(decimal current, decimal required)
+    {
+        // Simple heuristic: Green if within 10%
+        if (required == 0) return "";
+        var diff = Math.Abs(current - required);
+        var percent = diff / required;
+        if (percent < 0.1m) return "mud-text-success";
+        if (percent < 0.2m) return "mud-text-warning";
+        return "mud-text-error";
+    }
+
+    private async Task<IEnumerable<Food>> SearchFoods(string value, CancellationToken token)
+    {
+        if (string.IsNullOrEmpty(value))
+             return _allFoodsCache; 
+             
+        return _allFoodsCache.Where(x => x.Name_CZ.Contains(value, StringComparison.OrdinalIgnoreCase) || x.Name.Contains(value, StringComparison.OrdinalIgnoreCase));
+    }
+
+    private void AddItem()
+    {
+        if (_recipe == null) return;
+        _recipe.ClientRecipeItems.Add(new ClientRecipeItem { Count = 100, Unit = 1, ClientRecipeId = _recipe.Id });
+        RecalculateRecipeTotals();
+    }
+
+    private void RemoveItem(ClientRecipeItem item)
+    {
+        if (_recipe == null) return;
+        _recipe.ClientRecipeItems.Remove(item);
+        RecalculateRecipeTotals();
+    }
+
+     private void OnFoodSelected(ClientRecipeItem item, Food food)
+    {
+        if (food != null)
+        {
+            item.Food = food;
+            item.FoodId = food.Id;
+            RecalculateItem(item);
+        }
+    }
+    
+    private void OnCountChanged(ClientRecipeItem item, int count)
+    {
+        item.Count = count;
+        RecalculateItem(item);
+    }
+    
+    private void RecalculateItem(ClientRecipeItem item)
+    {
+        if (item.Food == null) return;
+        
+        decimal factor = item.Count / 100m;
+        
+        item.Protein = item.Food.Protein * factor;
+        item.Carbohydrate = item.Food.Carbohydrate * factor;
+        item.Fat = item.Food.Fat * factor;
+        
+        item.EnergyKcal = (int)Math.Round(item.Food.EnergyKcal * factor);
+        item.EnergyKJ = (int)Math.Round(item.Food.EnergyKJ * factor);
+        
+        item.ProteinFromFood = item.Protein;
+        item.CarbohydrateFromFood = item.Carbohydrate;
+        item.FatFromFood = item.Fat;
+        item.EnergyKcalFromFood = item.EnergyKcal;
+        item.EnergyKJFromFood = item.EnergyKJ;
+        
+        RecalculateRecipeTotals();
+    }
+
+    private void RecalculateRecipeTotals()
+    {
+        if (_recipe == null) return;
+        _recipe.Protein = _recipe.ClientRecipeItems.Sum(x => x.Protein);
+        _recipe.Carbohydrate = _recipe.ClientRecipeItems.Sum(x => x.Carbohydrate);
+        _recipe.Fat = _recipe.ClientRecipeItems.Sum(x => x.Fat);
+        _recipe.EnergyKcal = _recipe.ClientRecipeItems.Sum(x => x.EnergyKcal);
+        _recipe.EnergyKJ = _recipe.ClientRecipeItems.Sum(x => x.EnergyKJ);
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_recipe == null) return;
+        _saving = true;
+        try
+        {
+             await ClientRecipeService.UpdateAsync(_recipe);
+             Snackbar.Add(string.Format(Loc["UpdatedSuccess"], _recipe.Name), Severity.Success);
+             Navigation.NavigateTo($"/clients/cookbooks/{_recipe.ClientCookBookId}");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+    
+    private async Task SaveToCookbook()
+    {
+        if (_recipe == null) return;
+        var result = await DialogService.ShowMessageBox(
+            Loc["Export"], Loc["ExportToCatalogConfirmation"], yesText: Loc["Yes"], cancelText: Loc["No"]);
+            
+        if (result == true)
+        {
+             await ClientRecipeService.SaveToCookBookAsync(_recipe.Id);
+             Snackbar.Add(Loc["SavedToCatalog"], Severity.Success);
+        }
+    }
+
+    private void Cancel()
+    {
+        if (_recipe != null)
+             Navigation.NavigateTo($"/clients/cookbooks/{_recipe.ClientCookBookId}");
+        else
+             Navigation.NavigateTo("/clients");
+    }
+}

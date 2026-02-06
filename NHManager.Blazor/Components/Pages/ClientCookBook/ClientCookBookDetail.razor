@@ -1,0 +1,120 @@
+@page "/clients/cookbooks/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@inject IClientCookBookService ClientCookBookService
+@inject IClientRecipeService ClientRecipeService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IStringLocalizer<SharedResource> Loc
+@inject IStringLocalizer<MyStrings> MyStringsLoc
+
+<PageTitle>@Loc["CookBook"] - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_cookBook == null)
+{
+    <MudAlert Severity="Severity.Warning">@Loc["NotFound"]</MudAlert>
+}
+else
+{
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudText Typo="Typo.h4">@Loc["CookBook"] - @_cookBook.Date.ToString("dd.MM.yyyy")</MudText>
+        <MudButton Variant="Variant.Outlined" Color="Color.Default" StartIcon="@Icons.Material.Filled.ArrowBack" Href="@($"/clients/{_cookBook.ClientId}?tab=cookbooks")">
+            @Loc["Back"]
+        </MudButton>
+    </MudStack>
+    
+    <MudPaper Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudText><strong>@Loc["Description"]:</strong> @_cookBook.Description</MudText>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                 <MudText><strong>@Loc["DietType"]:</strong> @_cookBook.DietTypeString</MudText>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+    
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        @if (_cookBook.Breakfast) {
+             <MudTabPanel Text="@Loc["Breakfast"]">
+                <ClientCookBookRecipeList Recipes="@_cookBook.BreakfastRecipies" CookBookId="@_cookBook.Id" Type="1" OnDelete="DeleteRecipe" />
+             </MudTabPanel>
+        }
+        @if (_cookBook.MorningSnack) {
+             <MudTabPanel Text="@Loc["MorningSnack"]">
+                 <ClientCookBookRecipeList Recipes="@_cookBook.MorningSnackRecipies" CookBookId="@_cookBook.Id" Type="2" OnDelete="DeleteRecipe" />
+             </MudTabPanel>
+        }
+        @if (_cookBook.Lunch) {
+             <MudTabPanel Text="@Loc["Lunch"]">
+                 <ClientCookBookRecipeList Recipes="@_cookBook.LunchRecipies" CookBookId="@_cookBook.Id" Type="3" OnDelete="DeleteRecipe" />
+             </MudTabPanel>
+        }
+        @if (_cookBook.AfternoonSnack) {
+             <MudTabPanel Text="@Loc["AfternoonSnack"]">
+                 <ClientCookBookRecipeList Recipes="@_cookBook.AfternoonSnackRecipies" CookBookId="@_cookBook.Id" Type="4" OnDelete="DeleteRecipe" />
+             </MudTabPanel>
+        }
+        @if (_cookBook.Dinner1) {
+             <MudTabPanel Text="@Loc["Dinner1"]">
+                 <ClientCookBookRecipeList Recipes="@_cookBook.Dinner1Recipies" CookBookId="@_cookBook.Id" Type="5" OnDelete="DeleteRecipe" />
+             </MudTabPanel>
+        }
+        @if (_cookBook.Dinner2) {
+             <MudTabPanel Text="@Loc["Dinner2"]">
+                 <ClientCookBookRecipeList Recipes="@_cookBook.Dinner2Recipies" CookBookId="@_cookBook.Id" Type="6" OnDelete="DeleteRecipe" />
+             </MudTabPanel>
+        }
+    </MudTabs>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    
+    private ClientCookBook? _cookBook;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+    }
+    
+    private async Task LoadData()
+    {
+        _loading = true;
+        _cookBook = await ClientCookBookService.GetByIdAsync(Id);
+        _loading = false;
+    }
+
+    private async Task DeleteRecipe(int recipeId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["Delete"],
+             Loc["ConfirmDelete"], 
+             yesText: Loc["Delete"], 
+             cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+             try 
+             {
+                 await ClientRecipeService.DeleteAsync(recipeId);
+                 await LoadData();
+                 Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+             }
+             catch(Exception ex)
+             {
+                 Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+             }
+        }
+    }
+}

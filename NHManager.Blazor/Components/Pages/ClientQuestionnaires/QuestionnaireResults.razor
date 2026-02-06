@@ -1,0 +1,163 @@
+@page "/clients/{ClientId:int}/questionnaires/{QuestionnaireId:int}/results"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientQuestionnaireService QuestionnaireService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["QuestionnaireResults"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_result == null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc["NoResultsFound"]</MudAlert>
+        <MudButton Variant="Variant.Outlined" 
+                   Color="Color.Default" 
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Class="mt-4"
+                   OnClick="NavigateBack">
+            @Loc["Back"]
+        </MudButton>
+    }
+    else
+    {
+        <MudPaper Class="pa-6">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+                <MudText Typo="Typo.h5">@Loc["QuestionnaireResults"]</MudText>
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Default" 
+                           StartIcon="@Icons.Material.Filled.ArrowBack"
+                           OnClick="NavigateBack">
+                    @Loc["Back"]
+                </MudButton>
+            </MudStack>
+            
+            @if (_client != null)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName | @Loc["Date"]: @_result.Date.ToString("dd.MM.yyyy")</MudText>
+            }
+            
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["EnergyNeeds"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["BRM_KJ"]</strong></td>
+                                        <td>@_result.BRM_KJ kJ</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["BRM_KCAL"]</strong></td>
+                                        <td>@_result.BRM_KCAL kcal</td>
+                                    </tr>
+                                    @if (_result.BRM_KJ_FromAnalysis > 0)
+                                    {
+                                        <tr>
+                                            <td><strong>@Loc["BRM_FromMeasurement"]</strong></td>
+                                            <td>@_result.BRM_KJ_FromAnalysis kJ / @_result.BRM_KCAL_FromAnalysis kcal</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["DietPlan"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["DietType"]</strong></td>
+                                        <td>@GetDietTypeString(_result.DietType)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["ProteinProportion"]</strong></td>
+                                        <td>@_result.ProteinProportion %</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["CarbohydrateProportion"]</strong></td>
+                                        <td>@_result.CarbohydrateProportion %</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["FatProportion"]</strong></td>
+                                        <td>@_result.FatProportion %</td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                @if (!string.IsNullOrEmpty(_result.Description))
+                {
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">@Loc["Description"]</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText>@_result.Description</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int QuestionnaireId { get; set; }
+    
+    private ClientQuestionnaireResult? _result;
+    private Client? _client;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _result = await QuestionnaireService.GetResultByQuestionnaireIdAsync(QuestionnaireId);
+        _loading = false;
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=questionnaires");
+    }
+
+    private string GetDietTypeString(int type)
+    {
+        return type switch
+        {
+            1 => Loc["StandardDiet"],
+            2 => Loc["LowCarbDiet"],
+            3 => Loc["HighProteinDiet"],
+            _ => Loc["StandardDiet"]
+        };
+    }
+}

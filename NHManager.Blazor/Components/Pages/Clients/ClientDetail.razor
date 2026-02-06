@@ -1,0 +1,856 @@
+@page "/clients/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientService ClientService
+@inject IClientMeasurementService MeasurementService
+@inject IClientEventService EventService
+@inject IClientDocumentService DocumentService
+@inject IClientBiochemistryService BiochemistryService
+@inject IClientAnalysisService AnalysisService
+@inject IClientQuestionnaireService QuestionnaireService
+@inject IClientCookBookService CookBookService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IJSRuntime JS
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["ClientDetail"] - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_client == null)
+{
+    <MudAlert Severity="Severity.Warning">Klient nebyl nalezen.</MudAlert>
+}
+else
+{
+    <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+        <MudText Typo="Typo.h4">@_client.FullName</MudText>
+        <MudStack Row="true" Spacing="2">
+            <MudButton Variant="Variant.Outlined" 
+                       Color="Color.Default" 
+                       StartIcon="@Icons.Material.Filled.ArrowBack"
+                       Href="/clients">
+                Zpět
+            </MudButton>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.Edit"
+                       Href="@($"/clients/{Id}/edit")">
+                Upravit
+            </MudButton>
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Error" 
+                       StartIcon="@Icons.Material.Filled.Delete"
+                       OnClick="HandleDelete">
+                Smazat
+            </MudButton>
+        </MudStack>
+    </MudStack>
+
+    <MudTabs @ref="_tabs" Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndex="@_selectedTabIndex" ActivePanelIndexChanged="OnTabChanged" Class="client-detail-tabs">
+        <MudTabPanel Text="@Loc["Overview"]" Icon="@Icons.Material.Filled.Info">
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Osobní údaje</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true" Hover="true">
+                                <tbody>
+                                    <tr><td><strong>Jméno</strong></td><td>@_client.FullName</td></tr>
+                                    <tr><td><strong>Telefon</strong></td><td>@(_client.Phone ?? "-")</td></tr>
+                                    <tr><td><strong>Email</strong></td><td>@(_client.Email ?? "-")</td></tr>
+                                    <tr><td><strong>Datum narození</strong></td><td>@_client.DateOfBirth.ToString("d.M.yyyy")</td></tr>
+                                    <tr><td><strong>Pohlaví</strong></td><td>@(_client.Sex == 1 ? "Muž" : _client.Sex == 2 ? "Žena" : "-")</td></tr>
+                                    <tr><td><strong>Konzultant</strong></td><td>@(_client.Consultant?.FullName ?? "-")</td></tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Adresa</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true" Hover="true">
+                                <tbody>
+                                    <tr><td><strong>Ulice</strong></td><td>@(_client.Street ?? "-")</td></tr>
+                                    <tr><td><strong>Město</strong></td><td>@(_client.City ?? "-")</td></tr>
+                                    <tr><td><strong>PSČ</strong></td><td>@(_client.PostalCode ?? "-")</td></tr>
+                                    <tr><td><strong>Země</strong></td><td>@(_client.Country ?? "-")</td></tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                @if (!string.IsNullOrEmpty(_client.Notes))
+                {
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">Poznámka</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudText>@_client.Notes</MudText>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Schůzky" Icon="@Icons.Material.Filled.Event">
+            @if (_client.Meetings?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Meetings" Dense="true" Hover="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Title" Title="Název" />
+                        <PropertyColumn Property="x => x.From" Title="Od" Format="dd.MM.yyyy HH:mm" />
+                        <PropertyColumn Property="x => x.To" Title="Do" Format="dd.MM.yyyy HH:mm" />
+                        <PropertyColumn Property="x => x.MeetingType!.Name" Title="Typ" />
+                        <PropertyColumn Property="x => x.MeetingState!.Name" Title="Stav" />
+                    </Columns>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">Žádné schůzky.</MudAlert>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="@Loc["Measurements"]" Icon="@Icons.Material.Filled.MonitorWeight">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="@($"/clients/{Id}/measurements/create")">
+                    @Loc["NewMeasurement"]
+                </MudButton>
+            </MudStack>
+            @if (_client.Measurements?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Measurements" Dense="true" Hover="true">
+                    <Columns>
+                         <HierarchyColumn T="ClientMeasurement" />
+                        <PropertyColumn Property="x => x.Date" Title="@Loc["Date"]" Format="dd.MM.yyyy" />
+                        <PropertyColumn Property="x => x.Weight" Title="@Loc["Weight"]" />
+                        <PropertyColumn Property="x => x.FatPercentage" Title="@Loc["FatPercentage"]" />
+                        <PropertyColumn Property="x => x.WaterPercentage" Title="@Loc["WaterPercentage"]" />
+                        <TemplateColumn Title="@Loc["Actions"]" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                 <MudTooltip Text="@Loc["Evaluate"]">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Calculate" 
+                                                   Size="Size.Small" 
+                                                   Color="Color.Success"
+                                                   OnClick="@(() => EvaluateMeasurement(context.Item.Id))" />
+                                </MudTooltip>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                               Size="Size.Small" 
+                                               Color="Color.Primary"
+                                               Href="@($"/clients/{Id}/measurements/edit/{context.Item.Id}")" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Size="Size.Small" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteMeasurement(context.Item.Id))" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <ChildRowContent>
+                        @if (context.Item.Results != null && context.Item.Results.Any())
+                        {
+                            <MudCard Elevation="0" Class="ml-8 my-2">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.subtitle2">@Loc["EvaluationResults"]</MudText>
+                                    <MudTable Items="context.Item.Results" Dense="true" Hover="true" Elevation="0">
+                                        <HeaderContent>
+                                            <MudTh>@Loc["Date"]</MudTh>
+                                            <MudTh>@Loc["Description"]</MudTh>
+                                            <MudTh>BMI</MudTh>
+                                            <MudTh></MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate Context="result">
+                                            <MudTd>@result.Date.ToString("g")</MudTd>
+                                            <MudTd>@result.Description</MudTd>
+                                            <MudTd>@result.BMI.ToString("F1")</MudTd>
+                                            <MudTd>
+                                                 <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                                               Size="Size.Small" 
+                                                               Color="Color.Info"
+                                                               Href="@($"/clients/{Id}/measurements/{context.Item.Id}/results")" />
+                                            </MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudCardContent>
+                            </MudCard>
+                        }
+                    </ChildRowContent>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="@Loc["Questionnaires"]" Icon="@Icons.Material.Filled.Quiz">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="@($"/clients/{Id}/questionnaires/create")">
+                    @Loc["NewQuestionnaire"]
+                </MudButton>
+            </MudStack>
+            @if (_client.Questionnaires?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Questionnaires" Dense="true" Hover="true">
+                    <Columns>
+                        <HierarchyColumn T="ClientQuestionnaire" />
+                        <PropertyColumn Property="x => x.Date" Title="@Loc["Date"]" Format="dd.MM.yyyy" />
+                        <TemplateColumn Title="@Loc["Actions"]" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                 <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="Color.Success" 
+                                           Class="mr-2"
+                                            OnClick="@(() => Navigation.NavigateTo($"/clients/{Id}/questionnaires/{context.Item.Id}/evaluate"))">
+                                    @Loc["Evaluate"]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="@(context.Item.Completed_1 ? Color.Success : Color.Info)"
+                                           Class="mr-1"
+                                           Href="@($"/clients/{Id}/questionnaires/edit/{context.Item.Id}?tab=goals")">
+                                    @Loc["PersonalGoals"]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="@(context.Item.Completed_2 ? Color.Success : Color.Info)"
+                                           Class="mr-1"
+                                           Href="@($"/clients/{Id}/questionnaires/edit/{context.Item.Id}?tab=diagnosis")">
+                                    @Loc["Diagnosis"]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="@(context.Item.Completed_3 ? Color.Success : Color.Info)"
+                                           Class="mr-1"
+                                           Href="@($"/clients/{Id}/questionnaires/edit/{context.Item.Id}?tab=risks")">
+                                    @Loc["RiskFactors"]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="@(context.Item.Completed_4 ? Color.Success : Color.Info)"
+                                           Class="mr-1"
+                                           Href="@($"/clients/{Id}/questionnaires/edit/{context.Item.Id}?tab=family")">
+                                    @Loc["FamilyHistory"]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="@(context.Item.Completed_5 ? Color.Success : Color.Info)"
+                                           Class="mr-1"
+                                           Href="@($"/clients/{Id}/questionnaires/edit/{context.Item.Id}?tab=preferences")">
+                                    @Loc["TastePreferences"]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="@(context.Item.Completed_6 ? Color.Success : Color.Info)"
+                                           Class="mr-1"
+                                           Href="@($"/clients/{Id}/questionnaires/edit/{context.Item.Id}?tab=lifestyle")">
+                                    @Loc["Lifestyle"]
+                                </MudButton>
+                                <MudButton Variant="Variant.Filled" 
+                                           Size="Size.Small" 
+                                           Color="@(context.Item.Completed_7 ? Color.Success : Color.Info)"
+                                           Class="mr-1"
+                                           Href="@($"/clients/{Id}/questionnaires/edit/{context.Item.Id}?tab=lymphatic")">
+                                    @Loc["LymphaticSystem"]
+                                </MudButton>
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Size="Size.Small" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteQuestionnaire(context.Item.Id))" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <ChildRowContent>
+                         @if (context.Item.Results != null && context.Item.Results.Any())
+                        {
+                            <MudCard Elevation="0" Class="ml-8 my-2">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.subtitle2">@Loc["EvaluationResults"]</MudText>
+                                    <MudTable Items="context.Item.Results" Dense="true" Hover="true" Elevation="0">
+                                        <HeaderContent>
+                                            <MudTh>@Loc["Date"]</MudTh>
+                                            <MudTh>@Loc["Description"]</MudTh>
+                                             <MudTh>BRM (kJ)</MudTh>
+                                            <MudTh></MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate Context="result">
+                                            <MudTd>@result.Date.ToString("g")</MudTd>
+                                            <MudTd>@result.Description</MudTd>
+                                            <MudTd>@result.BRM_KJ</MudTd>
+                                            <MudTd>
+                                                 <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                                               Size="Size.Small" 
+                                                               Color="Color.Info"
+                                                               Href="@($"/clients/{Id}/questionnaires/{context.Item.Id}/results")" />
+                                            </MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudCardContent>
+                            </MudCard>
+                        }
+                    </ChildRowContent>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="Objednávky" Icon="@Icons.Material.Filled.ShoppingCart">
+            @if (_client.Orders?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Orders" Dense="true" Hover="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.CreateDate" Title="Datum" Format="dd.MM.yyyy" />
+                        <PropertyColumn Property="x => x.OrderItems!.Count" Title="Položek" />
+                    </Columns>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">Žádné objednávky.</MudAlert>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="@Loc["Events"]" Icon="@Icons.Material.Filled.EventNote">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="@($"/clients/{Id}/events/create")">
+                    @Loc["NewEvent"]
+                </MudButton>
+            </MudStack>
+            @if (_client.Events?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Events" Dense="true" Hover="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Date" Title="@Loc["Date"]" Format="dd.MM.yyyy" />
+                        <PropertyColumn Property="x => x.Description" Title="@Loc["Description"]" />
+                        <TemplateColumn Title="@Loc["Actions"]" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                               Size="Size.Small" 
+                                               Color="Color.Primary"
+                                               Href="@($"/clients/{Id}/events/edit/{context.Item.Id}")" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Size="Size.Small" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteEvent(context.Item.Id))" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="@Loc["Documents"]" Icon="@Icons.Material.Filled.Folder">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="@($"/clients/{Id}/documents/create")">
+                    @Loc["NewDocument"]
+                </MudButton>
+            </MudStack>
+            @if (_client.Documents?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Documents" Dense="true" Hover="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Name" Title="@Loc["Name"]" />
+                        <PropertyColumn Property="x => x.CreatedAt" Title="@Loc["Date"]" Format="dd.MM.yyyy" />
+                        <TemplateColumn Title="@Loc["Actions"]" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                               Size="Size.Small" 
+                                               Color="Color.Primary"
+                                               Href="@($"/clients/{Id}/documents/edit/{context.Item.Id}")" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Download" 
+                                               Size="Size.Small" 
+                                               Color="Color.Info"
+                                               OnClick="@(() => DownloadDocument(context.Item.Id, context.Item.FileNameWithPath))" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Size="Size.Small" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteDocument(context.Item.Id))" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="@Loc["Biochemistry"]" Icon="@Icons.Material.Filled.Science">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="@($"/clients/{Id}/biochemistry/create")">
+                    @Loc["NewBiochemistry"]
+                </MudButton>
+            </MudStack>
+            @if (_client.Biochemistry?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Biochemistry" Dense="true" Hover="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Date" Title="@Loc["Date"]" Format="dd.MM.yyyy" />
+                        <PropertyColumn Property="x => x.Glucose" Title="@Loc["Glucose"]" />
+                        <PropertyColumn Property="x => x.TotalCholesterol" Title="@Loc["TotalCholesterol"]" />
+                        <TemplateColumn Title="@Loc["Actions"]" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                               Size="Size.Small" 
+                                               Color="Color.Primary"
+                                               Href="@($"/clients/{Id}/biochemistry/edit/{context.Item.Id}")" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Size="Size.Small" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteBiochemistry(context.Item.Id))" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+            }
+        </MudTabPanel>
+        
+        <MudTabPanel Text="@Loc["Analysis"]" Icon="@Icons.Material.Filled.Analytics">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="@($"/clients/{Id}/analysis/create")">
+                    @Loc["NewAnalysis"]
+                </MudButton>
+            </MudStack>
+            @if (_client.Analysis?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.Analysis" Dense="true" Hover="true">
+                    <Columns>
+                        <HierarchyColumn T="ClientAnalysis" />
+                        <PropertyColumn Property="x => x.Date" Title="@Loc["Date"]" Format="dd.MM.yyyy" />
+                        <PropertyColumn Property="x => x.Glucose" Title="@Loc["Glucose"]" />
+                        <PropertyColumn Property="x => x.TotalCholesterol" Title="@Loc["TotalCholesterol"]" />
+                        <TemplateColumn Title="@Loc["Actions"]" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudTooltip Text="@Loc["Evaluate"]">
+                                    <MudIconButton Icon="@Icons.Material.Filled.Calculate" 
+                                                   Size="Size.Small" 
+                                                   Color="Color.Success"
+                                                   OnClick="@(() => EvaluateAnalysis(context.Item.Id))" />
+                                </MudTooltip>
+                                <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                               Size="Size.Small" 
+                                               Color="Color.Primary"
+                                               Href="@($"/clients/{Id}/analysis/edit/{context.Item.Id}")" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Size="Size.Small" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteAnalysis(context.Item.Id))" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                    <ChildRowContent>
+                        @if (context.Item.Results != null && context.Item.Results.Any())
+                        {
+                            <MudCard Elevation="0" Class="ml-8 my-2">
+                                <MudCardContent>
+                                    <MudText Typo="Typo.subtitle2">@Loc["EvaluationResults"]</MudText>
+                                    <MudTable Items="context.Item.Results" Dense="true" Hover="true" Elevation="0">
+                                        <HeaderContent>
+                                            <MudTh>@Loc["Date"]</MudTh>
+                                            <MudTh>@Loc["Description"]</MudTh>
+                                            <MudTh></MudTh>
+                                        </HeaderContent>
+                                        <RowTemplate Context="result">
+                                            <MudTd>@result.Date.ToString("g")</MudTd>
+                                            <MudTd>@result.Description</MudTd>
+                                            <MudTd>
+                                                <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                                               Size="Size.Small" 
+                                                               Color="Color.Info"
+                                                               Href="@($"/clients/{Id}/analysis/results/{result.Id}")" />
+                                            </MudTd>
+                                        </RowTemplate>
+                                    </MudTable>
+                                </MudCardContent>
+                            </MudCard>
+                        }
+                    </ChildRowContent>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+            }
+        </MudTabPanel>
+
+
+        <MudTabPanel Text="@Loc["CookBooks"]" Icon="@Icons.Material.Filled.MenuBook">
+            <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+                 <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           StartIcon="@Icons.Material.Filled.Add"
+                           Href="@($"/clients/{Id}/cookbooks/create")">
+                    @Loc["New"]
+                </MudButton>
+            </MudStack>
+            @if (_client.CookBooks?.Any() == true)
+            {
+                <MudDataGrid Items="@_client.CookBooks" Dense="true" Hover="true">
+                    <Columns>
+                        <PropertyColumn Property="x => x.Date" Title="@Loc["Date"]" Format="dd.MM.yyyy" />
+                        <PropertyColumn Property="x => x.Description" Title="@Loc["Description"]" />
+                         <TemplateColumn Title="@Loc["Actions"]" CellClass="d-flex justify-end">
+                            <CellTemplate>
+                                <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                               Size="Size.Small" 
+                                               Color="Color.Primary"
+                                               Href="@($"/clients/cookbooks/{context.Item.Id}")" />
+                                <MudIconButton Icon="@Icons.Material.Filled.Delete" 
+                                               Size="Size.Small" 
+                                               Color="Color.Error"
+                                               OnClick="@(() => DeleteCookBook(context.Item.Id))" />
+                            </CellTemplate>
+                        </TemplateColumn>
+                    </Columns>
+                </MudDataGrid>
+            }
+            else
+            {
+                <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+            }
+        </MudTabPanel>
+    </MudTabs>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+    
+    [SupplyParameterFromQuery(Name = "tab")]
+    public string? Tab { get; set; }
+    
+    private Client? _client;
+    private MudTabs? _tabs;
+    private int _selectedTabIndex = 0;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClient();
+        
+        // Set tab based on query parameter
+        _selectedTabIndex = Tab?.ToLower() switch
+        {
+            "measurements" => 2,
+            "meetings" => 1,
+            "questionnaires" => 3,
+            "orders" => 4,
+            "events" => 5,
+            "documents" => 6,
+            "biochemistry" => 7,
+            "analysis" => 8,
+            "cookbooks" => 9,
+            _ => 0
+        };
+    }
+
+    private async Task LoadClient()
+    {
+        _loading = true;
+        _client = await ClientService.GetByIdWithDetailsAsync(Id);
+        _loading = false;
+    }
+
+    private void OnTabChanged(int index)
+    {
+        _selectedTabIndex = index;
+    }
+
+    private async Task HandleDelete()
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DeleteClient"],
+            string.Format(Loc["ConfirmDelete"].Value, _client?.FullName),
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await ClientService.DeleteAsync(Id, "System");
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+                Navigation.NavigateTo("/clients");
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task DeleteMeasurement(int measurementId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DeleteMeasurement"],
+            Loc["ConfirmDeleteMeasurement"],
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await MeasurementService.DeleteAsync(measurementId);
+                await LoadClient();
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task DeleteEvent(int eventId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DeleteEvent"],
+            Loc["ConfirmDeleteEvent"],
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await EventService.DeleteAsync(eventId);
+                await LoadClient();
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task DeleteDocument(int documentId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DeleteDocument"],
+            Loc["ConfirmDeleteDocument"],
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await DocumentService.DeleteAsync(documentId);
+                await LoadClient();
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task DownloadDocument(int documentId, string? fileNameWithPath)
+    {
+        try
+        {
+            var fileBytes = await DocumentService.DownloadFileAsync(documentId);
+            if (fileBytes != null)
+            {
+                var originalFileName = Path.GetFileName(fileNameWithPath);
+                // Remove GUID prefix if present (format: GUID_filename.ext)
+                if (!string.IsNullOrEmpty(originalFileName) && originalFileName.Contains('_'))
+                {
+                    originalFileName = originalFileName.Substring(originalFileName.IndexOf('_') + 1);
+                }
+                
+                using var stream = new MemoryStream(fileBytes);
+                using var streamRef = new DotNetStreamReference(stream);
+                await JS.InvokeVoidAsync("downloadFileFromStream", originalFileName, streamRef);
+            }
+            else
+            {
+                 Snackbar.Add(Loc["FileNotFound"], Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteBiochemistry(int biochemistryId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DeleteBiochemistry"],
+            Loc["ConfirmDeleteBiochemistry"],
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await BiochemistryService.DeleteAsync(biochemistryId);
+                await LoadClient();
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task DeleteAnalysis(int analysisId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DeleteAnalysis"],
+            Loc["ConfirmDeleteAnalysis"],
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await AnalysisService.DeleteAsync(analysisId);
+                await LoadClient();
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task EvaluateMeasurement(int measurementId)
+    {
+        try
+        {
+            var result = await MeasurementService.EvaluateResultAsync(measurementId);
+            if (result != null)
+            {
+                Snackbar.Add(Loc["EvaluationSuccess"], Severity.Success);
+                // Reload client to show new result in nested grid
+                await LoadClient();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteQuestionnaire(int questionnaireId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DeleteQuestionnaire"],
+            Loc["ConfirmDeleteQuestionnaire"],
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await QuestionnaireService.DeleteAsync(questionnaireId);
+                await LoadClient();
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+
+    private async Task EvaluateAnalysis(int analysisId)
+    {
+        try
+        {
+            var result = await AnalysisService.EvaluateAsync(analysisId);
+            if (result != null)
+            {
+                Snackbar.Add(Loc["EvaluationSuccess"], Severity.Success);
+                await LoadClient();
+            }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task DeleteCookBook(int cookBookId)
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["Delete"],
+            Loc["ConfirmDelete"],
+            yesText: Loc["Delete"],
+            cancelText: Loc["Cancel"]);
+
+        if (result == true)
+        {
+            try
+            {
+                await CookBookService.DeleteAsync(cookBookId);
+                await LoadClient();
+                Snackbar.Add(Loc["DeletedSuccess"], Severity.Success);
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+            }
+        }
+    }
+}

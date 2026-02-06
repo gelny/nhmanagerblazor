@@ -1,0 +1,139 @@
+@page "/clients/{ClientId:int}/measurements"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Constants
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Resources
+@using NHManager.Blazor.Services
+@inject IClientMeasurementService MeasurementService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResource> Loc
+@attribute [Authorize]
+
+<PageTitle>@Loc["Measurements"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudBreadcrumbs Items="@_breadcrumbItems" />
+
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["Measurements"] - @_clientName</MudText>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudStack Row="true" Justify="Justify.FlexEnd" Class="mb-4">
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.Add"
+                       OnClick="@NavigateToCreate">
+                @Loc["NewMeasurement"]
+            </MudButton>
+        </MudStack>
+
+        @if (_loading)
+        {
+            <MudProgressCircular Indeterminate="true" />
+        }
+        else if (_measurements == null || !_measurements.Any())
+        {
+            <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
+        }
+        else
+        {
+            <MudTable Items="@_measurements" Hover="true" Striped="true" Dense="true">
+                <HeaderContent>
+                    <MudTh>@Loc["Date"]</MudTh>
+                    <MudTh>@Loc["Weight"]</MudTh>
+                    <MudTh>@Loc["FatPercentage"]</MudTh>
+                    <MudTh>@Loc["WaterPercentage"]</MudTh>
+                    <MudTh>@Loc["BMI"]</MudTh>
+                    <MudTh>@Loc["Actions"]</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                    <MudTd DataLabel="@Loc["Date"]">@context.Date.ToShortDateString()</MudTd>
+                    <MudTd DataLabel="@Loc["Weight"]">@context.Weight.ToString("N1") kg</MudTd>
+                    <MudTd DataLabel="@Loc["FatPercentage"]">@context.FatPercentage.ToString("N1")%</MudTd>
+                    <MudTd DataLabel="@Loc["WaterPercentage"]">@context.WaterPercentage.ToString("N1")%</MudTd>
+                    <MudTd DataLabel="@Loc["BMI"]">@(CalculateBMI(context))</MudTd>
+                    <MudTd>
+                        <MudIconButton Icon="@Icons.Material.Filled.Edit"
+                                       Size="Size.Small"
+                                       Color="Color.Primary"
+                                       OnClick="@(() => NavigateToEdit(context.Id))" />
+                        <MudIconButton Icon="@Icons.Material.Filled.Delete"
+                                       Size="Size.Small"
+                                       Color="Color.Error"
+                                       OnClick="@(() => DeleteMeasurement(context.Id))" />
+                    </MudTd>
+                </RowTemplate>
+            </MudTable>
+        }
+    </MudPaper>
+
+    <MudButton Variant="Variant.Text" 
+               Color="Color.Default" 
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               OnClick="@NavigateBack">
+        @Loc["Back"]
+    </MudButton>
+</MudContainer>
+
+@code {
+    [Parameter] public int ClientId { get; set; }
+
+    private List<ClientMeasurement>? _measurements;
+    private string _clientName = "";
+    private bool _loading = true;
+
+    private List<BreadcrumbItem> _breadcrumbItems = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var client = await ClientService.GetByIdAsync(ClientId);
+        if (client != null)
+        {
+            _clientName = client.FullName;
+        }
+
+        _breadcrumbItems = new List<BreadcrumbItem>
+        {
+            new BreadcrumbItem(Loc["Clients"], "/clients"),
+            new BreadcrumbItem(_clientName, $"/clients/edit/{ClientId}"),
+            new BreadcrumbItem(Loc["Measurements"], null, disabled: true)
+        };
+
+        await LoadMeasurements();
+        _loading = false;
+    }
+
+    private async Task LoadMeasurements()
+    {
+        _measurements = await MeasurementService.GetByClientIdAsync(ClientId);
+    }
+
+    private string CalculateBMI(ClientMeasurement m)
+    {
+        if (m.Height <= 0) return "-";
+        var bmi = (double)m.Weight / Math.Pow(m.Height / 100.0, 2);
+        return bmi.ToString("N1");
+    }
+
+    private void NavigateToCreate()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}/measurements/create");
+    }
+
+    private void NavigateToEdit(int id)
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}/measurements/edit/{id}");
+    }
+
+    private async Task DeleteMeasurement(int id)
+    {
+        await MeasurementService.DeleteAsync(id);
+        await LoadMeasurements();
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/edit/{ClientId}");
+    }
+}

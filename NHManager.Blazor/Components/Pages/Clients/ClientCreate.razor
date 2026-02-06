@@ -1,0 +1,151 @@
+@page "/clients/create"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientService ClientService
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["NewClient"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["NewClient"]</MudText>
+
+<MudPaper Class="pa-6">
+    <EditForm Model="_client" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_client.FirstName" 
+                              Label="@Loc["FirstName"]" 
+                              Required="true"
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_client.SurName" 
+                              Label="@Loc["SurName"]" 
+                              Required="true"
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_client.Phone" 
+                              Label="@Loc["Phone"]" 
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudTextField @bind-Value="_client.Email" 
+                              Label="@Loc["Email"]" 
+                              InputType="InputType.Email"
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudDatePicker @bind-Date="_birthDate" 
+                               Label="@Loc["DateOfBirth"]" 
+                               Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudSelect @bind-Value="_client.Sex" 
+                           Label="@Loc["Sex"]" 
+                           Variant="Variant.Outlined"
+                           T="int">
+                    <MudSelectItem Value="1">@Loc["Male"]</MudSelectItem>
+                    <MudSelectItem Value="2">@Loc["Female"]</MudSelectItem>
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12" sm="6">
+                <MudSelect @bind-Value="_client.ConsultantId" 
+                           Label="@Loc["Consultant"]" 
+                           Variant="Variant.Outlined"
+                           T="int?">
+                    <MudSelectItem Value="@((int?)null)">@Loc["NoneSelected"]</MudSelectItem>
+                    @foreach (var worker in _workers)
+                    {
+                        <MudSelectItem Value="@((int?)worker.Id)">@worker.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_client.Street" 
+                              Label="@Loc["Street"]" 
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="_client.City" 
+                              Label="@Loc["City"]" 
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="_client.PostalCode" 
+                              Label="@Loc["PostalCode"]" 
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="4">
+                <MudTextField @bind-Value="_client.Country" 
+                              Label="@Loc["Country"]" 
+                              Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_client.Notes" 
+                              Label="@Loc["Notes"]" 
+                              Lines="3"
+                              Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+        
+        <MudDivider Class="my-6" />
+        
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/clients">@Loc["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @Loc["Save"]
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    private Client _client = new();
+    private List<Worker> _workers = new();
+    private DateTime? _birthDate;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workers = await WorkerService.GetActiveAsync();
+    }
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        
+        try
+        {
+            if (_birthDate.HasValue)
+            {
+                _client.DateOfBirth = _birthDate.Value;
+            }
+            
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userName = authState.User.Identity?.Name ?? "System";
+            
+            await ClientService.CreateAsync(_client, userName);
+            Snackbar.Add(string.Format(Loc["CreatedSuccess"].Value, Loc["Client"].Value), Severity.Success);
+            Navigation.NavigateTo("/clients");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(string.Format(Loc["ErrorCreating"].Value, ex.Message), Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

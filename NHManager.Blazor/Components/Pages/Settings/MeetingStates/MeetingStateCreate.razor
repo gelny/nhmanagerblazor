@@ -1,0 +1,43 @@
+@page "/settings/meeting-states/create"
+@attribute [Authorize(Roles = Roles.AdminAndSuper)]
+@inject IMeetingStateService MeetingStateService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@using NHManager.Blazor.Resources
+@using Microsoft.Extensions.Localization
+@inject IStringLocalizer<SharedResource> Loc
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>@Loc["NewMeetingState"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["NewMeetingState"]</MudText>
+
+<MudPaper Class="pa-6">
+    <EditForm Model="_meetingState" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_meetingState.Name" Label="@Loc["Name"]" Required="true" Variant="Variant.Outlined" />
+            </MudItem>
+        </MudGrid>
+        
+        <MudDivider Class="my-6" />
+        
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/settings/meeting-states">@Loc["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @Loc["Save"]
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+

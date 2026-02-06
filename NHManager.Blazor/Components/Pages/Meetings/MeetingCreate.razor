@@ -1,0 +1,179 @@
+@page "/meetings/create"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@inject IMeetingService MeetingService
+@inject IClientService ClientService
+@inject IMeetingTypeService MeetingTypeService
+@inject IMeetingStateService MeetingStateService
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Nová schůzka - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">Nová schůzka</MudText>
+
+<MudPaper Class="pa-6">
+    <EditForm Model="_meeting" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_meeting.Title" Label="Název" Variant="Variant.Outlined" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="6">
+                <MudAutocomplete T="Client" Label="Klient" @bind-Value="_selectedClient" SearchFunc="@SearchClients"
+                                 ToStringFunc="@(c => c == null ? null : $"{c.SurName} {c.FirstName}")"
+                                 Variant="Variant.Outlined" Required="false" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="6">
+                <MudSelect @bind-Value="_meeting.ConsultantId" Label="Konzultant" Variant="Variant.Outlined" T="int?">
+                    <MudSelectItem Value="@((int?)null)">-- Nevybráno --</MudSelectItem>
+                    @foreach (var worker in _workers)
+                    {
+                        <MudSelectItem Value="@((int?)worker.Id)">@worker.FullName</MudSelectItem>
+                    }
+                </MudSelect>
+            </MudItem>
+
+            <MudItem xs="12" sm="3">
+                <MudDatePicker Label="Od (Datum)" @bind-Date="_fromDate" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="3">
+                <MudTimePicker Label="Od (Čas)" @bind-Time="_fromTime" Variant="Variant.Outlined" />
+            </MudItem>
+
+            <MudItem xs="12" sm="3">
+                <MudDatePicker Label="Do (Datum)" @bind-Date="_toDate" Variant="Variant.Outlined" />
+            </MudItem>
+            <MudItem xs="12" sm="3">
+                <MudTimePicker Label="Do (Čas)" @bind-Time="_toTime" Variant="Variant.Outlined" />
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudSelect @bind-Value="_meeting.MeetingTypeId" Label="Typ schůzky" Variant="Variant.Outlined" T="int" Required="true">
+                    @foreach (var type in _meetingTypes)
+                    {
+                        <MudSelectItem Value="@type.Id">@type.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                 @if (_meeting.MeetingTypeId == 0)
+                {
+                   <MudText Typo="Typo.caption" Color="Color.Error">Vyberte typ schůzky</MudText>
+                }
+            </MudItem>
+
+            <MudItem xs="12" sm="6">
+                <MudSelect @bind-Value="_meeting.MeetingStateId" Label="Stav schůzky" Variant="Variant.Outlined" T="int" Required="true">
+                    @foreach (var state in _meetingStates)
+                    {
+                        <MudSelectItem Value="@state.Id">@state.Name</MudSelectItem>
+                    }
+                </MudSelect>
+                 @if (_meeting.MeetingStateId == 0)
+                {
+                    <MudText Typo="Typo.caption" Color="Color.Error">Vyberte stav schůzky</MudText>
+                }
+            </MudItem>
+
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_meeting.Description" Label="Popis" Variant="Variant.Outlined" Lines="3" />
+            </MudItem>
+        </MudGrid>
+        
+        <MudDivider Class="my-6" />
+        
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/meetings">Zrušit</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                Uložit
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    private Meeting _meeting = new() { From = DateTime.Now, To = DateTime.Now.AddHours(1) };
+    private Client? _selectedClient;
+    private List<Worker> _workers = new();
+    private List<MeetingType> _meetingTypes = new();
+    private List<MeetingState> _meetingStates = new();
+    
+    private DateTime? _fromDate = DateTime.Today;
+    private TimeSpan? _fromTime = DateTime.Now.TimeOfDay;
+    private DateTime? _toDate = DateTime.Today;
+    private TimeSpan? _toTime = DateTime.Now.AddHours(1).TimeOfDay;
+
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Parallel loading triggers unrelated context issues sometimes with EF, usually better to await individually 
+        // unless context is Factory created per call (which it is scoped here, so NOT safe to parallelize if using same context instance via service injection if service shares context)
+        // Services are scoped. If they share same DbContext instance (Scoped), we CANNOT run parallel queries.
+        
+        _workers = await WorkerService.GetActiveAsync();
+        _meetingTypes = await MeetingTypeService.GetAllAsync();
+        _meetingStates = await MeetingStateService.GetAllAsync();
+        
+        // Defaults
+        if (_meetingTypes.Any()) _meeting.MeetingTypeId = _meetingTypes.First().Id;
+        if (_meetingStates.Any()) _meeting.MeetingStateId = _meetingStates.First().Id;
+        
+        // Set default times rounded
+        var now = DateTime.Now;
+        _fromDate = now.Date;
+        _fromTime = new TimeSpan(now.Hour, 0, 0); // Start of current hour
+        _toDate = now.Date;
+        _toTime = new TimeSpan(now.Hour + 1, 0, 0); // Start of next hour
+    }
+
+    private async Task<IEnumerable<Client>> SearchClients(string value, CancellationToken token)
+    {
+        // We use GetAllAsync with search string
+        return await ClientService.GetAllAsync(value);
+    }
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        try
+        {
+            // Combine Date and Time
+            if (_fromDate.HasValue && _fromTime.HasValue)
+                _meeting.From = _fromDate.Value.Date + _fromTime.Value;
+            
+            if (_toDate.HasValue && _toTime.HasValue)
+                _meeting.To = _toDate.Value.Date + _toTime.Value;
+
+            if (_selectedClient != null)
+                _meeting.ClientId = _selectedClient.Id;
+            else
+                _meeting.ClientId = null;
+
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userName = authState.User.Identity?.Name ?? "System";
+
+            await MeetingService.CreateAsync(_meeting, userName);
+             Snackbar.Add("Schůzka byla úspěšně vytvořena", Severity.Success);
+            Navigation.NavigateTo("/meetings");
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add($"Chyba při vytváření: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

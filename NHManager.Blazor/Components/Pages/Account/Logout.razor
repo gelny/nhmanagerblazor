@@ -1,0 +1,18 @@
+@page "/logout"
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+
+<PageTitle>Odhlašování...</PageTitle>
+
+<MudContainer Class="mt-8">
+    <MudText Typo="Typo.h5" Class="mb-4">Odhlašování...</MudText>
+    <MudProgressCircular Indeterminate="true" />
+</MudContainer>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        await AuthService.LogoutAsync();
+        Navigation.NavigateTo("/login", forceLoad: true);
+    }
+}

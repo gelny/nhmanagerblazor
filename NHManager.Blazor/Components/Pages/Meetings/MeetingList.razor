@@ -1,0 +1,121 @@
+@page "/meetings"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@inject IMeetingService MeetingService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Schůzky - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">Seznam schůzek</MudText>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" sm="8">
+                <MudTextField @bind-Value="_searchString" Placeholder="Hledat schůzku..." Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true" OnKeyUp="@(e => { if (e.Key == "Enter") _table.ReloadServerData(); })"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="4" Class="d-flex justify-end align-center">
+                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/meetings/create">Nová schůzka</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudTable ServerData="@(new Func<TableState, CancellationToken, Task<TableData<Meeting>>>(ServerReload))"
+              Dense="true" Hover="true" @ref="_table"
+              CurrentPage="@_currentPage">
+        <HeaderContent>
+            <MudTh>Datum</MudTh>
+            <MudTh>Čas</MudTh>
+            <MudTh>Klient</MudTh>
+            <MudTh>Název</MudTh>
+            <MudTh>Typ</MudTh>
+            <MudTh>Stav</MudTh>
+            <MudTh>Konzultant</MudTh>
+            <MudTh Style="width: 120px;">Akce</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="Datum">@context.From.ToString("dd.MM.yyyy")</MudTd>
+            <MudTd DataLabel="Čas">@context.From.ToString("HH:mm") - @context.To.ToString("HH:mm")</MudTd>
+            <MudTd DataLabel="Klient">
+                @if (context.Client != null)
+                {
+                   <MudLink Href="@($"/clients/edit/{context.ClientId}")">@context.ClientFullName</MudLink>
+                }
+            </MudTd>
+            <MudTd DataLabel="Název">@context.Title</MudTd>
+            <MudTd DataLabel="Typ">
+                 <MudChip T="string" Size="Size.Small" Style="@($"background-color:{context.MeetingType?.Color ?? "#ccc"}; color: white")">@context.MeetingTypeName</MudChip>
+            </MudTd>
+            <MudTd DataLabel="Stav">@context.MeetingStateName</MudTd>
+            <MudTd DataLabel="Konzultant">@context.ConsultantFullName</MudTd>
+            <MudTd DataLabel="Akce">
+                <MudTooltip Text="Upravit">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" Href="@($"/meetings/edit/{context.Id}")" />
+                </MudTooltip>
+                <MudTooltip Text="Smazat">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteMeeting(context))" />
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>Nebyly nalezeny žádné záznamy.</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+
+@code {
+    private MudTable<Meeting> _table = new();
+    private string _searchString = "";
+    private int _currentPage = 0;
+
+    private async Task<TableData<Meeting>> ServerReload(TableState state, CancellationToken token)
+    {
+        var data = await MeetingService.GetAllAsync(_searchString);
+        
+        // Client-side pagination logic
+        var totalItems = data.Count;
+        var pagedData = data.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+        
+        return new TableData<Meeting>() { TotalItems = totalItems, Items = pagedData };
+    }
+
+    private async Task OnSearchChanged(string text)
+    {
+        _searchString = text;
+        await _table.ReloadServerData();
+    }
+
+    private async Task DeleteMeeting(Meeting meeting)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            "Smazat schůzku", 
+            $"Opravdu chcete smazat schůzku '{meeting.Title}'?", 
+            yesText: "Smazat", cancelText: "Zrušit");
+        
+        if (result == true)
+        {
+             try
+             {
+                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                 var userName = authState.User.Identity?.Name ?? "System";
+                 
+                 await MeetingService.DeleteAsync(meeting.Id, userName);
+                 Snackbar.Add("Schůzka byla úspěšně smazána", Severity.Success);
+                 await _table.ReloadServerData();
+             }
+             catch (Exception ex)
+             {
+                 Snackbar.Add($"Chyba při mazání: {ex.Message}", Severity.Error);
+             }
+        }
+    }
+}

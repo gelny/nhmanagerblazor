@@ -1,0 +1,154 @@
+@page "/clients/{ClientId:int}/questionnaires/{QuestionnaireId:int}/evaluate"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@inject IClientQuestionnaireService QuestionnaireService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+@inject IStringLocalizer<MyStrings> MyStringsLoc
+
+<PageTitle>@Loc["QuestionnaireResult"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["QuestionnaireResult"]</MudText>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_result == null)
+{
+    <MudAlert Severity="Severity.Warning">@Loc["NotFound"]</MudAlert>
+}
+else
+{
+    <MudPaper Class="pa-6">
+        <EditForm Model="_result" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                 <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_result.Description" Label="@Loc["Description"]" Variant="Variant.Outlined" Required="true" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudDatePicker @bind-Date="_date" Label="@Loc["Date"]" Variant="Variant.Outlined" Required="true" />
+                </MudItem>
+
+                <MudItem xs="12"><MudDivider Class="my-4"/></MudItem>
+
+                 <MudItem xs="6" sm="3">
+                    <MudNumericField @bind-Value="_result.BRM_KJ" Label="BRM (KJ)" Variant="Variant.Outlined" />
+                </MudItem>
+                 <MudItem xs="6" sm="3">
+                    <MudNumericField @bind-Value="_result.BRM_KCAL" Label="BRM (KCAL)" Variant="Variant.Outlined" />
+                </MudItem>
+                 <MudItem xs="6" sm="3">
+                    <MudNumericField @bind-Value="_result.BRM_KJ_FromAnalysis" Label="@MyStringsLoc["BRM_KJ_FromAnalysis"]" Variant="Variant.Outlined" ReadOnly="true" />
+                </MudItem>
+                 <MudItem xs="6" sm="3">
+                    <MudNumericField @bind-Value="_result.BRM_KCAL_FromAnalysis" Label="@MyStringsLoc["BRM_KCAL_FromAnalysis"]" Variant="Variant.Outlined" ReadOnly="true" />
+                </MudItem>
+
+                 <MudItem xs="12"><MudDivider Class="my-4"/></MudItem>
+                 <MudItem xs="12"><MudText Typo="Typo.subtitle1">@Loc["DietProportions"]</MudText></MudItem>
+
+                 <MudItem xs="4">
+                    <MudNumericField @bind-Value="_result.ProteinProportion" Label="@MyStringsLoc["ProteinProportion"]" Variant="Variant.Outlined" />
+                </MudItem>
+                 <MudItem xs="4">
+                    <MudNumericField @bind-Value="_result.CarbohydrateProportion" Label="@MyStringsLoc["CarbohydrateProportion"]" Variant="Variant.Outlined" />
+                </MudItem>
+                 <MudItem xs="4">
+                    <MudNumericField @bind-Value="_result.FatProportion" Label="@MyStringsLoc["FatProportion"]" Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="12">
+                     <MudText Typo="Typo.subtitle1">@Loc["DietType"]</MudText>
+                     <MudRadioGroup T="int" @bind-Value="_result.DietType" Name="dietType" Class="d-flex">
+                         <MudRadio Value="1" Color="Color.Primary" Dense="true">@Loc["DietType1"]</MudRadio>
+                         <MudRadio Value="2" Color="Color.Primary" Dense="true">@Loc["DietType2"]</MudRadio>
+                         <MudRadio Value="3" Color="Color.Primary" Dense="true">@Loc["DietType3"]</MudRadio>
+                         <MudRadio Value="4" Color="Color.Primary" Dense="true">@Loc["DietType4"]</MudRadio>
+                         <MudRadio Value="5" Color="Color.Primary" Dense="true">@Loc["DietType5"]</MudRadio>
+                     </MudRadioGroup>
+                 </MudItem>
+
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" OnClick="Cancel">@Loc["Cancel"]</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Loc["Save"]
+                </MudButton>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int QuestionnaireId { get; set; }
+
+    private ClientQuestionnaireResult? _result;
+    private bool _loading = true;
+    private bool _saving = false;
+    private DateTime? _date;
+
+    protected override async Task OnInitializedAsync()
+    {
+        try 
+        {
+            _result = await QuestionnaireService.GetDraftResultAsync(QuestionnaireId);
+            if (_result != null)
+            {
+                 _date = _result.Date;
+            }
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_result == null) return;
+        _saving = true;
+        try
+        {
+            if (_date.HasValue) _result.Date = _date.Value;
+            
+             await QuestionnaireService.CreateResultAsync(_result);
+             Snackbar.Add(Loc["CreatedSuccess"], Severity.Success);
+             Navigation.NavigateTo($"/clients/{ClientId}?tab=questionnaires");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void Cancel()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=questionnaires");
+    }
+}

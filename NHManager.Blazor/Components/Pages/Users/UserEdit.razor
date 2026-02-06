@@ -1,0 +1,120 @@
+@page "/users/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AdminAndSuper)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IAuthService AuthService
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Auth
+@using NHManager.Blazor.Constants
+@using NHManager.Blazor.Services
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["EditUser"] - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_user == null)
+{
+    <MudAlert Severity="Severity.Warning">@string.Format(Loc["NotFound"].Value, Loc["User"].Value)</MudAlert>
+}
+else
+{
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["EditUser"]: @_user.UserName</MudText>
+
+    <MudPaper Class="pa-6">
+        <EditForm Model="_user" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_user.UserName" Label="@Loc["Username"]" ReadOnly="true" Variant="Variant.Filled" HelperText="@Loc["UsernameCannotBeChanged"]" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_user.Email" Label="@Loc["Email"]" InputType="InputType.Email" Required="true" Variant="Variant.Outlined" />
+                </MudItem>
+                
+                <MudItem xs="12" sm="6">
+                    <MudSelect @bind-Value="_user.Role" Label="@Loc["Role"]" Required="true" Variant="Variant.Outlined">
+                        <MudSelectItem Value="@Roles.Admin">@Loc["Admin"]</MudSelectItem>
+                        <MudSelectItem Value="@Roles.SuperEmployee">@Loc["SuperEmployee"]</MudSelectItem>
+                        <MudSelectItem Value="@Roles.Employee">@Loc["Employee"]</MudSelectItem>
+                        <MudSelectItem Value="@Roles.Customer">@Loc["Customer"]</MudSelectItem>
+                    </MudSelect>
+                </MudItem>
+                
+                <MudItem xs="12" sm="6">
+                    <MudSelect @bind-Value="_user.WorkerId" Label="@Loc["LinkToWorker"]" Variant="Variant.Outlined" T="int?">
+                        <MudSelectItem Value="@((int?)null)">@Loc["NoneSelected"]</MudSelectItem>
+                        @foreach (var worker in _workers)
+                        {
+                            <MudSelectItem Value="@((int?)worker.Id)">@worker.FullName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/users">@Loc["Cancel"]</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Loc["Save"]
+                </MudButton>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private ApplicationUser? _user;
+    private List<Worker> _workers = new();
+    private bool _loading = true;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workers = await WorkerService.GetActiveAsync();
+        _user = await AuthService.GetUserByIdAsync(Id);
+        _loading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_user == null) return;
+
+        _saving = true;
+        try
+        {
+            var result = await AuthService.UpdateUserAsync(_user);
+            if (result.Success)
+            {
+                Snackbar.Add(string.Format(Loc["UpdatedSuccess"].Value, Loc["User"].Value), Severity.Success);
+                Navigation.NavigateTo("/users");
+            }
+            else
+            {
+                 Snackbar.Add(result.Message, Severity.Error);
+            }
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add(string.Format(Loc["ErrorUpdating"].Value, ex.Message), Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

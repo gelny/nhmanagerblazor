@@ -1,0 +1,125 @@
+@page "/clients/{ClientId:int}/documents/create"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientDocumentService DocumentService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["NewDocument"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    <MudPaper Class="pa-6">
+        <MudText Typo="Typo.h5" Class="mb-4">@Loc["NewDocument"]</MudText>
+        
+        @if (_client != null)
+        {
+            <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName</MudText>
+        }
+        
+        <EditForm Model="_document" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField Label="@Loc["Name"]" 
+                                  @bind-Value="_document.Name" 
+                                  Variant="Variant.Outlined"
+                                  Required="true" />
+                </MudItem>
+                
+                <MudItem xs="12">
+                    <MudFileUpload T="IBrowserFile" FilesChanged="OnFileSelected">
+                        <ActivatorContent>
+                            <MudButton Variant="Variant.Outlined"
+                                       Color="Color.Primary"
+                                       StartIcon="@Icons.Material.Filled.CloudUpload">
+                                @Loc["UploadFile"]
+                            </MudButton>
+                        </ActivatorContent>
+                    </MudFileUpload>
+                    @if (_selectedFile != null)
+                    {
+                        <MudText Class="mt-2">@_selectedFile.Name (@(_selectedFile.Size / 1024) KB)</MudText>
+                    }
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Default" 
+                           OnClick="NavigateBack">
+                    @Loc["Cancel"]
+                </MudButton>
+                <MudButton Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           ButtonType="ButtonType.Submit"
+                           Disabled="_saving">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Loc["Save"]
+                </MudButton>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    private ClientDocument _document = new();
+    private Client? _client;
+    private IBrowserFile? _selectedFile;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _document.ClientId = ClientId;
+    }
+
+    private void OnFileSelected(IBrowserFile file)
+    {
+        _selectedFile = file;
+    }
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        try
+        {
+            Stream? fileStream = null;
+            string? fileName = null;
+            
+            if (_selectedFile != null)
+            {
+                fileStream = _selectedFile.OpenReadStream(maxAllowedSize: 10 * 1024 * 1024); // 10MB limit
+                fileName = _selectedFile.Name;
+            }
+            
+            await DocumentService.CreateAsync(_document, fileStream, fileName);
+            Snackbar.Add(Loc["SaveSuccess"], Severity.Success);
+            Navigation.NavigateTo($"/clients/{ClientId}?tab=documents");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=documents");
+    }
+}

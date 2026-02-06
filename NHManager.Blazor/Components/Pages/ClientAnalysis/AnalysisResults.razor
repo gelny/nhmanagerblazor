@@ -1,0 +1,290 @@
+@page "/clients/{ClientId:int}/analysis/results/{ResultId:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientAnalysisService AnalysisService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["AnalysisResults"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_result == null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc["NoResultsFound"]</MudAlert>
+        <MudButton Variant="Variant.Outlined" 
+                   Color="Color.Default" 
+                   StartIcon="@Icons.Material.Filled.ArrowBack"
+                   Class="mt-4"
+                   OnClick="NavigateBack">
+            @Loc["Back"]
+        </MudButton>
+    }
+    else
+    {
+        <MudPaper Class="pa-6">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+                <MudText Typo="Typo.h5">@Loc["AnalysisResults"]</MudText>
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Default" 
+                           StartIcon="@Icons.Material.Filled.ArrowBack"
+                           OnClick="NavigateBack">
+                    @Loc["Back"]
+                </MudButton>
+            </MudStack>
+            
+            @if (_client != null)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName | @Loc["Date"]: @_result.Date.ToString("dd.MM.yyyy")</MudText>
+            }
+            
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">WHR (@Loc["WaistHipRatio"])</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Value"]</strong></td>
+                                        <td>@Math.Round(_result.WHR, 2)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetWHRColor(_result.WHR_Result)">@GetWHRText(_result.WHR_Result)</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["Glucose"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetResultColor(_result.Glucose_Result)">@GetGlucoseText(_result.Glucose_Result)</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["TotalCholesterol"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetResultColor(_result.TotalCholesterol_Result)">@GetCholesterolText(_result.TotalCholesterol_Result)</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["AtheroscleroticIndex"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Value"]</strong></td>
+                                        <td>@Math.Round(_result.AtherogenicIndex, 2)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetResultColor(_result.AtherogenicIndex_Result)">@GetAtherogenicText(_result.AtherogenicIndex_Result)</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["WeightLossIndex"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Value"]</strong></td>
+                                        <td>@_result.IndexLoseWeight / 5</td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                @if (_analysis != null)
+                {
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">@Loc["RiskFactors"]</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudStack Row="true" Spacing="2" Wrap="Wrap.Wrap">
+                                    @if (_analysis.FamilyHeartDisease == 1)
+                                    {
+                                        <MudChip T="string" Color="Color.Warning">@Loc["FamilyHeartDisease"]</MudChip>
+                                    }
+                                    @if (_analysis.Smoker == 1)
+                                    {
+                                        <MudChip T="string" Color="Color.Warning">@Loc["Smoker"]</MudChip>
+                                    }
+                                    @if (_analysis.HighBloodPressureOrMeds == 1)
+                                    {
+                                        <MudChip T="string" Color="Color.Warning">@Loc["HighBloodPressure"]</MudChip>
+                                    }
+                                    @if (_analysis.DiabetesMeds == 1)
+                                    {
+                                        <MudChip T="string" Color="Color.Warning">@Loc["DiabetesMeds"]</MudChip>
+                                    }
+                                    @if (_analysis.CravingSweets == 1)
+                                    {
+                                        <MudChip T="string" Color="Color.Warning">@Loc["CravingSweets"]</MudChip>
+                                    }
+                                    @if (_analysis.FamilyHeartDisease == 0 && _analysis.Smoker == 0 && 
+                                         _analysis.HighBloodPressureOrMeds == 0 && _analysis.DiabetesMeds == 0 &&
+                                         _analysis.CravingSweets == 0)
+                                    {
+                                        <MudChip T="string" Color="Color.Success">@Loc["NoRiskFactors"]</MudChip>
+                                    }
+                                </MudStack>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                }
+            </MudGrid>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int ResultId { get; set; }
+    
+    private ClientAnalysisResult? _result;
+    private ClientAnalysis? _analysis;
+    private Client? _client;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _result = await AnalysisService.GetResultByIdAsync(ResultId);
+        if (_result != null)
+        {
+             _analysis = _result.ClientAnalysis;
+        }
+        _loading = false;
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=analysis");
+    }
+
+    private Color GetWHRColor(int result)
+    {
+        return result switch
+        {
+            0 => Color.Success,
+            1 => Color.Warning,
+            _ => Color.Error
+        };
+    }
+
+    private string GetWHRText(int result)
+    {
+        return result switch
+        {
+            0 => Loc["Normal"],
+            1 => Loc["Risk"],
+            _ => Loc["HighRisk"]
+        };
+    }
+
+    private Color GetResultColor(int result)
+    {
+        return result switch
+        {
+            0 => Color.Success,
+            1 => Color.Warning,
+            _ => Color.Error
+        };
+    }
+
+    private string GetGlucoseText(int result)
+    {
+        return result switch
+        {
+            0 => Loc["Low"],
+            1 => Loc["Normal"],
+            2 => Loc["Prediabetes"],
+            _ => Loc["DiabetesMeds"]
+        };
+    }
+
+    private string GetCholesterolText(int result)
+    {
+        return result switch
+        {
+            0 => Loc["Normal"],
+            1 => Loc["Borderline"],
+            _ => Loc["High"]
+        };
+    }
+
+    private string GetAtherogenicText(int result)
+    {
+        return result switch
+        {
+            0 => Loc["LowRisk"],
+            1 => Loc["ModerateRisk"],
+            _ => Loc["HighRisk"]
+        };
+    }
+}

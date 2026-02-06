@@ -1,0 +1,123 @@
+@page "/workers"
+@attribute [Authorize(Roles = Roles.SuperEmployee)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["Workers"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["Workers"]</MudText>
+
+    <MudPaper Class="pa-4 mb-4">
+        <MudGrid>
+            <MudItem xs="12" sm="8">
+                <!-- Search implemented client-side on full list -->
+                <MudTextField @bind-Value="_searchString" Placeholder="@Loc["SearchWorkers"]" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0" Immediate="true"></MudTextField>
+            </MudItem>
+            <MudItem xs="12" sm="4" Class="d-flex justify-end align-center">
+                 <MudButton Variant="Variant.Filled" Color="Color.Primary" StartIcon="@Icons.Material.Filled.Add" Href="/workers/create">@Loc["NewWorker"]</MudButton>
+            </MudItem>
+        </MudGrid>
+    </MudPaper>
+
+    <MudTable Items="@_workers" Filter="new Func<Worker,bool>(FilterFunc)" Dense="true" Hover="true" @ref="_table">
+        <HeaderContent>
+            <MudTh>@Loc["Name"]</MudTh>
+            <MudTh>@Loc["Email"]</MudTh>
+            <MudTh>@Loc["Phone"]</MudTh>
+            <MudTh>@Loc["Active"]</MudTh>
+            <MudTh Style="width: 120px;">@Loc["Actions"]</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd DataLabel="@Loc["Name"]">@context.FullName</MudTd>
+            <MudTd DataLabel="@Loc["Email"]">@context.Email</MudTd>
+            <MudTd DataLabel="@Loc["Phone"]">@context.Phone</MudTd>
+            <MudTd DataLabel="@Loc["Active"]">
+                @if (context.Active)
+                {
+                    <MudChip T="string" Color="Color.Success" Size="Size.Small">@Loc["Yes"]</MudChip>
+                }
+                else
+                {
+                    <MudChip T="string" Color="Color.Default" Size="Size.Small">@Loc["No"]</MudChip>
+                }
+            </MudTd>
+            <MudTd DataLabel="@Loc["Actions"]">
+                <MudTooltip Text="@Loc["Edit"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" Size="Size.Small" Color="Color.Primary" Href="@($"/workers/edit/{context.Id}")" />
+                </MudTooltip>
+                <MudTooltip Text="@Loc["Delete"]">
+                    <MudIconButton Icon="@Icons.Material.Filled.Delete" Size="Size.Small" Color="Color.Error" OnClick="@(() => DeleteWorker(context))" />
+                </MudTooltip>
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>@string.Format(Loc["NotFound"].Value, Loc["Workers"].Value)</MudText>
+        </NoRecordsContent>
+        <PagerContent>
+            <MudTablePager />
+        </PagerContent>
+    </MudTable>
+</MudContainer>
+
+@code {
+    private List<Worker> _workers = new();
+    private MudTable<Worker> _table = new();
+    private string _searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workers = await WorkerService.GetAllAsync(activeOnly: false);
+    }
+
+    private bool FilterFunc(Worker worker) => FilterFunc(worker, _searchString);
+
+    private bool FilterFunc(Worker worker, string searchString)
+    {
+        if (string.IsNullOrWhiteSpace(searchString))
+            return true;
+        
+        if (worker.FirstName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (worker.SurName.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (worker.Email != null && worker.Email.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+            return true;
+        
+        return false;
+    }
+
+    private async Task DeleteWorker(Worker worker)
+    {
+        bool? result = await DialogService.ShowMessageBox(
+            string.Format(Loc["DeleteTitle"].Value, Loc["Worker"].Value), 
+            string.Format(Loc["DeleteConfirmation"].Value, Loc["Worker"].Value, worker.FullName), 
+            yesText: Loc["Delete"], cancelText: Loc["Cancel"]);
+        
+        if (result == true)
+        {
+             try
+             {
+                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+                 var userName = authState.User.Identity?.Name ?? "System";
+                 
+                 await WorkerService.DeleteAsync(worker.Id, userName);
+                 Snackbar.Add(string.Format(Loc["DeletedSuccess"].Value, Loc["Worker"].Value), Severity.Success);
+                 _workers = await WorkerService.GetAllAsync(activeOnly: false);
+             }
+             catch (Exception ex)
+             {
+                 Snackbar.Add(string.Format(Loc["ErrorDeleting"].Value, ex.Message), Severity.Error);
+             }
+        }
+    }
+}

@@ -1,0 +1,161 @@
+@page "/login"
+@attribute [AllowAnonymous]
+@layout EmptyLayout
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IAuthService AuthService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["Login"] - NHManager</PageTitle>
+
+<AuthorizeView>
+    <Authorized>
+        @{ NavigateToReturnUrl(); }
+    </Authorized>
+    <NotAuthorized>
+        <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
+            <MudPaper Class="pa-8 mx-auto" Elevation="3" Style="width: 100%; max-width: 400px;">
+                <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">NHManager</MudText>
+                <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-6">@Loc["Login"]</MudText>
+                
+                <MudTextField @bind-Value="_username" 
+                              Label="@Loc["Username"]" 
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              Adornment="Adornment.Start"
+                              AdornmentIcon="@Icons.Material.Filled.Person" />
+                
+                <MudTextField @bind-Value="_password" 
+                              Label="@Loc["Password"]" 
+                              Variant="Variant.Outlined"
+                              Class="mb-4"
+                              InputType="@_passwordInputType"
+                              Adornment="Adornment.End"
+                              AdornmentIcon="@_passwordInputIcon"
+                              OnAdornmentClick="TogglePasswordVisibility" />
+                
+                <MudCheckBox @bind-Value="_rememberMe" Label="@Loc["RememberMe"]" Class="mb-4" />
+                
+                @if (!string.IsNullOrEmpty(_errorMessage))
+                {
+                    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+                }
+                
+                <MudButton OnClick="HandleLogin"
+                           Variant="Variant.Filled" 
+                           Color="Color.Primary" 
+                           FullWidth="true"
+                           Disabled="_loading">
+                    @if (_loading)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Loc["LoginAction"]
+                </MudButton>
+            </MudPaper>
+        </MudContainer>
+    </NotAuthorized>
+</AuthorizeView>
+
+@code {
+    [SupplyParameterFromQuery(Name = "returnUrl")]
+    public string? ReturnUrl { get; set; }
+    
+    private string _username = "";
+    private string _password = "";
+    private bool _rememberMe = false;
+    private string _errorMessage = "";
+    private bool _loading = false;
+    private InputType _passwordInputType = InputType.Password;
+    private string _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+
+    private void NavigateToReturnUrl()
+    {
+        var url = GetSafeReturnUrl();
+        Navigation.NavigateTo(url);
+    }
+    
+    private string GetSafeReturnUrl()
+    {
+        if (!string.IsNullOrEmpty(ReturnUrl))
+        {
+            var decodedUrl = Uri.UnescapeDataString(ReturnUrl);
+            // Ensure it's a relative URL to prevent open redirect attacks
+            if (Uri.TryCreate(decodedUrl, UriKind.Absolute, out var uri))
+            {
+                // If it's an absolute URL, extract the path
+                if (uri.Host == new Uri(Navigation.BaseUri).Host)
+                {
+                    return uri.PathAndQuery;
+                }
+            }
+            else if (decodedUrl.StartsWith("/"))
+            {
+                return decodedUrl;
+            }
+        }
+        return "/";
+    }
+
+    private void TogglePasswordVisibility()
+    {
+        if (_passwordInputType == InputType.Password)
+        {
+            _passwordInputType = InputType.Text;
+            _passwordInputIcon = Icons.Material.Filled.Visibility;
+        }
+        else
+        {
+            _passwordInputType = InputType.Password;
+            _passwordInputIcon = Icons.Material.Filled.VisibilityOff;
+        }
+    }
+
+    private async Task HandleLogin()
+    {
+        if (string.IsNullOrWhiteSpace(_username) || string.IsNullOrWhiteSpace(_password))
+        {
+            _errorMessage = Loc["EnterUsernameAndPassword"];
+            return;
+        }
+
+        _loading = true;
+        _errorMessage = "";
+        StateHasChanged();
+
+        try
+        {
+            var loginModel = new LoginModel
+            {
+                Username = _username,
+                Password = _password,
+                RememberMe = _rememberMe
+            };
+
+            var result = await AuthService.LoginAsync(loginModel);
+
+            if (result.Success)
+            {
+                Snackbar.Add(Loc["LoginSuccess"], Severity.Success);
+                var url = GetSafeReturnUrl();
+                Navigation.NavigateTo(url);
+            }
+            else
+            {
+                _errorMessage = result.Message;
+            }
+        }
+        catch (Exception ex)
+        {
+            _errorMessage = string.Format(Loc["LoginError"].Value + ": {0}", ex.Message);
+        }
+        finally
+        {
+            _loading = false;
+            StateHasChanged();
+        }
+    }
+}
+

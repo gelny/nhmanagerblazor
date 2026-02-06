@@ -1,0 +1,108 @@
+@page "/clients"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["Clients"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["Clients"]</MudText>
+
+<MudPaper Class="pa-4 mb-4">
+    <MudGrid>
+        <MudItem xs="12" sm="8" md="6">
+            <MudTextField @bind-Value="_searchString" 
+                          Placeholder="@Loc["SearchClients"]" 
+                          Adornment="Adornment.Start" 
+                          AdornmentIcon="@Icons.Material.Filled.Search"
+                          Immediate="true"
+                          DebounceInterval="300"
+                          OnDebounceIntervalElapsed="OnSearch" />
+        </MudItem>
+        <MudItem xs="12" sm="4" md="6" Class="d-flex justify-end">
+            <MudButton Variant="Variant.Filled" 
+                       Color="Color.Primary" 
+                       StartIcon="@Icons.Material.Filled.Add"
+                       Href="/clients/create">
+                @Loc["NewClient"]
+            </MudButton>
+        </MudItem>
+    </MudGrid>
+</MudPaper>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_clients == null || !_clients.Any())
+{
+    <MudAlert Severity="Severity.Info">@string.Format(Loc["NotFound"].Value, Loc["Clients"].Value)</MudAlert>
+}
+else
+{
+    <MudDataGrid Items="@_clients" Dense="true" Hover="true" Striped="true" Bordered="true" QuickFilter="@_quickFilter">
+        <Columns>
+            <PropertyColumn Property="x => x.FullName" Title="@Loc["Name"]" />
+            <PropertyColumn Property="x => x.Phone" Title="@Loc["Phone"]" />
+            <PropertyColumn Property="x => x.Email" Title="@Loc["Email"]" />
+            <PropertyColumn Property="x => x.Consultant!.FullName" Title="@Loc["Consultant"]" />
+            <TemplateColumn CellClass="d-flex justify-end">
+                <CellTemplate>
+                    <MudIconButton Icon="@Icons.Material.Filled.Visibility" 
+                                   Size="Size.Small" 
+                                   Color="Color.Info"
+                                   Href="@($"/clients/{context.Item.Id}")" />
+                    <MudIconButton Icon="@Icons.Material.Filled.Edit" 
+                                   Size="Size.Small" 
+                                   Color="Color.Primary"
+                                   Href="@($"/clients/{context.Item.Id}/edit")" />
+                </CellTemplate>
+            </TemplateColumn>
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="Client" />
+        </PagerContent>
+    </MudDataGrid>
+}
+
+@code {
+    private List<Client>? _clients;
+    private bool _loading = true;
+    private string _searchString = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadClients();
+    }
+
+    private async Task LoadClients()
+    {
+        _loading = true;
+        _clients = await ClientService.GetAllAsync(_searchString);
+        _loading = false;
+    }
+
+    private Func<Client, bool> _quickFilter => x =>
+    {
+        if (string.IsNullOrWhiteSpace(_searchString))
+            return true;
+
+        var search = _searchString.ToLower();
+        
+        if (x.FullName != null && x.FullName.ToLower().Contains(search))
+            return true;
+        if (x.Phone != null && x.Phone.Contains(search))
+            return true;
+        if (x.Email != null && x.Email.ToLower().Contains(search))
+            return true;
+
+        return false;
+    };
+
+    private async Task OnSearch()
+    {
+        await LoadClients();
+    }
+}

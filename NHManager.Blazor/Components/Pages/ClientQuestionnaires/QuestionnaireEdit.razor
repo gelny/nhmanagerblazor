@@ -1,0 +1,839 @@
+@page "/clients/{ClientId:int}/questionnaires/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+
+@inject IClientQuestionnaireService QuestionnaireService
+@inject IClientService ClientService
+@inject IFoodService FoodService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+@inject IStringLocalizer<Questions> LocQ
+
+<PageTitle>@Loc["EditQuestionnaire"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_questionnaire == null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc["RecordNotFound"]</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-6">
+            <MudText Typo="Typo.h5" Class="mb-4">@Loc["EditQuestionnaire"]</MudText>
+            
+            @if (_client != null)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName</MudText>
+            }
+            
+            <EditForm Model="_questionnaire" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                
+                <MudGrid Class="mb-4">
+                    <MudItem xs="12" md="4">
+                        <MudDatePicker Label="@Loc["Date"]" 
+                                       @bind-Date="_questionnaireDate" 
+                                       Variant="Variant.Outlined"
+                                       Required="true" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6" ActivePanelIndex="@_activeTabIndex">
+                    <!-- Section 1: Personal Goals -->
+                    <MudTabPanel Text="@Loc["PersonalGoals"]">
+                        <MudText Typo="Typo.h6" Class="mb-4">@Loc["PersonalGoals_Description"]</MudText>
+                        <MudGrid>
+
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_1"]" Value="@(_questionnaire.Q_1_1 == 1)" ValueChanged="@(v => _questionnaire.Q_1_1 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_2"]" Value="@(_questionnaire.Q_1_2 == 1)" ValueChanged="@(v => _questionnaire.Q_1_2 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_3"]" Value="@(_questionnaire.Q_1_3 == 1)" ValueChanged="@(v => _questionnaire.Q_1_3 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudNumericField T="int" Label="@($"{LocQ["Q_1_4"]} (kg)")" @bind-Value="_questionnaire.Q_1_4" Variant="Variant.Outlined" Min="0" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_5"]" Value="@(_questionnaire.Q_1_5 == 1)" ValueChanged="@(v => _questionnaire.Q_1_5 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_6"]" Value="@(_questionnaire.Q_1_6 == 1)" ValueChanged="@(v => _questionnaire.Q_1_6 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_7"]" Value="@(_questionnaire.Q_1_7 == 1)" ValueChanged="@(v => _questionnaire.Q_1_7 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_8"]" Value="@(_questionnaire.Q_1_8 == 1)" ValueChanged="@(v => _questionnaire.Q_1_8 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_9"]" Value="@(_questionnaire.Q_1_9 == 1)" ValueChanged="@(v => _questionnaire.Q_1_9 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_10"]" Value="@(_questionnaire.Q_1_10 == 1)" ValueChanged="@(v => _questionnaire.Q_1_10 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_11"]" Value="@(_questionnaire.Q_1_11 == 1)" ValueChanged="@(v => _questionnaire.Q_1_11 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_1_12"]" Value="@(_questionnaire.Q_1_12 == 1)" ValueChanged="@(v => _questionnaire.Q_1_12 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12">
+                                <MudTextField Label="@LocQ["Q_1_13"]" @bind-Value="_questionnaire.Q_1_13" Variant="Variant.Outlined" Lines="3" />
+                                <MudTextField Label="@LocQ["Q_1_14"]" @bind-Value="_questionnaire.Q_1_14" Variant="Variant.Outlined" Lines="3" Class="mt-4" />
+                                <MudTextField Label="@LocQ["Q_1_15"]" @bind-Value="_questionnaire.Q_1_15" Variant="Variant.Outlined" Lines="3" Class="mt-4" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+
+                    <!-- Section 2: Diagnosis -->
+                    <MudTabPanel Text="@Loc["Diagnosis"]">
+                         <MudText Typo="Typo.h6" Class="mb-4">@Loc["Diagnosis_Description"]</MudText>
+                         <MudGrid>
+
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_1"]" Value="@(_questionnaire.Q_2_1 == 1)" ValueChanged="@(v => _questionnaire.Q_2_1 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_2"]" Value="@(_questionnaire.Q_2_2 == 1)" ValueChanged="@(v => _questionnaire.Q_2_2 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_3"]" Value="@(_questionnaire.Q_2_3 == 1)" ValueChanged="@(v => _questionnaire.Q_2_3 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_4"]" Value="@(_questionnaire.Q_2_4 == 1)" ValueChanged="@(v => _questionnaire.Q_2_4 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_2_5"]" @bind-Value="_questionnaire.Q_2_5" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_2_5_0"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_2_5_1"]</MudSelectItem>
+                                    <MudSelectItem Value="4">@LocQ["Q_2_5_2"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_2_5_3"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_6"]" Value="@(_questionnaire.Q_2_6 == 1)" ValueChanged="@(v => _questionnaire.Q_2_6 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_2_7"]" @bind-Value="_questionnaire.Q_2_7" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_2_8"]" @bind-Value="_questionnaire.Q_2_8" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_9"]" Value="@(_questionnaire.Q_2_9 == 1)" ValueChanged="@(v => _questionnaire.Q_2_9 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_10"]" Value="@(_questionnaire.Q_2_10 == 1)" ValueChanged="@(v => _questionnaire.Q_2_10 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_11"]" Value="@(_questionnaire.Q_2_11 == 1)" ValueChanged="@(v => _questionnaire.Q_2_11 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_12"]" Value="@(_questionnaire.Q_2_12 == 1)" ValueChanged="@(v => _questionnaire.Q_2_12 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_13"]" Value="@(_questionnaire.Q_2_13 == 1)" ValueChanged="@(v => _questionnaire.Q_2_13 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_14"]" Value="@(_questionnaire.Q_2_14 == 1)" ValueChanged="@(v => _questionnaire.Q_2_14 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_15"]" Value="@(_questionnaire.Q_2_15 == 1)" ValueChanged="@(v => _questionnaire.Q_2_15 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_16"]" Value="@(_questionnaire.Q_2_16 == 1)" ValueChanged="@(v => _questionnaire.Q_2_16 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_17"]" Value="@(_questionnaire.Q_2_17 == 1)" ValueChanged="@(v => _questionnaire.Q_2_17 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_2_18"]" @bind-Value="_questionnaire.Q_2_18" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_2_18_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_2_18_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_2_18_2"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_19"]" Value="@(_questionnaire.Q_2_19 == 1)" ValueChanged="@(v => _questionnaire.Q_2_19 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_20"]" Value="@(_questionnaire.Q_2_20 == 1)" ValueChanged="@(v => _questionnaire.Q_2_20 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_21"]" Value="@(_questionnaire.Q_2_21 == 1)" ValueChanged="@(v => _questionnaire.Q_2_21 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_2_22"]" @bind-Value="_questionnaire.Q_2_22" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_2_23"]" @bind-Value="_questionnaire.Q_2_23" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_24"]" Value="@(_questionnaire.Q_2_24 == 1)" ValueChanged="@(v => _questionnaire.Q_2_24 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_25"]" Value="@(_questionnaire.Q_2_25 == 1)" ValueChanged="@(v => _questionnaire.Q_2_25 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_26"]" Value="@(_questionnaire.Q_2_26 == 1)" ValueChanged="@(v => _questionnaire.Q_2_26 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_27"]" Value="@(_questionnaire.Q_2_27 == 1)" ValueChanged="@(v => _questionnaire.Q_2_27 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_28"]" Value="@(_questionnaire.Q_2_28 == 1)" ValueChanged="@(v => _questionnaire.Q_2_28 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_29"]" Value="@(_questionnaire.Q_2_29 == 1)" ValueChanged="@(v => _questionnaire.Q_2_29 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_30"]" Value="@(_questionnaire.Q_2_30 == 1)" ValueChanged="@(v => _questionnaire.Q_2_30 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_2_31"]" @bind-Value="_questionnaire.Q_2_31" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_2_31_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_2_31_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_2_31_2"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_2_32"]" @bind-Value="_questionnaire.Q_2_32" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_33"]" Value="@(_questionnaire.Q_2_33 == 1)" ValueChanged="@(v => _questionnaire.Q_2_33 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_2_34"]" @bind-Value="_questionnaire.Q_2_34" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_35"]" Value="@(_questionnaire.Q_2_35 == 1)" ValueChanged="@(v => _questionnaire.Q_2_35 = v ? 1 : 0)" />
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_36"]" Value="@(_questionnaire.Q_2_36 == 1)" ValueChanged="@(v => _questionnaire.Q_2_36 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_2_37"]" @bind-Value="_questionnaire.Q_2_37" Variant="Variant.Outlined" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_2_38"]" Value="@(_questionnaire.Q_2_38 == 1)" ValueChanged="@(v => _questionnaire.Q_2_38 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_2_39"]" @bind-Value="_questionnaire.Q_2_39" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_2_40"]" @bind-Value="_questionnaire.Q_2_40" Variant="Variant.Outlined" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+
+                    <!-- Section 3: Risk Factors -->
+                    <MudTabPanel Text="@Loc["RiskFactors"]">
+                         <MudText Typo="Typo.h6" Class="mb-4">@Loc["RiskFactors_Description"]</MudText>
+                         <MudGrid>
+
+                           <MudItem xs="12" md="6">
+                                <MudSelect Label="@LocQ["Q_3_1"]" @bind-Value="_questionnaire.Q_3_1" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_3_2"]" Value="@(_questionnaire.Q_3_2 == 1)" ValueChanged="@(v => _questionnaire.Q_3_2 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_3_3"]" @bind-Value="_questionnaire.Q_3_3" Variant="Variant.Outlined" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_3_4"]" @bind-Value="_questionnaire.Q_3_4" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_3_5"]" Value="@(_questionnaire.Q_3_5 == 1)" ValueChanged="@(v => _questionnaire.Q_3_5 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_3_6"]" Value="@(_questionnaire.Q_3_6 == 1)" ValueChanged="@(v => _questionnaire.Q_3_6 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_3_7"]" Value="@(_questionnaire.Q_3_7 == 1)" ValueChanged="@(v => _questionnaire.Q_3_7 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudTextField Label="@LocQ["Q_3_8"]" @bind-Value="_questionnaire.Q_3_8" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_9"]" Value="@(_questionnaire.Q_3_9 == 1)" ValueChanged="@(v => _questionnaire.Q_3_9 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_10"]" Value="@(_questionnaire.Q_3_10 == 1)" ValueChanged="@(v => _questionnaire.Q_3_10 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_11"]" Value="@(_questionnaire.Q_3_11 == 1)" ValueChanged="@(v => _questionnaire.Q_3_11 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_12"]" Value="@(_questionnaire.Q_3_12 == 1)" ValueChanged="@(v => _questionnaire.Q_3_12 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_13"]" Value="@(_questionnaire.Q_3_13 == 1)" ValueChanged="@(v => _questionnaire.Q_3_13 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_14"]" Value="@(_questionnaire.Q_3_14 == 1)" ValueChanged="@(v => _questionnaire.Q_3_14 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_15"]" Value="@(_questionnaire.Q_3_15 == 1)" ValueChanged="@(v => _questionnaire.Q_3_15 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_16"]" Value="@(_questionnaire.Q_3_16 == 1)" ValueChanged="@(v => _questionnaire.Q_3_16 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_17"]" Value="@(_questionnaire.Q_3_17 == 1)" ValueChanged="@(v => _questionnaire.Q_3_17 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_3_18"]" Value="@(_questionnaire.Q_3_18 == 1)" ValueChanged="@(v => _questionnaire.Q_3_18 = v ? 1 : 0)" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+
+                    <!-- Section 4: Family History -->
+                    <MudTabPanel Text="@Loc["FamilyHistory"]">
+                         <MudText Typo="Typo.h6" Class="mb-4">@Loc["FamilyHistory_Description"]</MudText>
+                         <MudGrid>
+
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_1"]" @bind-Value="_questionnaire.Q_4_1" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_2"]" @bind-Value="_questionnaire.Q_4_2" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_3"]" @bind-Value="_questionnaire.Q_4_3" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_4"]" @bind-Value="_questionnaire.Q_4_4" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_5"]" @bind-Value="_questionnaire.Q_4_5" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_6"]" @bind-Value="_questionnaire.Q_4_6" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_7"]" @bind-Value="_questionnaire.Q_4_7" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_8"]" @bind-Value="_questionnaire.Q_4_8" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_9"]" @bind-Value="_questionnaire.Q_4_9" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_10"]" @bind-Value="_questionnaire.Q_4_10" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_11"]" @bind-Value="_questionnaire.Q_4_11" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_4_12"]" @bind-Value="_questionnaire.Q_4_12" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+
+                    <!-- Section 5: Preferences -->
+                    <MudTabPanel Text="@Loc["Preferences"]">
+                         <MudText Typo="Typo.h6" Class="mb-4">@Loc["Preferences_Description"]</MudText>
+                         <MudGrid>
+
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_5_1"]" @bind-Value="_questionnaire.Q_5_1" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes_Intolerance"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["Yes_Allergy"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_DontKnow"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_2"]" Value="@(_questionnaire.Q_5_2 == 1)" ValueChanged="@(v => _questionnaire.Q_5_2 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_3"]" Value="@(_questionnaire.Q_5_3 == 1)" ValueChanged="@(v => _questionnaire.Q_5_3 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_4"]" Value="@(_questionnaire.Q_5_4 == 1)" ValueChanged="@(v => _questionnaire.Q_5_4 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_5"]" Value="@(_questionnaire.Q_5_5 == 1)" ValueChanged="@(v => _questionnaire.Q_5_5 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_6"]" Value="@(_questionnaire.Q_5_6 == 1)" ValueChanged="@(v => _questionnaire.Q_5_6 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_7"]" Value="@(_questionnaire.Q_5_7 == 1)" ValueChanged="@(v => _questionnaire.Q_5_7 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudSelect T="int" Label="@LocQ["Q_5_8"]" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_8" Variant="Variant.Outlined" ToStringFunc="@(id => _foods.FirstOrDefault(f => f.Id == id)?.Name)">
+                                    @foreach (var food in _foods)
+                                    {
+                                        <MudSelectItem T="int" Value="@food.Id">@food.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudSelect T="int" Label="@LocQ["Q_5_9"]" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_9" Variant="Variant.Outlined" ToStringFunc="@(id => _foods.FirstOrDefault(f => f.Id == id)?.Name)">
+                                    @foreach (var food in _foods)
+                                    {
+                                        <MudSelectItem T="int" Value="@food.Id">@food.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_10"]" Value="@(_questionnaire.Q_5_10 == 1)" ValueChanged="@(v => _questionnaire.Q_5_10 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_11"]" Value="@(_questionnaire.Q_5_11 == 1)" ValueChanged="@(v => _questionnaire.Q_5_11 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_12"]" Value="@(_questionnaire.Q_5_12 == 1)" ValueChanged="@(v => _questionnaire.Q_5_12 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_5_13"]" @bind-Value="_questionnaire.Q_5_13" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@Loc["Rarely"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_14"]" Value="@(_questionnaire.Q_5_14 == 1)" ValueChanged="@(v => _questionnaire.Q_5_14 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_15"]" Value="@(_questionnaire.Q_5_15 == 1)" ValueChanged="@(v => _questionnaire.Q_5_15 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_5_16"]" Value="@(_questionnaire.Q_5_16 == 1)" ValueChanged="@(v => _questionnaire.Q_5_16 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_5_17"]" @bind-Value="_questionnaire.Q_5_17" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@Loc["DontMind"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudSelect T="int" Label="@LocQ["Q_5_18"]" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_18" Variant="Variant.Outlined" ToStringFunc="@(id => _foods.FirstOrDefault(f => f.Id == id)?.Name)">
+                                    @foreach (var food in _foods)
+                                    {
+                                        <MudSelectItem T="int" Value="@food.Id">@food.Name</MudSelectItem>
+                                    }
+                                </MudSelect>
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+
+                    <!-- Section 6: Lifestyle -->
+                    <MudTabPanel Text="@Loc["Lifestyle"]">
+                         <MudText Typo="Typo.h6" Class="mb-4">@Loc["Lifestyle_Description"]</MudText>
+                         <MudGrid>
+
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_1"]" @bind-Value="_questionnaire.Q_6_1" Variant="Variant.Outlined" Lines="2" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_2"]" @bind-Value="_questionnaire.Q_6_2" Variant="Variant.Outlined" Lines="2" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_3"]" @bind-Value="_questionnaire.Q_6_3" Variant="Variant.Outlined" Lines="2" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_4"]" @bind-Value="_questionnaire.Q_6_4" Variant="Variant.Outlined" Lines="2" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_5"]" @bind-Value="_questionnaire.Q_6_5" Variant="Variant.Outlined" Lines="2" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_6"]" @bind-Value="_questionnaire.Q_6_6" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudCheckBox T="bool" Label="@LocQ["Q_6_7"]" Value="@(_questionnaire.Q_6_7 == 1)" ValueChanged="@(v => _questionnaire.Q_6_7 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_9"]" @bind-Value="_questionnaire.Q_6_9" Variant="Variant.Outlined" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_10"]" @bind-Value="_questionnaire.Q_6_10" Variant="Variant.Outlined" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_11"]" Value="@(_questionnaire.Q_6_11 == 1)" ValueChanged="@(v => _questionnaire.Q_6_11 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_6_12"]" @bind-Value="_questionnaire.Q_6_12" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_6_12_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_6_12_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_6_12_2"]</MudSelectItem>
+                                    <MudSelectItem Value="4">@LocQ["Q_6_12_3"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_13"]" @bind-Value="_questionnaire.Q_6_13" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_14"]" Value="@(_questionnaire.Q_6_14 == 1)" ValueChanged="@(v => _questionnaire.Q_6_14 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_15"]" Value="@(_questionnaire.Q_6_15 == 1)" ValueChanged="@(v => _questionnaire.Q_6_15 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_16"]" Value="@(_questionnaire.Q_6_16 == 1)" ValueChanged="@(v => _questionnaire.Q_6_16 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_17"]" Value="@(_questionnaire.Q_6_17 == 1)" ValueChanged="@(v => _questionnaire.Q_6_17 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_18"]" Value="@(_questionnaire.Q_6_18 == 1)" ValueChanged="@(v => _questionnaire.Q_6_18 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_19"]" Value="@(_questionnaire.Q_6_19 == 1)" ValueChanged="@(v => _questionnaire.Q_6_19 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_6_20"]" @bind-Value="_questionnaire.Q_6_20" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_6_20_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_6_20_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_6_20_2"]</MudSelectItem>
+                                    <MudSelectItem Value="4">@LocQ["Q_6_20_3"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_21"]" Value="@(_questionnaire.Q_6_21 == 1)" ValueChanged="@(v => _questionnaire.Q_6_21 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_22"]" Value="@(_questionnaire.Q_6_22 == 1)" ValueChanged="@(v => _questionnaire.Q_6_22 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_23"]" Value="@(_questionnaire.Q_6_23 == 1)" ValueChanged="@(v => _questionnaire.Q_6_23 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                  <MudNumericField T="int" Label="@LocQ["Q_6_24"]" @bind-Value="_questionnaire.Q_6_24" Variant="Variant.Outlined" Min="0" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                  <MudNumericField T="int" Label="@LocQ["Q_6_25"]" @bind-Value="_questionnaire.Q_6_25" Variant="Variant.Outlined" Min="0" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_26"]" Value="@(_questionnaire.Q_6_26 == 1)" ValueChanged="@(v => _questionnaire.Q_6_26 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_27"]" Value="@(_questionnaire.Q_6_27 == 1)" ValueChanged="@(v => _questionnaire.Q_6_27 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_28"]" @bind-Value="_questionnaire.Q_6_28" Variant="Variant.Outlined" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_29"]" @bind-Value="_questionnaire.Q_6_29" Variant="Variant.Outlined" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_30"]" Value="@(_questionnaire.Q_6_30 == 1)" ValueChanged="@(v => _questionnaire.Q_6_30 = v ? 1 : 0)" />
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_31"]" Value="@(_questionnaire.Q_6_31 == 1)" ValueChanged="@(v => _questionnaire.Q_6_31 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_6_32"]" @bind-Value="_questionnaire.Q_6_32" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_6_32_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_6_32_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_6_32_2"]</MudSelectItem>
+                                    <MudSelectItem Value="4">@LocQ["Q_6_32_3"]</MudSelectItem>
+                                    <MudSelectItem Value="5">@LocQ["Q_6_32_4"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_33"]" Value="@(_questionnaire.Q_6_33 == 1)" ValueChanged="@(v => _questionnaire.Q_6_33 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_6_34"]" @bind-Value="_questionnaire.Q_6_34" Variant="Variant.Outlined" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_35"]" Value="@(_questionnaire.Q_6_35 == 1)" ValueChanged="@(v => _questionnaire.Q_6_35 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_36"]" Value="@(_questionnaire.Q_6_36 == 1)" ValueChanged="@(v => _questionnaire.Q_6_36 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_37"]" Value="@(_questionnaire.Q_6_37 == 1)" ValueChanged="@(v => _questionnaire.Q_6_37 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_38"]" Value="@(_questionnaire.Q_6_38 == 1)" ValueChanged="@(v => _questionnaire.Q_6_38 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_39"]" Value="@(_questionnaire.Q_6_39 == 1)" ValueChanged="@(v => _questionnaire.Q_6_39 = v ? 1 : 0)" />
+                            </MudItem>
+                             <MudItem xs="12" md="12">
+                                 <MudCheckBox T="bool" Label="@LocQ["Q_6_40"]" Value="@(_questionnaire.Q_6_40 == 1)" ValueChanged="@(v => _questionnaire.Q_6_40 = v ? 1 : 0)" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+
+                    <!-- Section 7: Lymphatic System -->
+                    <MudTabPanel Text="@Loc["LymphaticSystem"]">
+                         <MudText Typo="Typo.h6" Class="mb-4">@Loc["LymphaticSystem_Description"]</MudText>
+                         <MudGrid>
+
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_1"]" @bind-Value="_questionnaire.Q_7_1" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_1_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_1_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_1_2"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_2"]" @bind-Value="_questionnaire.Q_7_2" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_2_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_2_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_2_2"]</MudSelectItem>
+                                    <MudSelectItem Value="4">@LocQ["Q_7_2_3"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_3"]" @bind-Value="_questionnaire.Q_7_3" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_3_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_3_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_3_2"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_4"]" @bind-Value="_questionnaire.Q_7_4" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_4_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_4_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_4_2"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_5"]" @bind-Value="_questionnaire.Q_7_5" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_5_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_5_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_5_2"]</MudSelectItem>
+                                    <MudSelectItem Value="4">@LocQ["Q_7_5_3"]</MudSelectItem>
+                                    <MudSelectItem Value="5">@LocQ["Q_7_5_4"]</MudSelectItem>
+                                    <MudSelectItem Value="6">@LocQ["Q_7_5_5"]</MudSelectItem>
+                                    <MudSelectItem Value="7">@LocQ["Q_7_5_6"]</MudSelectItem>
+                                    <MudSelectItem Value="8">@LocQ["Q_7_5_7"]</MudSelectItem>
+                                    <MudSelectItem Value="9">@LocQ["Q_7_5_8"]</MudSelectItem>
+                                    <MudSelectItem Value="10">@LocQ["Q_7_5_9"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_6"]" @bind-Value="_questionnaire.Q_7_6" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_6_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_6_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_6_2"]</MudSelectItem>
+                                    <MudSelectItem Value="4">@LocQ["Q_7_6_3"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_7"]" @bind-Value="_questionnaire.Q_7_7" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_7_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_7_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_7_2"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_8"]" @bind-Value="_questionnaire.Q_7_8" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@LocQ["Q_7_8_0"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@LocQ["Q_7_8_1"]</MudSelectItem>
+                                    <MudSelectItem Value="3">@LocQ["Q_7_8_2"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_9"]" @bind-Value="_questionnaire.Q_7_9" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+                            <MudItem xs="12" md="12">
+                                <MudSelect Label="@LocQ["Q_7_10"]" @bind-Value="_questionnaire.Q_7_10" Variant="Variant.Outlined">
+                                    <MudSelectItem Value="0">@Loc["SelectOption"]</MudSelectItem>
+                                    <MudSelectItem Value="1">@Loc["Yes"]</MudSelectItem>
+                                    <MudSelectItem Value="2">@Loc["No"]</MudSelectItem>
+                                </MudSelect>
+                            </MudItem>
+
+                            <MudItem xs="12" md="12">
+                                 <MudTextField Label="@LocQ["Q_7_11"]" @bind-Value="_questionnaire.Q_7_11" Variant="Variant.Outlined" Lines="3" />
+                            </MudItem>
+                        </MudGrid>
+                    </MudTabPanel>
+                </MudTabs>
+                
+                <MudDivider Class="my-6" />
+                
+                <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Default" 
+                               OnClick="NavigateBack">
+                        @Loc["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               ButtonType="ButtonType.Submit"
+                               Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        @Loc["Save"]
+                    </MudButton>
+                </MudStack>
+            </EditForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int Id { get; set; }
+    
+
+
+    [SupplyParameterFromQuery(Name = "tab")]
+    public string? Tab { get; set; }
+
+    private ClientQuestionnaire? _questionnaire;
+    private Client? _client;
+    private DateTime? _questionnaireDate;
+    private bool _loading = true;
+    private bool _saving = false;
+    private int _activeTabIndex = 0;
+    
+
+
+    private List<Food> _foods = new();
+    private IEnumerable<int> _selectedFoods_Q5_8 = new HashSet<int>();
+    private IEnumerable<int> _selectedFoods_Q5_9 = new HashSet<int>();
+    private IEnumerable<int> _selectedFoods_Q5_18 = new HashSet<int>();
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _foods = await FoodService.GetAllAsync();
+        _questionnaire = await QuestionnaireService.GetByIdAsync(Id);
+        
+        if (_questionnaire != null)
+        {
+            _questionnaireDate = _questionnaire.Date;
+            
+            // Map booleans based on bindings removed
+
+            
+            // Map IDs from model to selected values
+            _questionnaire.MapFoodIds();
+            _selectedFoods_Q5_8 = _questionnaire.Q_5_8_FoodIds ?? new List<int>();
+            _selectedFoods_Q5_9 = _questionnaire.Q_5_9_FoodIds ?? new List<int>();
+            _selectedFoods_Q5_18 = _questionnaire.Q_5_18_FoodIds ?? new List<int>();
+        }
+        
+        // Set active tab based on query parameter
+        if (!string.IsNullOrEmpty(Tab))
+        {
+            _activeTabIndex = Tab.ToLower() switch
+            {
+                "goals" => 0,
+                "diagnosis" => 1,
+                "risks" => 2,
+                "family" => 3,
+                "preferences" => 4,
+                "lifestyle" => 5,
+                "lymphatic" => 6,
+                _ => 0
+            };
+        }
+
+        _loading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_questionnaire == null) return;
+        
+        _saving = true;
+        try
+        {
+            _questionnaire.Date = _questionnaireDate ?? DateTime.Today;
+            
+            // Auto-complete the currently active section
+            switch (_activeTabIndex)
+            {
+                case 0: _questionnaire.Completed_1 = true; break;
+                case 1: _questionnaire.Completed_2 = true; break;
+                case 2: _questionnaire.Completed_3 = true; break;
+                case 3: _questionnaire.Completed_4 = true; break;
+                case 4: _questionnaire.Completed_5 = true; break;
+                case 5: _questionnaire.Completed_6 = true; break;
+                case 6: _questionnaire.Completed_7 = true; break;
+            }
+
+             // Map food selections
+            _questionnaire.Q_5_8_FoodIds = _selectedFoods_Q5_8.ToList();
+            _questionnaire.Q_5_9_FoodIds = _selectedFoods_Q5_9.ToList();
+            _questionnaire.Q_5_18_FoodIds = _selectedFoods_Q5_18.ToList();
+            _questionnaire.MapFoodStrings();
+
+            await QuestionnaireService.UpdateAsync(_questionnaire);
+            Snackbar.Add(Loc["SaveSuccess"], Severity.Success);
+            Navigation.NavigateTo($"/clients/{ClientId}?tab=questionnaires");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=questionnaires");
+    }
+}

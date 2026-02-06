@@ -1,0 +1,109 @@
+@page "/products/create"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IProductService ProductService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["NewProduct"] - NHManager</PageTitle>
+
+<MudText Typo="Typo.h4" Class="mb-4">@Loc["NewProduct"]</MudText>
+
+<MudPaper Class="pa-6">
+    <EditForm Model="_product" OnValidSubmit="HandleSubmit">
+        <DataAnnotationsValidator />
+        
+        <MudGrid>
+            <MudItem xs="12">
+                <MudTextField @bind-Value="_product.Name" Label="@Loc["Name"]" Required="true" Variant="Variant.Outlined" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="4">
+                <MudNumericField Value="_product.Price" Label="@Loc["PriceNoVAT"]" Format="F2" Variant="Variant.Outlined" 
+                                 Immediate="true" ValueChanged="@((decimal v) => OnPriceChanged(v))" />
+            </MudItem>
+            
+            <MudItem xs="12" sm="4">
+                <MudNumericField Value="_product.VAT" Label="@Loc["VAT"]" Min="0" Max="100" Variant="Variant.Outlined" 
+                                 Immediate="true" ValueChanged="@((int v) => OnVATChanged(v))" />
+            </MudItem>
+
+            <MudItem xs="12" sm="4">
+                <MudNumericField Value="_product.PriceWithVAT" Label="@Loc["PriceWithVAT"]" Format="F2" Variant="Variant.Outlined" 
+                                 Immediate="true" ValueChanged="@((decimal v) => OnPriceWithVATChanged(v))" />
+            </MudItem>
+            
+            <MudItem xs="12">
+                <MudCheckBox @bind-Value="_product.Active" Label="@Loc["Active"]" Color="Color.Primary" />
+            </MudItem>
+        </MudGrid>
+        
+        <MudDivider Class="my-6" />
+        
+        <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+            <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/products">@Loc["Cancel"]</MudButton>
+            <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                @if (_saving)
+                {
+                    <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                }
+                @Loc["Save"]
+            </MudButton>
+        </MudStack>
+    </EditForm>
+</MudPaper>
+
+@code {
+    private Product _product = new() { Active = true, VAT = 21 }; // Default 21% VAT
+    private bool _saving = false;
+
+    private void OnPriceChanged(decimal price)
+    {
+        _product.Price = price;
+        _product.PriceWithVAT = price * (1 + (_product.VAT / 100m));
+    }
+
+    private void OnVATChanged(int vat)
+    {
+        _product.VAT = vat;
+        _product.PriceWithVAT = _product.Price * (1 + (vat / 100m));
+    }
+
+    private void OnPriceWithVATChanged(decimal priceWithVat)
+    {
+        _product.PriceWithVAT = priceWithVat;
+        _product.Price = priceWithVat / (1 + (_product.VAT / 100m));
+    }
+
+    private async Task HandleSubmit()
+    {
+        _saving = true;
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userName = authState.User.Identity?.Name ?? "System";
+            
+            // Sync string properties if used
+            _product.Price_string = _product.Price.ToString();
+            _product.PriceWithVAT_string = _product.PriceWithVAT.ToString();
+
+            await ProductService.CreateAsync(_product, userName);
+             Snackbar.Add(string.Format(Loc["CreatedSuccess"].Value, Loc["Product"].Value), Severity.Success);
+            Navigation.NavigateTo("/products");
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add(string.Format(Loc["ErrorCreating"].Value, ex.Message), Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

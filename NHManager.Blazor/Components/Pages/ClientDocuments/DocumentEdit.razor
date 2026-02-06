@@ -1,0 +1,112 @@
+@page "/clients/{ClientId:int}/documents/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientDocumentService DocumentService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["EditDocument"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Medium" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_document == null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc["RecordNotFound"]</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-6">
+            <MudText Typo="Typo.h5" Class="mb-4">@Loc["EditDocument"]</MudText>
+            
+            @if (_client != null)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName</MudText>
+            }
+            
+            <EditForm Model="_document" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudTextField Label="@Loc["Name"]" 
+                                      @bind-Value="_document.Name" 
+                                      Variant="Variant.Outlined"
+                                      Required="true" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudDivider Class="my-6" />
+                
+                <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Default" 
+                               OnClick="NavigateBack">
+                        @Loc["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               ButtonType="ButtonType.Submit"
+                               Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        @Loc["Save"]
+                    </MudButton>
+                </MudStack>
+            </EditForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int Id { get; set; }
+    
+    private ClientDocument? _document;
+    private Client? _client;
+    private bool _loading = true;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _document = await DocumentService.GetByIdAsync(Id);
+        _loading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_document == null) return;
+        
+        _saving = true;
+        try
+        {
+            await DocumentService.UpdateAsync(_document);
+            Snackbar.Add(Loc["SaveSuccess"], Severity.Success);
+            Navigation.NavigateTo($"/clients/{ClientId}?tab=documents");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=documents");
+    }
+}

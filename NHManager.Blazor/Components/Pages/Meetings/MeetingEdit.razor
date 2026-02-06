@@ -1,0 +1,190 @@
+@page "/meetings/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@inject IMeetingService MeetingService
+@inject IClientService ClientService
+@inject IMeetingTypeService MeetingTypeService
+@inject IMeetingStateService MeetingStateService
+@inject IWorkerService WorkerService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+
+<PageTitle>Upravit schůzku - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_meeting == null)
+{
+    <MudAlert Severity="Severity.Warning">Schůzka nebyla nalezena.</MudAlert>
+}
+else
+{
+    <MudText Typo="Typo.h4" Class="mb-4">Upravit schůzku</MudText>
+
+    <MudPaper Class="pa-6">
+        <EditForm Model="_meeting" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_meeting.Title" Label="Název" Variant="Variant.Outlined" />
+                </MudItem>
+                
+                <MudItem xs="12" sm="6">
+                    <MudAutocomplete T="Client" Label="Klient" @bind-Value="_selectedClient" SearchFunc="@SearchClients"
+                                     ToStringFunc="@(c => c == null ? null : $"{c.SurName} {c.FirstName}")"
+                                     Variant="Variant.Outlined" Required="false" />
+                </MudItem>
+                
+                <MudItem xs="12" sm="6">
+                    <MudSelect @bind-Value="_meeting.ConsultantId" Label="Konzultant" Variant="Variant.Outlined" T="int?">
+                        <MudSelectItem Value="@((int?)null)">-- Nevybráno --</MudSelectItem>
+                        @foreach (var worker in _workers)
+                        {
+                            <MudSelectItem Value="@((int?)worker.Id)">@worker.FullName</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" sm="3">
+                    <MudDatePicker Label="Od (Datum)" @bind-Date="_fromDate" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="3">
+                    <MudTimePicker Label="Od (Čas)" @bind-Time="_fromTime" Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="12" sm="3">
+                    <MudDatePicker Label="Do (Datum)" @bind-Date="_toDate" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="3">
+                    <MudTimePicker Label="Do (Čas)" @bind-Time="_toTime" Variant="Variant.Outlined" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudSelect @bind-Value="_meeting.MeetingTypeId" Label="Typ schůzky" Variant="Variant.Outlined" T="int" Required="true">
+                        @foreach (var type in _meetingTypes)
+                        {
+                            <MudSelectItem Value="@type.Id">@type.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudSelect @bind-Value="_meeting.MeetingStateId" Label="Stav schůzky" Variant="Variant.Outlined" T="int" Required="true">
+                        @foreach (var state in _meetingStates)
+                        {
+                            <MudSelectItem Value="@state.Id">@state.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudItem>
+
+                <MudItem xs="12">
+                    <MudTextField @bind-Value="_meeting.Description" Label="Popis" Variant="Variant.Outlined" Lines="3" />
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/meetings">Zrušit</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    Uložit změny
+                </MudButton>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Meeting? _meeting;
+    private Client? _selectedClient;
+    private List<Worker> _workers = new();
+    private List<MeetingType> _meetingTypes = new();
+    private List<MeetingState> _meetingStates = new();
+    
+    private DateTime? _fromDate;
+    private TimeSpan? _fromTime;
+    private DateTime? _toDate;
+    private TimeSpan? _toTime;
+
+    private bool _loading = true;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _workers = await WorkerService.GetActiveAsync();
+        _meetingTypes = await MeetingTypeService.GetAllAsync();
+        _meetingStates = await MeetingStateService.GetAllAsync();
+        
+        _meeting = await MeetingService.GetByIdAsync(Id);
+
+        if (_meeting != null)
+        {
+            _fromDate = _meeting.From.Date;
+            _fromTime = _meeting.From.TimeOfDay;
+            _toDate = _meeting.To.Date;
+            _toTime = _meeting.To.TimeOfDay;
+            
+            if (_meeting.ClientId.HasValue)
+            {
+                // We assume Client is loaded via Include in GetByIdAsync or we fetch it.
+                // MeetingService.GetByIdAsync includes Client.
+                _selectedClient = _meeting.Client;
+            }
+        }
+        
+        _loading = false;
+    }
+
+    private async Task<IEnumerable<Client>> SearchClients(string value, CancellationToken token)
+    {
+        return await ClientService.GetAllAsync(value);
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_meeting == null) return;
+        
+        _saving = true;
+        try
+        {
+            if (_fromDate.HasValue && _fromTime.HasValue)
+                _meeting.From = _fromDate.Value.Date + _fromTime.Value;
+            
+            if (_toDate.HasValue && _toTime.HasValue)
+                _meeting.To = _toDate.Value.Date + _toTime.Value;
+
+            if (_selectedClient != null)
+                _meeting.ClientId = _selectedClient.Id;
+            else
+                _meeting.ClientId = null;
+
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userName = authState.User.Identity?.Name ?? "System";
+
+            await MeetingService.UpdateAsync(_meeting, userName);
+             Snackbar.Add("Schůzka byla úspěšně aktualizována", Severity.Success);
+            Navigation.NavigateTo("/meetings");
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add($"Chyba při ukládání: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

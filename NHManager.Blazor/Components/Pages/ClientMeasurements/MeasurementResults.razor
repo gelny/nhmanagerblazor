@@ -1,0 +1,260 @@
+@page "/clients/{ClientId:int}/measurements/{MeasurementId:int}/results"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientMeasurementService MeasurementService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["MeasurementResults"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_result == null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc["RecordNotFound"]</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-6">
+            <MudStack Row="true" Justify="Justify.SpaceBetween" AlignItems="AlignItems.Center" Class="mb-4">
+                <MudText Typo="Typo.h5">@Loc["MeasurementResults"]</MudText>
+                <MudButton Variant="Variant.Outlined" 
+                           Color="Color.Default" 
+                           StartIcon="@Icons.Material.Filled.ArrowBack"
+                           OnClick="NavigateBack">
+                    @Loc["Back"]
+                </MudButton>
+            </MudStack>
+            
+            @if (_client != null)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName | @Loc["Date"]: @_result.Date.ToString("dd.MM.yyyy")</MudText>
+            }
+            
+            <MudGrid>
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">BMI</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Value"]</strong></td>
+                                        <td>@_result.BMI</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Recommended"]</strong></td>
+                                        <td>@_result.BMI_Recommended</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetBMIColor(_result.BMI_Result)">@_result.BMI_Result</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["MetabolicAge"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Value"]</strong></td>
+                                        <td>@Math.Round(_result.MetabolicAge, 1)</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Recommended"]</strong></td>
+                                        <td>@_result.MetabolicAge_Recommended</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetMetabolicAgeColor(_result.MetabolicAge_Result)">@_result.MetabolicAge_Result</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["VisceralFat"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Value"]</strong></td>
+                                        <td>@_result.VisceralFat</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Recommended"]</strong></td>
+                                        <td>@_result.VisceralFat_Recommended</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetVisceralFatColor(_result.VisceralFat_Result)">@_result.VisceralFat_Result</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">BRM</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>kJ</strong></td>
+                                        <td>@_result.BRM_KJ</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>kcal</strong></td>
+                                        <td>@_result.BRM_KCAL</td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["FatPercentage"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Recommended"]</strong></td>
+                                        <td>@_result.FatPercentage_RecommendedMin - @_result.FatPercentage_RecommendedMax %</td>
+                                    </tr>
+                                    <tr>
+                                        <td><strong>@Loc["Result"]</strong></td>
+                                        <td><MudChip T="string" Color="@GetFatPercentageColor(_result.FatPercentage_Result)">@_result.FatPercentage_Result</MudChip></td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+                
+                <MudItem xs="12" md="6">
+                    <MudCard>
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">@Loc["Weight"]</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudSimpleTable Dense="true">
+                                <tbody>
+                                    <tr>
+                                        <td><strong>@Loc["Recommended"]</strong></td>
+                                        <td>@_result.Weight_RecommendedMin - @_result.Weight_RecommendedMax kg</td>
+                                    </tr>
+                                </tbody>
+                            </MudSimpleTable>
+                        </MudCardContent>
+                    </MudCard>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int MeasurementId { get; set; }
+    
+    private ClientMeasurementResult? _result;
+    private Client? _client;
+    private bool _loading = true;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _result = await MeasurementService.GetResultByMeasurementIdAsync(MeasurementId);
+        _loading = false;
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=measurements");
+    }
+
+    private Color GetBMIColor(NHManager.Blazor.Enums.BMIResult result)
+    {
+        return result switch
+        {
+            NHManager.Blazor.Enums.BMIResult.Normal => Color.Success,
+            NHManager.Blazor.Enums.BMIResult.Nadvaha => Color.Warning,
+            _ => Color.Error
+        };
+    }
+
+    private Color GetMetabolicAgeColor(NHManager.Blazor.Enums.MetabolicAgeResult result)
+    {
+        return result switch
+        {
+            NHManager.Blazor.Enums.MetabolicAgeResult.Green => Color.Success,
+            NHManager.Blazor.Enums.MetabolicAgeResult.Orange => Color.Warning,
+            NHManager.Blazor.Enums.MetabolicAgeResult.Red => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetVisceralFatColor(NHManager.Blazor.Enums.VisceralFatResult result)
+    {
+        return result switch
+        {
+            NHManager.Blazor.Enums.VisceralFatResult.Green => Color.Success,
+            NHManager.Blazor.Enums.VisceralFatResult.Orange => Color.Warning,
+            NHManager.Blazor.Enums.VisceralFatResult.Red => Color.Error,
+            _ => Color.Default
+        };
+    }
+
+    private Color GetFatPercentageColor(NHManager.Blazor.Enums.FatPercentageResult result)
+    {
+        return result switch
+        {
+            NHManager.Blazor.Enums.FatPercentageResult.Green => Color.Success,
+            NHManager.Blazor.Enums.FatPercentageResult.Orange => Color.Warning,
+            _ => Color.Error
+        };
+    }
+}

@@ -1,0 +1,147 @@
+@page "/foods/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IFoodService FoodService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@using NHManager.Blazor.Models
+@using NHManager.Blazor.Services
+@using NHManager.Blazor.Constants
+@inject AuthenticationStateProvider AuthStateProvider
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["EditFood"] - NHManager</PageTitle>
+
+@if (_loading)
+{
+    <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+}
+else if (_food == null)
+{
+    <MudAlert Severity="Severity.Warning">@string.Format(Loc["NotFound"].Value, Loc["Food"].Value)</MudAlert>
+}
+else
+{
+    <MudText Typo="Typo.h4" Class="mb-4">@Loc["EditFood"]: @_food.Name_CZ</MudText>
+
+    <MudPaper Class="pa-6">
+        <EditForm Model="_food" OnValidSubmit="HandleSubmit">
+            <DataAnnotationsValidator />
+            
+            <MudGrid>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_food.Name" Label="@Loc["NameEN"]" Required="true" Variant="Variant.Outlined" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudTextField @bind-Value="_food.Name_CZ" Label="@Loc["NameCZ"]" Required="true" Variant="Variant.Outlined" />
+                </MudItem>
+                
+                <MudItem xs="12" sm="4">
+                    <MudNumericField Value="_food.Protein" Label="@Loc["Protein"]" Format="F2" Variant="Variant.Outlined" 
+                                     Immediate="true" ValueChanged="@((decimal v) => OnProteinChanged(v))" />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <MudNumericField Value="_food.Carbohydrate" Label="@Loc["Carbohydrate"]" Format="F2" Variant="Variant.Outlined" 
+                                     Immediate="true" ValueChanged="@((decimal v) => OnCarbsChanged(v))" />
+                </MudItem>
+                <MudItem xs="12" sm="4">
+                    <MudNumericField Value="_food.Fat" Label="@Loc["Fat"]" Format="F2" Variant="Variant.Outlined" 
+                                     Immediate="true" ValueChanged="@((decimal v) => OnFatChanged(v))" />
+                </MudItem>
+
+                <MudItem xs="12" sm="6">
+                    <MudNumericField @bind-Value="_food.EnergyKcal" Label="@string.Format("{0} ({1})", Loc["Energy"].Value, Loc["Kcal"].Value)" Variant="Variant.Outlined" ReadOnly="false" HelperText="@Loc["CalculatedAutomatically"]" />
+                </MudItem>
+                <MudItem xs="12" sm="6">
+                    <MudNumericField @bind-Value="_food.EnergyKJ" Label="@string.Format("{0} ({1})", Loc["Energy"].Value, Loc["KJ"].Value)" Variant="Variant.Outlined" ReadOnly="false" HelperText="@Loc["CalculatedAutomatically"]" />
+                </MudItem>
+            </MudGrid>
+            
+            <MudDivider Class="my-6" />
+            
+            <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                <MudButton Variant="Variant.Outlined" Color="Color.Default" Href="/foods">@Loc["Cancel"]</MudButton>
+                <MudButton Variant="Variant.Filled" Color="Color.Primary" ButtonType="ButtonType.Submit" Disabled="_saving">
+                    @if (_saving)
+                    {
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                    }
+                    @Loc["Save"]
+                </MudButton>
+            </MudStack>
+        </EditForm>
+    </MudPaper>
+}
+
+@code {
+    [Parameter]
+    public int Id { get; set; }
+
+    private Food? _food;
+    private bool _loading = true;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _food = await FoodService.GetByIdAsync(Id);
+        _loading = false;
+    }
+
+    private void CalculateEnergy()
+    {
+        if (_food == null) return;
+        var kcal = (_food.Protein * 4) + (_food.Carbohydrate * 4) + (_food.Fat * 9);
+        _food.EnergyKcal = (int)Math.Round(kcal);
+        _food.EnergyKJ = (int)Math.Round(kcal * 4.184m);
+    }
+
+    private void OnProteinChanged(decimal value)
+    {
+        if (_food == null) return;
+        _food.Protein = value;
+        CalculateEnergy();
+    }
+
+    private void OnCarbsChanged(decimal value)
+    {
+        if (_food == null) return;
+        _food.Carbohydrate = value;
+        CalculateEnergy();
+    }
+
+    private void OnFatChanged(decimal value)
+    {
+        if (_food == null) return;
+        _food.Fat = value;
+        CalculateEnergy();
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_food == null) return;
+        
+        _saving = true;
+        try
+        {
+            var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+            var userName = authState.User.Identity?.Name ?? "System";
+            
+            _food.Protein_string = _food.Protein.ToString();
+            _food.Carbohydrate_string = _food.Carbohydrate.ToString();
+            _food.Fat_string = _food.Fat.ToString();
+
+            await FoodService.UpdateAsync(_food, userName);
+             Snackbar.Add(string.Format(Loc["UpdatedSuccess"].Value, Loc["Food"].Value), Severity.Success);
+            Navigation.NavigateTo("/foods");
+        }
+        catch (Exception ex)
+        {
+             Snackbar.Add(string.Format(Loc["ErrorUpdating"].Value, ex.Message), Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+}

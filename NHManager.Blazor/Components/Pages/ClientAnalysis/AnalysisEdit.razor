@@ -1,0 +1,187 @@
+@page "/clients/{ClientId:int}/analysis/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientAnalysisService AnalysisService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["EditAnalysis"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_analysis == null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc["RecordNotFound"]</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-6">
+            <MudText Typo="Typo.h5" Class="mb-4">@Loc["EditAnalysis"]</MudText>
+            
+            @if (_client != null)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName</MudText>
+            }
+            
+            <EditForm Model="_analysis" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudDatePicker Label="@Loc["Date"]" 
+                                       @bind-Date="_analysisDate" 
+                                       Variant="Variant.Outlined"
+                                       Required="true" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["BloodValues"]</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["Glucose"]} (mmol/l)")" 
+                                         @bind-Value="_analysis.Glucose" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["TotalCholesterol"]} (mmol/l)")" 
+                                         @bind-Value="_analysis.TotalCholesterol" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["Triglycerides"]} (mmol/l)")" 
+                                         @bind-Value="_analysis.Triglycerides" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="LDL (mmol/l)" 
+                                         @bind-Value="_analysis.LDLCholesterol" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="HDL (mmol/l)" 
+                                         @bind-Value="_analysis.HDLCholesterol" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["RiskFactors"]</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudCheckBox @bind-Value="_familyHeartDisease" 
+                                     Label="@Loc["FamilyHeartDisease"]" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudCheckBox @bind-Value="_smoker" 
+                                     Label="@Loc["Smoker"]" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudCheckBox @bind-Value="_highBloodPressure" 
+                                     Label="@Loc["HighBloodPressure"]" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudCheckBox @bind-Value="_diabetesMeds" 
+                                     Label="@Loc["DiabetesMeds"]" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudDivider Class="my-6" />
+                
+                <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Default" 
+                               OnClick="NavigateBack">
+                        @Loc["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               ButtonType="ButtonType.Submit"
+                               Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        @Loc["Save"]
+                    </MudButton>
+                </MudStack>
+            </EditForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int Id { get; set; }
+    
+    private ClientAnalysis? _analysis;
+    private Client? _client;
+    private DateTime? _analysisDate;
+    private bool _loading = true;
+    private bool _saving = false;
+    
+    // Risk factors as booleans
+    private bool _familyHeartDisease;
+    private bool _smoker;
+    private bool _highBloodPressure;
+    private bool _diabetesMeds;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _analysis = await AnalysisService.GetByIdAsync(Id);
+        if (_analysis != null)
+        {
+            _analysisDate = _analysis.Date;
+            _familyHeartDisease = _analysis.FamilyHeartDisease == 1;
+            _smoker = _analysis.Smoker == 1;
+            _highBloodPressure = _analysis.HighBloodPressureOrMeds == 1;
+            _diabetesMeds = _analysis.DiabetesMeds == 1;
+        }
+        _loading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_analysis == null) return;
+        
+        _saving = true;
+        try
+        {
+            _analysis.Date = _analysisDate ?? DateTime.Today;
+            _analysis.FamilyHeartDisease = _familyHeartDisease ? 1 : 0;
+            _analysis.Smoker = _smoker ? 1 : 0;
+            _analysis.HighBloodPressureOrMeds = _highBloodPressure ? 1 : 0;
+            _analysis.DiabetesMeds = _diabetesMeds ? 1 : 0;
+            
+            await AnalysisService.UpdateAsync(_analysis);
+            Snackbar.Add(Loc["SaveSuccess"], Severity.Success);
+            Navigation.NavigateTo($"/clients/{ClientId}?tab=analysis");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=analysis");
+    }
+}

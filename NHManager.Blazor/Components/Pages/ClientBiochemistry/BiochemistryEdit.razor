@@ -1,0 +1,226 @@
+@page "/clients/{ClientId:int}/biochemistry/edit/{Id:int}"
+@attribute [Authorize(Roles = Roles.AllEmployees)]
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientBiochemistryService BiochemistryService
+@inject IClientService ClientService
+@inject NavigationManager Navigation
+@inject ISnackbar Snackbar
+@inject IStringLocalizer<SharedResource> Loc
+
+<PageTitle>@Loc["EditBiochemistry"] - NHManager</PageTitle>
+
+<MudContainer MaxWidth="MaxWidth.Large" Class="mt-4">
+    @if (_loading)
+    {
+        <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
+    }
+    else if (_biochemistry == null)
+    {
+        <MudAlert Severity="Severity.Warning">@Loc["RecordNotFound"]</MudAlert>
+    }
+    else
+    {
+        <MudPaper Class="pa-6">
+            <MudText Typo="Typo.h5" Class="mb-4">@Loc["EditBiochemistry"]</MudText>
+            
+            @if (_client != null)
+            {
+                <MudText Typo="Typo.subtitle1" Class="mb-4">@Loc["Client"]: @_client.FullName</MudText>
+            }
+            
+            <EditForm Model="_biochemistry" OnValidSubmit="HandleSubmit">
+                <DataAnnotationsValidator />
+                
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudDatePicker Label="@Loc["Date"]" 
+                                       @bind-Date="_biochemistryDate" 
+                                       Variant="Variant.Outlined"
+                                       Required="true" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["BasicValues"]</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["Glucose"]} (mmol/l)")" 
+                                         @bind-Value="_biochemistry.Glucose" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["TotalCholesterol"]} (mmol/l)")" 
+                                         @bind-Value="_biochemistry.TotalCholesterol" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["Triglycerides"]} (mmol/l)")" 
+                                         @bind-Value="_biochemistry.Triglycerides" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="LDL (mmol/l)" 
+                                         @bind-Value="_biochemistry.LDLCholesterol" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="HDL (mmol/l)" 
+                                         @bind-Value="_biochemistry.HDLCholesterol" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["LiverEnzymes"]</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="3">
+                        <MudNumericField Label="ALP (ukat/l)" 
+                                         @bind-Value="_biochemistry.ALP" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.01M" />
+                    </MudItem>
+                    <MudItem xs="12" md="3">
+                        <MudNumericField Label="ALT (ukat/l)" 
+                                         @bind-Value="_biochemistry.ALT" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.01M" />
+                    </MudItem>
+                    <MudItem xs="12" md="3">
+                        <MudNumericField Label="AST (ukat/l)" 
+                                         @bind-Value="_biochemistry.AST" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.01M" />
+                    </MudItem>
+                    <MudItem xs="12" md="3">
+                        <MudNumericField Label="GGT (ukat/l)" 
+                                         @bind-Value="_biochemistry.GGT" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.01M" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["OtherValues"]</MudText>
+                <MudGrid>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["GlycatedHemoglobin"]} (mmol/mol)")" 
+                                         @bind-Value="_biochemistry.GlycatedHemoglobin" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["Homocysteine"]} (umol/l)")" 
+                                         @bind-Value="_biochemistry.Homocysteine" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["Creatinine"]} (umol/l)")" 
+                                         @bind-Value="_biochemistry.Creatinine" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["UricAcid"]} (umol/l)")" 
+                                         @bind-Value="_biochemistry.UricAcid" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="@($"{Loc["Urea"]} (mmol/l)")" 
+                                         @bind-Value="_biochemistry.Urea" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="CRP (mg/l)" 
+                                         @bind-Value="_biochemistry.CRP" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                    <MudItem xs="12" md="4">
+                        <MudNumericField Label="TSH (mlU/l)" 
+                                         @bind-Value="_biochemistry.TSH" 
+                                         Variant="Variant.Outlined"
+                                         Step="0.1M" />
+                    </MudItem>
+                </MudGrid>
+                
+                <MudDivider Class="my-6" />
+                
+                <MudStack Row="true" Justify="Justify.FlexEnd" Spacing="2">
+                    <MudButton Variant="Variant.Outlined" 
+                               Color="Color.Default" 
+                               OnClick="NavigateBack">
+                        @Loc["Cancel"]
+                    </MudButton>
+                    <MudButton Variant="Variant.Filled" 
+                               Color="Color.Primary" 
+                               ButtonType="ButtonType.Submit"
+                               Disabled="_saving">
+                        @if (_saving)
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        }
+                        @Loc["Save"]
+                    </MudButton>
+                </MudStack>
+            </EditForm>
+        </MudPaper>
+    }
+</MudContainer>
+
+@code {
+    [Parameter]
+    public int ClientId { get; set; }
+    
+    [Parameter]
+    public int Id { get; set; }
+    
+    private ClientBiochemistry? _biochemistry;
+    private Client? _client;
+    private DateTime? _biochemistryDate;
+    private bool _loading = true;
+    private bool _saving = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _client = await ClientService.GetByIdAsync(ClientId);
+        _biochemistry = await BiochemistryService.GetByIdAsync(Id);
+        if (_biochemistry != null)
+        {
+            _biochemistryDate = _biochemistry.Date;
+        }
+        _loading = false;
+    }
+
+    private async Task HandleSubmit()
+    {
+        if (_biochemistry == null) return;
+        
+        _saving = true;
+        try
+        {
+            _biochemistry.Date = _biochemistryDate ?? DateTime.Today;
+            await BiochemistryService.UpdateAsync(_biochemistry);
+            Snackbar.Add(Loc["SaveSuccess"], Severity.Success);
+            Navigation.NavigateTo($"/clients/{ClientId}?tab=biochemistry");
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _saving = false;
+        }
+    }
+
+    private void NavigateBack()
+    {
+        Navigation.NavigateTo($"/clients/{ClientId}?tab=biochemistry");
+    }
+}

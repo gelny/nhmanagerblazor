@@ -1,0 +1,8 @@
+﻿@page "/not-found"
+@layout MainLayout
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IStringLocalizer<SharedResource> Loc
+
+<h3>@Loc["NotFoundTitle"]</h3>
+<p>@Loc["NotFoundMessage"]</p>

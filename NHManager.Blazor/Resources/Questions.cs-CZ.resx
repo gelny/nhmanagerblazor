@@ -1,0 +1,647 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Q_DontKnow" xml:space="preserve">
+    <value>Nevím</value>
+  </data>
+  <data name="Q_1_1" xml:space="preserve">
+    <value>Mým cílem je redukce hmotnosti</value>
+  </data>
+  <data name="Q_1_2" xml:space="preserve">
+    <value>Mým cílem je přibírání hmotnosti</value>
+  </data>
+  <data name="Q_1_3" xml:space="preserve">
+    <value>Mým cílem je udržování hmotnosti (nechci ani redukovat, ani přibrat)</value>
+  </data>
+  <data name="Q_1_4" xml:space="preserve">
+    <value>O kolik kg chcete zhubnout (přibrat)? [kg]</value>
+  </data>
+  <data name="Q_1_5" xml:space="preserve">
+    <value>Mým cílem je zhubnout hlavně rychle</value>
+  </data>
+  <data name="Q_1_6" xml:space="preserve">
+    <value>Mým cílem je zhubnout pomaleji, ale zaměřit se na udržitelný výsledek</value>
+  </data>
+  <data name="Q_1_7" xml:space="preserve">
+    <value>Mým cílem je zbavit se problémů doprovázejících prediabetes nebo diabetes 2. typu</value>
+  </data>
+  <data name="Q_1_8" xml:space="preserve">
+    <value>Mým cílem je zbavit se problémů doprovázejících diabetes 1. typu</value>
+  </data>
+  <data name="Q_1_9" xml:space="preserve">
+    <value>Mým cílem je snížit množství užívaných léků</value>
+  </data>
+  <data name="Q_1_10" xml:space="preserve">
+    <value>Mým cílem je zdravě se stravovat</value>
+  </data>
+  <data name="Q_1_11" xml:space="preserve">
+    <value>Mým cílem je zlepšit svou fyzickou kondici</value>
+  </data>
+  <data name="Q_1_12" xml:space="preserve">
+    <value>Mým cílem je líbit se sám/sama sobě</value>
+  </data>
+  <data name="Q_1_13" xml:space="preserve">
+    <value>Co mi ve splnění cíle nejvíce pomůže: (např. pomůže mi chystat si obědy doma)</value>
+  </data>
+  <data name="Q_1_14" xml:space="preserve">
+    <value>Co mi může splnění cíle zhatit: (např. sladkosti doma ve skříni)</value>
+  </data>
+  <data name="Q_1_15" xml:space="preserve">
+    <value>Co udělám jako první: (např. nakoupím si zdravé potraviny)</value>
+  </data>
+  <data name="Q_2_1" xml:space="preserve">
+    <value>Máte diagnostikovanou cukrovku 1. typu?</value>
+  </data>
+  <data name="Q_2_2" xml:space="preserve">
+    <value>Máte diagnostikovaný prediabetes? (náběh na cukrovku)</value>
+  </data>
+  <data name="Q_2_3" xml:space="preserve">
+    <value>Máte zvýšenou hladinu krevního cukru? (nad 5,6 mmol/l)</value>
+  </data>
+  <data name="Q_2_4" xml:space="preserve">
+    <value>Máte diagnostikovanou cukrovku 2. typu?</value>
+  </data>
+  <data name="Q_2_5" xml:space="preserve">
+    <value>Pokud máte diagnostikovanou cukrovku 2. typu, jakým způsobem ji léčíte?</value>
+  </data>
+  <data name="Q_2_6" xml:space="preserve">
+    <value>Berete léky na ovlivnění tuků v krvi? (statiny – např. léky na cholesterol, fibráty, jedná se např. Lipanthyl, Atoris, Rosucard, Ezetrol)</value>
+  </data>
+  <data name="Q_2_7" xml:space="preserve">
+    <value>Máte zvýšený LDL (“špatný”) cholesterol (rovno nebo vyšší jak 3 mmol/l), a/nebo snížený HDL (“hodný”) cholesterol (méně než 1,2 mmol/l u žen, resp. 1 u mužů)?</value>
+  </data>
+  <data name="Q_2_8" xml:space="preserve">
+    <value>Máte zvýšené triacylglyceroly v krvi?  (hodnota vyšší nebo rovna 1,7 mmol/l)</value>
+  </data>
+  <data name="Q_2_9" xml:space="preserve">
+    <value>Užíváte léky na vysoký krevní tlak?</value>
+  </data>
+  <data name="Q_2_10" xml:space="preserve">
+    <value>Prodělal/a jste některé z následujících onemocnění – mozková mrtvice, ischemická choroba srdeční (angina pectoris) nebo infarkt myokardu, ischemická choroba dolních končetin?</value>
+  </data>
+  <data name="Q_2_11" xml:space="preserve">
+    <value>Prodělal/a jste transplantaci a nyní užíváte imunosupresiva (léky na potlačení imunity)?</value>
+  </data>
+  <data name="Q_2_12" xml:space="preserve">
+    <value>Prodělal/a jste transplantaci ledvin?</value>
+  </data>
+  <data name="Q_2_13" xml:space="preserve">
+    <value>Selhávají Vám ledviny?</value>
+  </data>
+  <data name="Q_2_14" xml:space="preserve">
+    <value>Selhává Vám srdce?</value>
+  </data>
+  <data name="Q_2_15" xml:space="preserve">
+    <value>Chodíte na dialýzu ledvin?</value>
+  </data>
+  <data name="Q_2_16" xml:space="preserve">
+    <value>Proděláváte nebo jste prodělal/a onkologické onemocněnía jste nyní v remisi? (ukončená léčba, pravidelné kontroly)</value>
+  </data>
+  <data name="Q_2_17" xml:space="preserve">
+    <value>Měla jste někdy diagnostikované nádorové onemocnění prsu, vaječníku nebo vejcovodu?</value>
+  </data>
+  <data name="Q_2_18" xml:space="preserve">
+    <value>Máte diagnostikovanou dnu nebo zvýšenou hladinu kyseliny močové?</value>
+  </data>
+  <data name="Q_2_19" xml:space="preserve">
+    <value>V případě, že máte diagnostikovanou dnu nebo zvýšenou hladinu kyseliny močové, užíváte léky na její snížení?</value>
+  </data>
+  <data name="Q_2_20" xml:space="preserve">
+    <value>Máte diagnostikované onemocnění štítné žlázy?</value>
+  </data>
+  <data name="Q_2_21" xml:space="preserve">
+    <value>Máte diagnostikovanou sníženou funkci štítné žlázy (hypofunkci)? (užíváte léky Letrox, Euthyrox)</value>
+  </data>
+  <data name="Q_2_22" xml:space="preserve">
+    <value>Pokud máte diagnostikované jiné onemocnění štítné žlázy, popište, o jaké onemocnění jde:</value>
+  </data>
+  <data name="Q_2_23" xml:space="preserve">
+    <value>Máte zvýšené jaterní testy?  (hodnoty jaterních enzymů ALT, AST, ALP a/nebo GGT)</value>
+  </data>
+  <data name="Q_2_24" xml:space="preserve">
+    <value>Trápí Vás žlučníkové problémy, nebo máte žlučník vyoperovaný? (akutní zánět žlučníku, žlučníkové kameny, vyoperovaný? (akutní zánět žlučníku, žlučníkové kameny, žlučová kolika)</value>
+  </data>
+  <data name="Q_2_25" xml:space="preserve">
+    <value>Užíváte léky na ředění krve? (například warfarin, anopyrin, godasal)</value>
+  </data>
+  <data name="Q_2_26" xml:space="preserve">
+    <value>V případě, že užíváte léky na ředění krve, užíváte konkrétně warfarin?</value>
+  </data>
+  <data name="Q_2_27" xml:space="preserve">
+    <value>Trpíte Crohnovou chorobou?</value>
+  </data>
+  <data name="Q_2_28" xml:space="preserve">
+    <value>Trpíte ulcerózní kolitidou?</value>
+  </data>
+  <data name="Q_2_29" xml:space="preserve">
+    <value>Trpíte bolestí kloubů?</value>
+  </data>
+  <data name="Q_2_30" xml:space="preserve">
+    <value>Máte diagnostikovanou refluxní chorobu jícnu nebo trpíte pyrózou (pálením žáhy)?</value>
+  </data>
+  <data name="Q_2_31" xml:space="preserve">
+    <value>Máte nějaké kožní problémy?</value>
+  </data>
+  <data name="Q_2_32" xml:space="preserve">
+    <value>Pokud máte jiné kožní problémy, prosím, popište je:</value>
+  </data>
+  <data name="Q_2_33" xml:space="preserve">
+    <value>Užíváte nějaké léky?</value>
+  </data>
+  <data name="Q_2_34" xml:space="preserve">
+    <value>Pokud užíváte jakékoliv léky, prosím, vypište jejich celý název, dávkování a dobu po kterou je užíváte:</value>
+  </data>
+  <data name="Q_2_35" xml:space="preserve">
+    <value>Pokud užíváté léky, obsahuje některý z těchto léků účinnou látku methotrexát? (např. léky při nádorových onemocněních, psoriáze nebo revmatoidní artritidě,  např. Aldesta, Methotrexat, Metoject, Injexate, Nordimet, Trexan)</value>
+  </data>
+  <data name="Q_2_36" xml:space="preserve">
+    <value>Užíváte nějaké doplňky stravy?</value>
+  </data>
+  <data name="Q_2_37" xml:space="preserve">
+    <value>Pokud užíváte jakékoliv doplňky stravy, prosím, vypište jejich celý název, dávkování a dobu po kterou je užíváte:</value>
+  </data>
+  <data name="Q_2_38" xml:space="preserve">
+    <value>Máte od lékaře doporučenou nějakou speciální dietu (například bezezbytková, nízkobílkovinová,...)?</value>
+  </data>
+  <data name="Q_2_39" xml:space="preserve">
+    <value>Pokud máte od lékaře doporučenou dietu, napište, prosím, jakou dietu Vám lékař doporučil a v čem spočívá?</value>
+  </data>
+  <data name="Q_2_40" xml:space="preserve">
+    <value>Pokud trpíte ještě i jinými onemocněními, která nebyla v dotazníku zmíněna, prosím, vypište je:</value>
+  </data>
+  <data name="Q_3_1" xml:space="preserve">
+    <value>Trpíte častou únavou? (v průběhu dne, ráno po probuzení)</value>
+  </data>
+  <data name="Q_3_2" xml:space="preserve">
+    <value>Trpíte nespavostí či nekvalitním spánkem? (špatné usínání, večerní probouzení, pocit nevyspalosti ráno)</value>
+  </data>
+  <data name="Q_3_3" xml:space="preserve">
+    <value>V kolik hodin nejčastěji chodíte spát?</value>
+  </data>
+  <data name="Q_3_4" xml:space="preserve">
+    <value>V kolik hodin nejčastěji vstáváte?</value>
+  </data>
+  <data name="Q_3_5" xml:space="preserve">
+    <value>Trpíte průjmy? (normální stolice je nejen pravidelná, ale i pevná a zároveň lehce vytlačitelná, pokud máte denně 3 a více vodnatých stolic hovoříme o průjmu)</value>
+  </data>
+  <data name="Q_3_6" xml:space="preserve">
+    <value>Trpíte zácpou? (normální stolice je nejen pravidelná, ale i pevná a zároveň lehce vytlačitelná, pokud stolice nejde dobře vytlačit hovoříme o zácpě)</value>
+  </data>
+  <data name="Q_3_7" xml:space="preserve">
+    <value>Trpíte jinými zažívacími problémy? (pálení žáhy, bolesti břicha)</value>
+  </data>
+  <data name="Q_3_8" xml:space="preserve">
+    <value>Užíváte hormonální antikoncepci? (pokud ano, napište, prosím, její název a jak dlouho ji užíváte)</value>
+  </data>
+  <data name="Q_3_9" xml:space="preserve">
+    <value>Jste těhotná / v šestinedělí?</value>
+  </data>
+  <data name="Q_3_10" xml:space="preserve">
+    <value>Kojíte?</value>
+  </data>
+  <data name="Q_3_11" xml:space="preserve">
+    <value>Trpíte premenstruačním syndromem? (např. změny nálad, deprese, nafouknuté břicho, nesoustředěnost či bolest hlavy v období mezi ovulací a menstruací)</value>
+  </data>
+  <data name="Q_3_12" xml:space="preserve">
+    <value>Byla jste někdy těhotná?</value>
+  </data>
+  <data name="Q_3_13" xml:space="preserve">
+    <value>Máte/měla jste těhotenskou cukrovku?</value>
+  </data>
+  <data name="Q_3_14" xml:space="preserve">
+    <value>Plánujete v následujících dvou letech těhotenství?</value>
+  </data>
+  <data name="Q_3_15" xml:space="preserve">
+    <value>Užíváte hormonální substituci? (např. hormony při menopauze)</value>
+  </data>
+  <data name="Q_3_16" xml:space="preserve">
+    <value>Trpíte návaly nebo jinými příznaky menopauzy?</value>
+  </data>
+  <data name="Q_3_17" xml:space="preserve">
+    <value>Létáte často letadlem a/nebo máte dlouhodobé znehybnění? (sádrový obvaz, upoutání na lůžko)</value>
+  </data>
+  <data name="Q_3_18" xml:space="preserve">
+    <value>Kouříte?</value>
+  </data>
+  <data name="Q_4_1" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče cukrovku 2. typu?</value>
+  </data>
+  <data name="Q_4_2" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče infarkt / mozkovou mrtvici?</value>
+  </data>
+  <data name="Q_4_3" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče vysoký cholesterol?</value>
+  </data>
+  <data name="Q_4_4" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče nadváhu nebo obezitu?</value>
+  </data>
+  <data name="Q_4_5" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče nádorové onemocnění?</value>
+  </data>
+  <data name="Q_4_6" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče nádorové onemocnění prsu/ vaječníků/vejcovodu?</value>
+  </data>
+  <data name="Q_4_7" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče nádorové onemocnění prsu u muže?</value>
+  </data>
+  <data name="Q_4_8" xml:space="preserve">
+    <value>Byly v rodině častější potraty? (spontánní, nikoliv plánovaná interrupce)</value>
+  </data>
+  <data name="Q_4_9" xml:space="preserve">
+    <value>Byly v rodině předčasné porody? (spontánní, nikoliv plánované lékařem)</value>
+  </data>
+  <data name="Q_4_10" xml:space="preserve">
+    <value>Měli/mají Vaši rodiče, sourozenci nebo prarodiče tromboembolickou chorobu?</value>
+  </data>
+  <data name="Q_4_11" xml:space="preserve">
+    <value>Léčí se někdo ve Vaší rodině na onemocnění srdce a cév? (onemocněním se myslí i vysoký krevní tlak a cholesterol)</value>
+  </data>
+  <data name="Q_4_12" xml:space="preserve">
+    <value>Vyskytuje/vyskytovalo se u Vašich rodičů, sourozenců nebo prarodiče ucpávání cév dolních končetin?</value>
+  </data>
+  <data name="Q_5_1" xml:space="preserve">
+    <value>Máte diagnostikovanou intoleranci na laktózu (mléčný cukr) nebo alergii na mléko? (ano odpovídejte pouze v případě, že je intolerance/alergie lékařsky diagnostikována)</value>
+  </data>
+  <data name="Q_5_2" xml:space="preserve">
+    <value>Bezprostředně po konzumaci potravin s mlékem nebo mléka máte zažívací problémy?</value>
+  </data>
+  <data name="Q_5_3" xml:space="preserve">
+    <value>Vyskytuje se laktózová intolerance ve Vaší rodině? (rodiče, prarodiče, sourozenci)</value>
+  </data>
+  <data name="Q_5_4" xml:space="preserve">
+    <value>Máte diagnostikovanou intoleranci nebo alergii na lepek? (ano odpovídejte pouze v případě, že je alergie lékařsky diagnostikována)</value>
+  </data>
+  <data name="Q_5_5" xml:space="preserve">
+    <value>Bezprostředně po konzumaci potravin s lepkem máte zažívací problémy?</value>
+  </data>
+  <data name="Q_5_6" xml:space="preserve">
+    <value>Vyskytuje se celiakie ve Vaší rodině? (rodiče, prarodiče, sourozenci)</value>
+  </data>
+  <data name="Q_5_7" xml:space="preserve">
+    <value>Máte diagnostikovanou histaminovou intoleranci?</value>
+  </data>
+  <data name="Q_5_8" xml:space="preserve">
+    <value>Pokud máte intoleranci na jiné potraviny, vypište je, prosím:</value>
+  </data>
+  <data name="Q_5_9" xml:space="preserve">
+    <value>Pokud máte alergii na jiné potraviny, vypište je, prosím:</value>
+  </data>
+  <data name="Q_5_10" xml:space="preserve">
+    <value>Jste vegan/ka?</value>
+  </data>
+  <data name="Q_5_11" xml:space="preserve">
+    <value>Jste vegetarián/ka?</value>
+  </data>
+  <data name="Q_5_12" xml:space="preserve">
+    <value>Jíte běžně minimálně  4x týdně maso?</value>
+  </data>
+  <data name="Q_5_13" xml:space="preserve">
+    <value>Jíte ryby?</value>
+  </data>
+  <data name="Q_5_14" xml:space="preserve">
+    <value>Jíte vejce a jídla z nich (např. pomazánku) obvykle více než 1x týdně?</value>
+  </data>
+  <data name="Q_5_15" xml:space="preserve">
+    <value>Konzumujete mléko, mléčné výrobky (zakysané mléčné výrobky, jogurty, tvarohy,  smetany, sýry) a jídla z nich (např. smetanové omáčky) více než 3x týdně?</value>
+  </data>
+  <data name="Q_5_16" xml:space="preserve">
+    <value>Máte rád/a pálivá (ostrá) jídla?</value>
+  </data>
+  <data name="Q_5_17" xml:space="preserve">
+    <value>Míváte nepřekonatelnou chuť na sladké?</value>
+  </data>
+  <data name="Q_5_18" xml:space="preserve">
+    <value>Vypište potraviny, které nejíte/nemají být v jídelníčku zařazené:</value>
+  </data>
+  <data name="Q_6_1" xml:space="preserve">
+    <value>SNÍDANĚ: (například “1 silný plátek chleba šumava s tenkou vrstvou másla a plátkem 30% eidamu, 3 kolečka okurky; káva s polotučným mlékem a 1 lžičkou cukru", "nic")</value>
+  </data>
+  <data name="Q_6_2" xml:space="preserve">
+    <value>DOPOLEDNÍ SVAČINA: (například "1 velké jablko a 3 kostičky mléčné čokolády", "nic")</value>
+  </data>
+  <data name="Q_6_3" xml:space="preserve">
+    <value>OBĚD: (například "čtvrtka pečeného kuřete s kůží, výpek, 2 střední brambory přelité máslem a po obědě 1 malý větrník", "nic")</value>
+  </data>
+  <data name="Q_6_4" xml:space="preserve">
+    <value>ODPOLEDNÍ SVAČINA: (například "150g kelímek bílého smetanového jogurt, 1 polévková lžíce marmelády; Latté", "nic")</value>
+  </data>
+  <data name="Q_6_5" xml:space="preserve">
+    <value>VEČEŘE: (například "1 silný krajíc žitného chleba s tvarohovou pomazánka s pažitkou, 1 vařené vajíčko, půl červené papriky", "nic")</value>
+  </data>
+  <data name="Q_6_6" xml:space="preserve">
+    <value>II. VEČEŘE: (například "půl bločku sýra a 2 dcl červeného vína", "nic")</value>
+  </data>
+  <data name="Q_6_7" xml:space="preserve">
+    <value>Při současném způsobu stravování pociťujete často hlad?</value>
+  </data>
+  <data name="Q_6_8" xml:space="preserve">
+    <value>Jaké denní porce chcete mít v jídelníčku zařazené?</value>
+  </data>
+  <data name="Q_6_9" xml:space="preserve">
+    <value>Jaké množství nealkoholických nápojů denně vypijete</value>
+  </data>
+  <data name="Q_6_10" xml:space="preserve">
+    <value>Napište, prosím, jaké nápoje nejčastěji pijete:  (např. neperlivá voda, ochucené minerálky, džus, coca-cola, čaj)</value>
+  </data>
+  <data name="Q_6_11" xml:space="preserve">
+    <value>Pijete kávu?</value>
+  </data>
+  <data name="Q_6_12" xml:space="preserve">
+    <value>Jak často pijete kávu?</value>
+  </data>
+  <data name="Q_6_13" xml:space="preserve">
+    <value>Pokud pijete kávu, popište, prosím, jakou kávu pijete: (např. s 1 lžičkou cukru, s plnotučným mlékem, espresso, turek)</value>
+  </data>
+  <data name="Q_6_14" xml:space="preserve">
+    <value>Doslazujete často nápoje a pokrmy cukrem (min. 3x týdně)?</value>
+  </data>
+  <data name="Q_6_15" xml:space="preserve">
+    <value>Pijete minimálně 1x týdně sladké a kalorické nealkoholické nápoje? (coca-cola, náhražky coca-coly, džusy,sladké minerální vody, ledové čaje)</value>
+  </data>
+  <data name="Q_6_16" xml:space="preserve">
+    <value>Konzumujete více než 2x týdně alkoholické nápoje ? (pivo, víno, míchané drinky, tvrdý alkohol)</value>
+  </data>
+  <data name="Q_6_17" xml:space="preserve">
+    <value>Máte sedavé zaměstnání? (pokud máte zaměstnání, kde se střídá sezení a pohyb, vybírejte podle častější převahy)</value>
+  </data>
+  <data name="Q_6_18" xml:space="preserve">
+    <value>Trávíte často delší dobu v autě na cestách? (často znamená několikrát týdně)</value>
+  </data>
+  <data name="Q_6_19" xml:space="preserve">
+    <value>Pracujete na směny?</value>
+  </data>
+  <data name="Q_6_20" xml:space="preserve">
+    <value>Pokud ano, vyberte způsob střídání směn:</value>
+  </data>
+  <data name="Q_6_21" xml:space="preserve">
+    <value>Stíháte v zaměstnání pravidelně jíst? (v případě potřeby se můžete najíst)</value>
+  </data>
+  <data name="Q_6_22" xml:space="preserve">
+    <value>Máte v zaměstnání možnost ohřát si jídlo?</value>
+  </data>
+  <data name="Q_6_23" xml:space="preserve">
+    <value>Vaříte si a jste schopni si většinu jídel připravovat doma?</value>
+  </data>
+  <data name="Q_6_24" xml:space="preserve">
+    <value>Stravujete se více jak 2x týdně v restauracích? (včetně závodních jídelen)</value>
+  </data>
+  <data name="Q_6_25" xml:space="preserve">
+    <value>Stravujete se více jak 2 x týdně ve fastfoodu?</value>
+  </data>
+  <data name="Q_6_26" xml:space="preserve">
+    <value>Konzumujete ve večerních hodinách (min. 1x týdně) nezdravé jídlo? (za nezdravé jídlo ve večerních hodinách můžete považovat obecně nezdravé potraviny, velké množství jídla a také potraviny nebo pokrmy s vysokým obsahem sacharidů nebo příliš velkým množstvím tuku)</value>
+  </data>
+  <data name="Q_6_27" xml:space="preserve">
+    <value>Chodíte rádi pěšky? (jít 15 minut místo použití dopravy mi nedělá problém)</value>
+  </data>
+  <data name="Q_6_28" xml:space="preserve">
+    <value>Jak často a jakou pohybovou aktivitu máte?</value>
+  </data>
+  <data name="Q_6_29" xml:space="preserve">
+    <value>Jaké pohybové aktivity preferujete?  (např. běh, cyklistika, plavání, vyberte preferované pohybové aktivity i v případě,  že v současné době aktivně nesportujete)</value>
+  </data>
+  <data name="Q_6_30" xml:space="preserve">
+    <value>Trpíte omezenou hybností kloubů či bolestí kloubů, která Vás limituje v pohybové aktivitě?</value>
+  </data>
+  <data name="Q_6_31" xml:space="preserve">
+    <value>Jste často ve stresu?</value>
+  </data>
+  <data name="Q_6_32" xml:space="preserve">
+    <value>Pokud jste často ve stresu, co je jeho hlavní příčinou?</value>
+  </data>
+  <data name="Q_6_33" xml:space="preserve">
+    <value>Zkoušeli jste už různé diety a bez stálého výsledku nebo jste i přibrali?</value>
+  </data>
+  <data name="Q_6_34" xml:space="preserve">
+    <value>Pokud jste zkoušeli diety, vypište, prosím, jaké a s jakým výsledkem: (např. ketodieta mi pomohla zhubnou 5 kg, ale po měsíci byly kg zpátky)</value>
+  </data>
+  <data name="Q_7_1" xml:space="preserve">
+    <value>Na jakém místě se Vám začíná ukládat tuk jako první?</value>
+  </data>
+  <data name="Q_7_2" xml:space="preserve">
+    <value>Na kterých místech hubnete jako první?</value>
+  </data>
+  <data name="Q_7_3" xml:space="preserve">
+    <value>Trápí Vás celulitida na hýždích a nohou?</value>
+  </data>
+  <data name="Q_7_4" xml:space="preserve">
+    <value>Máte křeče dolních končetin?</value>
+  </data>
+  <data name="Q_7_5" xml:space="preserve">
+    <value>Máte bolesti dolních končetin?(stupnice: 1 = vůbec–10 = často)</value>
+  </data>
+  <data name="Q_7_6" xml:space="preserve">
+    <value>Pokud jste míru bolesti končetin označil/a mezi 6 - 10, vyberte, prosím, kdy k bolesti dochází.</value>
+  </data>
+  <data name="Q_7_7" xml:space="preserve">
+    <value>Máte otoky dolních končetin?</value>
+  </data>
+  <data name="Q_7_8" xml:space="preserve">
+    <value>Máte křečové žíly?</value>
+  </data>
+  <data name="Q_7_9" xml:space="preserve">
+    <value>Prodělal/a jste v minulosti zánět křečových žil?</value>
+  </data>
+  <data name="Q_7_10" xml:space="preserve">
+    <value>Trpíte hypermobilitou kloubů? (zvýšený rozsah kloubní pohyblivosti)</value>
+  </data>
+  <data name="Q_7_11" xml:space="preserve">
+    <value>Chcete sdělit svému specialistovi ještě něco co v dotazníku nezaznělo a ovlivní to váš výživový plán?</value>
+  </data>
+  <data name="Q_6_35" xml:space="preserve">
+    <value>Chcete mít v jídelníčku snídani?</value>
+  </data>
+  <data name="Q_6_36" xml:space="preserve">
+    <value>Chcete mít v jídelníčku dopolední svačinu?</value>
+  </data>
+  <data name="Q_6_37" xml:space="preserve">
+    <value>Chcete mít v jídelníčku oběd?</value>
+  </data>
+  <data name="Q_6_38" xml:space="preserve">
+    <value>Chcete mít v jídelníčku odpolední svačinu?</value>
+  </data>
+  <data name="Q_6_39" xml:space="preserve">
+    <value>Chcete mít v jídelníčku večeři?</value>
+  </data>
+  <data name="Q_6_40" xml:space="preserve">
+    <value>Chcete mít v jídelníčku druhou večeři?</value>
+  </data>
+  <data name="Q_2_5_0" xml:space="preserve"><value>POUZE DIETA</value></data>
+  <data name="Q_2_5_1" xml:space="preserve"><value>DIETA A LÉKY</value></data>
+  <data name="Q_2_5_2" xml:space="preserve"><value>DIETA A INZULÍN</value></data>
+  <data name="Q_2_5_3" xml:space="preserve"><value>NEMÁM</value></data>
+  <data name="Q_2_18_0" xml:space="preserve"><value>ANO DNU</value></data>
+  <data name="Q_2_18_1" xml:space="preserve"><value>ANO KYSELINU MOČOVOU</value></data>
+  <data name="Q_2_18_2" xml:space="preserve"><value>NE HODNOTU NEVÍM</value></data>
+  <data name="Q_2_31_0" xml:space="preserve"><value>ANO, AKNÉ</value></data>
+  <data name="Q_2_31_1" xml:space="preserve"><value>ANO, ALE JINÉ</value></data>
+  <data name="Q_2_31_2" xml:space="preserve"><value>NE</value></data>
+  <data name="Q_6_8_0" xml:space="preserve"><value>SNÍDANĚ</value></data>
+  <data name="Q_6_8_1" xml:space="preserve"><value>DOPOLEDNÍ SVAČINA</value></data>
+  <data name="Q_6_8_2" xml:space="preserve"><value>OBĚD</value></data>
+  <data name="Q_6_8_3" xml:space="preserve"><value>ODPOLEDNÍ SVAČINA</value></data>
+  <data name="Q_6_8_4" xml:space="preserve"><value>VEČEŘE</value></data>
+  <data name="Q_6_8_5" xml:space="preserve"><value>II. VEČEŘE</value></data>
+  <data name="Q_6_20_0" xml:space="preserve"><value>STŘÍDÁNÍ DENNÍ X NOČNÍ</value></data>
+  <data name="Q_6_20_1" xml:space="preserve"><value>POUZE NOČNÍ</value></data>
+  <data name="Q_6_20_2" xml:space="preserve"><value>TŘÍSMĚNNÝ PROVOZ</value></data>
+  <data name="Q_6_20_3" xml:space="preserve"><value>JINÉ</value></data>
+  <data name="Q_6_32_0" xml:space="preserve"><value>ZAMĚSTNÁNÍ</value></data>
+  <data name="Q_6_32_1" xml:space="preserve"><value>FINANCE</value></data>
+  <data name="Q_6_32_2" xml:space="preserve"><value>VZTAHY</value></data>
+  <data name="Q_6_32_3" xml:space="preserve"><value>VZHLED</value></data>
+  <data name="Q_6_32_4" xml:space="preserve"><value>JINÉ</value></data>
+  <data name="Q_6_12_0" xml:space="preserve"><value>NEPRAVIDELNĚ</value></data>
+  <data name="Q_6_12_1" xml:space="preserve"><value>1 x DENNĚ</value></data>
+  <data name="Q_6_12_2" xml:space="preserve"><value>2 - 3 x DENNĚ</value></data>
+  <data name="Q_6_12_3" xml:space="preserve"><value>MINIMÁLNĚ 4 x DENNĚ</value></data>
+  <data name="Q_7_1_0" xml:space="preserve"><value>STEHNA A HÝŽDĚ</value></data>
+  <data name="Q_7_1_1" xml:space="preserve"><value>SOUMĚRNĚ</value></data>
+  <data name="Q_7_1_2" xml:space="preserve"><value>BŘICHO</value></data>
+  <data name="Q_7_2_0" xml:space="preserve"><value>OBLIČEJ A PRSA</value></data>
+  <data name="Q_7_2_1" xml:space="preserve"><value>SOUMĚRNĚ</value></data>
+  <data name="Q_7_2_2" xml:space="preserve"><value>HÝŽDĚ A NOHY</value></data>
+  <data name="Q_7_2_3" xml:space="preserve"><value>NEVÍM</value></data>
+  <data name="Q_7_3_0" xml:space="preserve"><value>ANO, VIDITELNÁ</value></data>
+  <data name="Q_7_3_1" xml:space="preserve"><value>ANO, PŘI ZMÁČKNUTÍ KŮŽE</value></data>
+  <data name="Q_7_3_2" xml:space="preserve"><value>NE</value></data>
+  <data name="Q_7_4_0" xml:space="preserve"><value>ANO</value></data>
+  <data name="Q_7_4_1" xml:space="preserve"><value>ANO POUZE U SPORTU</value></data>
+  <data name="Q_7_4_2" xml:space="preserve"><value>NE</value></data>
+  <data name="Q_7_5_0" xml:space="preserve"><value>1</value></data>
+  <data name="Q_7_5_1" xml:space="preserve"><value>2</value></data>
+  <data name="Q_7_5_2" xml:space="preserve"><value>3</value></data>
+  <data name="Q_7_5_3" xml:space="preserve"><value>4</value></data>
+  <data name="Q_7_5_4" xml:space="preserve"><value>5</value></data>
+  <data name="Q_7_5_5" xml:space="preserve"><value>6</value></data>
+  <data name="Q_7_5_6" xml:space="preserve"><value>7</value></data>
+  <data name="Q_7_5_7" xml:space="preserve"><value>8</value></data>
+  <data name="Q_7_5_8" xml:space="preserve"><value>9</value></data>
+  <data name="Q_7_5_9" xml:space="preserve"><value>10</value></data>
+  <data name="Q_7_6_0" xml:space="preserve"><value>NIKDE</value></data>
+  <data name="Q_7_6_1" xml:space="preserve"><value>PŘI CHŮZI</value></data>
+  <data name="Q_7_6_2" xml:space="preserve"><value>PŘI SEZENÍ</value></data>
+  <data name="Q_7_6_3" xml:space="preserve"><value>NEDOKÁŽU URČIT</value></data>
+  <data name="Q_7_7_0" xml:space="preserve"><value>ČASTO</value></data>
+  <data name="Q_7_7_1" xml:space="preserve"><value>OBČAS</value></data>
+  <data name="Q_7_7_2" xml:space="preserve"><value>NEMÁM</value></data>
+  <data name="Q_7_8_0" xml:space="preserve"><value>ANO VELKÉ A VIDITELNÉ</value></data>
+  <data name="Q_7_8_1" xml:space="preserve"><value>ANO MIKROVARIXY (METLIČKY)</value></data>
+  <data name="Q_7_8_2" xml:space="preserve"><value>NE</value></data>
+</root>

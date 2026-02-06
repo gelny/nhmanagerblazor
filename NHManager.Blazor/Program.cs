@@ -5,6 +5,7 @@ using NHManager.Blazor.Auth;
 using NHManager.Blazor.Components;
 using NHManager.Blazor.Data;
 using NHManager.Blazor.Services;
+using MudExtensions.Services;
 using Serilog;
 
 Log.Logger = new LoggerConfiguration()
@@ -27,6 +28,7 @@ try
 
     // MudBlazor
     builder.Services.AddMudServices();
+    builder.Services.AddMudExtensions();
 
     // Authentication & Authorization
     builder.Services.AddAuthentication(options =>

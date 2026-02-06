@@ -398,20 +398,18 @@
                                  <MudCheckBox T="bool" Label="@LocQ["Q_5_7"]" Value="@(_questionnaire.Q_5_7 == 1)" ValueChanged="@(v => _questionnaire.Q_5_7 = v ? 1 : 0)" />
                             </MudItem>
                             <MudItem xs="12" md="12">
-                                 <MudSelect T="int" Label="@LocQ["Q_5_8"]" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_8" Variant="Variant.Outlined" ToStringFunc="@(id => _foods.FirstOrDefault(f => f.Id == id)?.Name)">
-                                    @foreach (var food in _foods)
-                                    {
-                                        <MudSelectItem T="int" Value="@food.Id">@food.Name</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudText Typo="Typo.caption">@LocQ["Q_5_8"]</MudText>
+                                <MudSelectExtended T="Food" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_8_Objects" 
+                                                   ItemCollection="_foods" Virtualize="true"
+                                                   SearchBox="true" SearchBoxAutoFocus="true" SearchFunc="SearchFoodsExtended" 
+                                                   ToStringFunc="@(f => f?.Name)" Variant="Variant.Outlined" ValuePresenter="ValuePresenter.Chip" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" />
                             </MudItem>
                             <MudItem xs="12" md="12">
-                                 <MudSelect T="int" Label="@LocQ["Q_5_9"]" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_9" Variant="Variant.Outlined" ToStringFunc="@(id => _foods.FirstOrDefault(f => f.Id == id)?.Name)">
-                                    @foreach (var food in _foods)
-                                    {
-                                        <MudSelectItem T="int" Value="@food.Id">@food.Name</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudText Typo="Typo.caption">@LocQ["Q_5_9"]</MudText>
+                                <MudSelectExtended T="Food" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_9_Objects" 
+                                                   ItemCollection="_foods" Virtualize="true"
+                                                   SearchBox="true" SearchBoxAutoFocus="true" SearchFunc="SearchFoodsExtended" 
+                                                   ToStringFunc="@(f => f?.Name)" Variant="Variant.Outlined" ValuePresenter="ValuePresenter.Chip" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" />
                             </MudItem>
                             <MudItem xs="12" md="12">
                                  <MudCheckBox T="bool" Label="@LocQ["Q_5_10"]" Value="@(_questionnaire.Q_5_10 == 1)" ValueChanged="@(v => _questionnaire.Q_5_10 = v ? 1 : 0)" />
@@ -448,12 +446,11 @@
                                 </MudSelect>
                             </MudItem>
                             <MudItem xs="12" md="12">
-                                 <MudSelect T="int" Label="@LocQ["Q_5_18"]" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_18" Variant="Variant.Outlined" ToStringFunc="@(id => _foods.FirstOrDefault(f => f.Id == id)?.Name)">
-                                    @foreach (var food in _foods)
-                                    {
-                                        <MudSelectItem T="int" Value="@food.Id">@food.Name</MudSelectItem>
-                                    }
-                                </MudSelect>
+                                <MudText Typo="Typo.caption">@LocQ["Q_5_18"]</MudText>
+                                <MudSelectExtended T="Food" MultiSelection="true" @bind-SelectedValues="_selectedFoods_Q5_18_Objects" 
+                                                   ItemCollection="_foods" Virtualize="true"
+                                                   SearchBox="true" SearchBoxAutoFocus="true" SearchFunc="SearchFoodsExtended" 
+                                                   ToStringFunc="@(f => f?.Name)" Variant="Variant.Outlined" ValuePresenter="ValuePresenter.Chip" AnchorOrigin="Origin.BottomCenter" TransformOrigin="Origin.TopCenter" />
                             </MudItem>
                         </MudGrid>
                     </MudTabPanel>
@@ -744,13 +741,25 @@
     private bool _loading = true;
     private bool _saving = false;
     private int _activeTabIndex = 0;
+
+    private IEnumerable<Food> _selectedFoods_Q5_8_Objects = new HashSet<Food>();
+    private IEnumerable<Food> _selectedFoods_Q5_9_Objects = new HashSet<Food>();
+    private IEnumerable<Food> _selectedFoods_Q5_18_Objects = new HashSet<Food>();
+    
+    private bool SearchFoodsExtended(Food food, string value)
+    {
+        if (string.IsNullOrEmpty(value))
+            return true;
+
+        return food.Name?.Contains(value, StringComparison.InvariantCultureIgnoreCase) ?? false;
+    }
     
 
 
     private List<Food> _foods = new();
-    private IEnumerable<int> _selectedFoods_Q5_8 = new HashSet<int>();
-    private IEnumerable<int> _selectedFoods_Q5_9 = new HashSet<int>();
-    private IEnumerable<int> _selectedFoods_Q5_18 = new HashSet<int>();
+    private HashSet<int> _selectedFoods_Q5_8 = new();
+    private HashSet<int> _selectedFoods_Q5_9 = new();
+    private HashSet<int> _selectedFoods_Q5_18 = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -767,9 +776,9 @@
             
             // Map IDs from model to selected values
             _questionnaire.MapFoodIds();
-            _selectedFoods_Q5_8 = _questionnaire.Q_5_8_FoodIds ?? new List<int>();
-            _selectedFoods_Q5_9 = _questionnaire.Q_5_9_FoodIds ?? new List<int>();
-            _selectedFoods_Q5_18 = _questionnaire.Q_5_18_FoodIds ?? new List<int>();
+            _selectedFoods_Q5_8_Objects = _foods.Where(f => (_questionnaire.Q_5_8_FoodIds ?? new List<int>()).Contains(f.Id)).ToHashSet();
+            _selectedFoods_Q5_9_Objects = _foods.Where(f => (_questionnaire.Q_5_9_FoodIds ?? new List<int>()).Contains(f.Id)).ToHashSet();
+            _selectedFoods_Q5_18_Objects = _foods.Where(f => (_questionnaire.Q_5_18_FoodIds ?? new List<int>()).Contains(f.Id)).ToHashSet();
         }
         
         // Set active tab based on query parameter
@@ -798,6 +807,9 @@
         _saving = true;
         try
         {
+
+
+
             _questionnaire.Date = _questionnaireDate ?? DateTime.Today;
             
             // Auto-complete the currently active section
@@ -813,9 +825,10 @@
             }
 
              // Map food selections
-            _questionnaire.Q_5_8_FoodIds = _selectedFoods_Q5_8.ToList();
-            _questionnaire.Q_5_9_FoodIds = _selectedFoods_Q5_9.ToList();
-            _questionnaire.Q_5_18_FoodIds = _selectedFoods_Q5_18.ToList();
+            // Map food selections
+            _questionnaire.Q_5_8_FoodIds = _selectedFoods_Q5_8_Objects.Select(f => f.Id).ToList();
+            _questionnaire.Q_5_9_FoodIds = _selectedFoods_Q5_9_Objects.Select(f => f.Id).ToList();
+            _questionnaire.Q_5_18_FoodIds = _selectedFoods_Q5_18_Objects.Select(f => f.Id).ToList();
             _questionnaire.MapFoodStrings();
 
             await QuestionnaireService.UpdateAsync(_questionnaire);

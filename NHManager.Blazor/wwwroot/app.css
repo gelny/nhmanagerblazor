@@ -50,6 +50,43 @@ h1:focus {
     border-color: #929292;
 }
 
+/* Scheduler / FullCalendar styles */
+.scheduler-tooltip {
+    position: fixed;
+    z-index: 10000;
+    background: #fff;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 10px 14px;
+    max-width: 350px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    font-size: 13px;
+    line-height: 1.5;
+    pointer-events: none;
+}
+
+.scheduler-tooltip b {
+    display: inline-block;
+    min-width: 90px;
+}
+
+.fc .fc-event {
+    border-left-width: 4px !important;
+    cursor: pointer;
+}
+
+.fc {
+    font-family: 'Roboto', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.fc .fc-timegrid-slot {
+    height: 1.5em;
+}
+
+.fc .fc-daygrid-day-number {
+    font-size: 14px;
+}
+
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
     color: var(--bs-secondary-color);
     text-align: end;

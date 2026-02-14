@@ -1105,5 +1105,29 @@
   <data name="DemoDataError" xml:space="preserve">
     <value>Chyba při generování demo dat</value>
   </data>
+  <data name="Day" xml:space="preserve">
+    <value>Den</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Týden</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Měsíc</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Dnes</value>
+  </data>
+  <data name="NewMeeting" xml:space="preserve">
+    <value>Nová schůzka</value>
+  </data>
+  <data name="EditMeeting" xml:space="preserve">
+    <value>Upravit schůzku</value>
+  </data>
+  <data name="Meeting" xml:space="preserve">
+    <value>Schůzka</value>
+  </data>
+  <data name="MeetingMoved" xml:space="preserve">
+    <value>Schůzka přesunuta</value>
+  </data>
 </root>
 

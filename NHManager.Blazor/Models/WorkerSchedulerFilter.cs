@@ -18,7 +18,7 @@ public class WorkerSchedulerFilter
 	}
 
 	[NotMapped]
-	private int? WorkerId { get; }
+	public int? WorkerId { get; }
 
 	[NotMapped]
 	public int Id { get; }

@@ -63,6 +63,7 @@ public class MeetingService : IMeetingService
             .Include(m => m.Client)
             .Include(m => m.Consultant)
             .Include(m => m.MeetingType)
+            .Include(m => m.MeetingState)
             .AsQueryable();
 
         if (workerIds != null && workerIds.Length > 0)

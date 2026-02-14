@@ -1024,5 +1024,29 @@
   <data name="DemoDataError" xml:space="preserve">
     <value>Błąd podczas generowania danych demo</value>
   </data>
+  <data name="Day" xml:space="preserve">
+    <value>Dzień</value>
+  </data>
+  <data name="Week" xml:space="preserve">
+    <value>Tydzień</value>
+  </data>
+  <data name="Month" xml:space="preserve">
+    <value>Miesiąc</value>
+  </data>
+  <data name="Today" xml:space="preserve">
+    <value>Dzisiaj</value>
+  </data>
+  <data name="NewMeeting" xml:space="preserve">
+    <value>Nowe spotkanie</value>
+  </data>
+  <data name="EditMeeting" xml:space="preserve">
+    <value>Edytuj spotkanie</value>
+  </data>
+  <data name="Meeting" xml:space="preserve">
+    <value>Spotkanie</value>
+  </data>
+  <data name="MeetingMoved" xml:space="preserve">
+    <value>Spotkanie przesunięte</value>
+  </data>
 </root>
 

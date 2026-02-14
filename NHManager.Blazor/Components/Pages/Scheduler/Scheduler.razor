@@ -1,192 +1,449 @@
 @page "/scheduler"
 @attribute [Authorize(Roles = Roles.AllEmployees)]
 @inject IMeetingService MeetingService
+@inject IMeetingTypeService MeetingTypeService
+@inject IMeetingStateService MeetingStateService
 @inject IWorkerService WorkerService
+@inject IClientService ClientService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@inject IJSRuntime JS
 @using NHManager.Blazor.Models
 @using NHManager.Blazor.Services
 @using NHManager.Blazor.Constants
 @using Microsoft.Extensions.Localization
 @using NHManager.Blazor.Resources
+@using System.Globalization
 @inject IStringLocalizer<SharedResource> Loc
 @inject AuthenticationStateProvider AuthStateProvider
 @rendermode InteractiveServer
+@implements IDisposable
 
 <PageTitle>@Loc["Scheduler"] - NHManager</PageTitle>
 
 <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="mt-4">
-    <MudGrid>
-        <MudItem xs="12" sm="6" md="4">
-            <MudDatePicker Label="Datum" Date="_selectedDate" Variant="Variant.Outlined" DateChanged="OnDateChanged" />
-        </MudItem>
-         <MudItem xs="12" sm="6" md="8" Class="d-flex justify-end align-center">
-             <MudButton Variant="Variant.Outlined" StartIcon="@Icons.Material.Filled.ArrowBack" OnClick="PreviousDay" Class="mr-2">Předchozí</MudButton>
-             <MudButton Variant="Variant.Outlined" EndIcon="@Icons.Material.Filled.ArrowForward" OnClick="NextDay">Další</MudButton>
-        </MudItem>
-    </MudGrid>
+    @* Employee filter row *@
+    <MudPaper Class="pa-3 mb-3" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2" Wrap="Wrap.Wrap">
+            <MudText Typo="Typo.subtitle2" Class="mr-2">@Loc["Workers"]:</MudText>
+            @foreach (var worker in _workerFilters)
+            {
+                var w = worker;
+                <MudCheckBox T="bool" Value="@w.Selected" ValueChanged="@(v => OnWorkerFilterChanged(w, v))"
+                             Label="@w.Name" Color="Color.Primary" Dense="true" />
+            }
+        </MudStack>
+    </MudPaper>
 
-    <MudDivider Class="my-4" />
+    @* Toolbar row *@
+    <MudPaper Class="pa-3 mb-3" Elevation="1">
+        <MudStack Row="true" AlignItems="AlignItems.Center" Justify="Justify.SpaceBetween" Wrap="Wrap.Wrap">
+            <MudStack Row="true" Spacing="1">
+                <MudButtonGroup Variant="Variant.Outlined" Size="Size.Small">
+                    <MudButton OnClick="@(() => ChangeView("timeGridDay"))"
+                               Variant="@(_currentView == "timeGridDay" ? Variant.Filled : Variant.Outlined)"
+                               Color="Color.Primary">@Loc["Day"]</MudButton>
+                    <MudButton OnClick="@(() => ChangeView("timeGridWeek"))"
+                               Variant="@(_currentView == "timeGridWeek" ? Variant.Filled : Variant.Outlined)"
+                               Color="Color.Primary">@Loc["Week"]</MudButton>
+                    <MudButton OnClick="@(() => ChangeView("dayGridMonth"))"
+                               Variant="@(_currentView == "dayGridMonth" ? Variant.Filled : Variant.Outlined)"
+                               Color="Color.Primary">@Loc["Month"]</MudButton>
+                </MudButtonGroup>
+            </MudStack>
 
+            <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="1">
+                <MudIconButton Icon="@Icons.Material.Filled.ChevronLeft" OnClick="Prev" Size="Size.Small" />
+                <MudButton Variant="Variant.Text" OnClick="GoToToday" Size="Size.Small">@Loc["Today"]</MudButton>
+                <MudIconButton Icon="@Icons.Material.Filled.ChevronRight" OnClick="Next" Size="Size.Small" />
+                <MudDatePicker Date="_selectedDate" DateChanged="OnDatePickerChanged" Variant="Variant.Outlined"
+                               Margin="Margin.Dense" Style="max-width: 180px;" />
+            </MudStack>
+        </MudStack>
+    </MudPaper>
+
+    @* Calendar container *@
     @if (_loading)
     {
         <MudProgressLinear Indeterminate="true" Color="Color.Primary" />
     }
-    else
-    {
-        <MudPaper Height="800px" Class="overflow-auto relative">
-             <MudDropContainer T="Meeting" Items="_meetings" ItemsSelector="@((item,dropzone) => ItemSelector(item, dropzone))" ItemDropped="ItemDropped" Class="d-flex flex-column" Style="min-width: 1000px;">
-                <ChildContent>
-                     <!-- Header Row (Workers) -->
-                    <div class="d-flex flex-row" style="position: sticky; top: 0; z-index: 10; background-color: var(--mud-palette-background);">
-                        <div style="width: 80px; min-width: 80px; border-right: 1px solid var(--mud-palette-divider); padding: 8px; font-weight: bold;">Čas</div>
-                        @foreach (var worker in _workers)
-                        {
-                            <div class="d-flex justify-center align-center flex-grow-1" style="min-width: 200px; border-right: 1px solid var(--mud-palette-divider); padding: 8px; font-weight: bold; background-color: var(--mud-palette-background-grey);">
-                                @worker.FullName
-                            </div>
-                        }
-                    </div>
-
-                    <!-- Time Slots -->
-                    @for (int hour = 7; hour < 19; hour++)
-                    {
-                        var h = hour;
-                        <div class="d-flex flex-row" style="border-bottom: 1px solid var(--mud-palette-divider); min-height: 100px;">
-                            <!-- Time Label -->
-                            <div class="d-flex justify-center align-center" style="width: 80px; min-width: 80px; border-right: 1px solid var(--mud-palette-divider); padding: 8px; font-weight: bold;">
-                                @($"{h:00}:00")
-                            </div>
-
-                            <!-- Worker Slots -->
-                            @foreach (var worker in _workers)
-                            {
-                                <MudDropZone T="Meeting" Identifier="@($"{worker.Id}_{h}")" Class="flex-grow-1 d-flex gap-2 p-2 flex-wrap" Style="min-width: 200px; border-right: 1px solid #e0e0e0; min-height: 100px; align-content: flex-start;" />
-                            }
-                        </div>
-                    }
-                </ChildContent>
-                <ItemRenderer>
-                    <MudPaper Elevation="2" Class="pa-2 ma-1" Style="@($"background-color: {context.MeetingType?.Color ?? "#fff"}; color: white; width: 100%; cursor: grab;")">
-                        <MudText Typo="Typo.body2"><b>@context.From.ToString("HH:mm")</b> - @context.Client?.SurName @context.Client?.FirstName</MudText>
-                        <MudText Typo="Typo.caption">@context.MeetingType?.Abbreviation</MudText>
-                    </MudPaper>
-                </ItemRenderer>
-            </MudDropContainer>
-        </MudPaper>
-    }
+    <div id="fullcalendar-container"></div>
 </MudContainer>
 
 @code {
-    private DateTime? _selectedDate = DateTime.Today;
     private List<Worker> _workers = new();
+    private List<WorkerSchedulerFilter> _workerFilters = new();
+    private List<MeetingType> _meetingTypes = new();
+    private List<MeetingState> _meetingStates = new();
     private List<Meeting> _meetings = new();
     private bool _loading = true;
+    private bool _calendarInitialized = false;
+    private string _currentView = "timeGridWeek";
+    private DateTime? _selectedDate = DateTime.Today;
+    private DotNetObjectReference<Scheduler>? _dotNetRef;
+    private string _userName = "System";
+    private bool _suppressDatePickerCallback = false;
+
+    // Date range currently displayed by the calendar
+    private DateTime _viewStart;
+    private DateTime _viewEnd;
+
+    // Employee color palette
+    private static readonly string[] WorkerColors = {
+        "#1976D2", "#D32F2F", "#388E3C", "#7B1FA2", "#F57C00",
+        "#0097A7", "#C2185B", "#512DA8", "#00796B", "#AFB42B",
+        "#5D4037", "#455A64", "#E64A19", "#1565C0", "#2E7D32"
+    };
 
     protected override async Task OnInitializedAsync()
     {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        _userName = authState.User.Identity?.Name ?? "System";
+
         _workers = await WorkerService.GetActiveAsync();
-        await LoadMeetings();
-    }
+        _meetingTypes = await MeetingTypeService.GetAllAsync();
+        _meetingStates = await MeetingStateService.GetAllAsync();
 
-    private async Task OnDateChanged(DateTime? date)
-    {
-        _selectedDate = date;
-        await LoadMeetings();
-    }
-    
-    private async Task PreviousDay()
-    {
-        if (_selectedDate.HasValue)
-        {
-            _selectedDate = _selectedDate.Value.AddDays(-1);
-            await LoadMeetings();
-        }
-    }
-    
-    private async Task NextDay()
-    {
-         if (_selectedDate.HasValue)
-        {
-            _selectedDate = _selectedDate.Value.AddDays(1);
-            await LoadMeetings();
-        }
-    }
-
-    private async Task LoadMeetings()
-    {
-        _loading = true;
-        if (_selectedDate.HasValue)
-        {
-            // Get meetings for the selected day (entire day)
-            var start = _selectedDate.Value.Date;
-            var end = start.AddDays(1).AddTicks(-1);
-            
-            _meetings = await MeetingService.GetByDateRangeAsync(start, end);
-        }
-        else 
-        {
-            _meetings = new List<Meeting>();
-        }
+        _workerFilters = _workers.Select((w, i) => new WorkerSchedulerFilter(i, w.FullName, w.Id) { Selected = true }).ToList();
         _loading = false;
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            _dotNetRef = DotNetObjectReference.Create(this);
+            var locale = CultureInfo.CurrentCulture.TwoLetterISOLanguageName;
+            if (locale != "cs" && locale != "pl") locale = "cs";
+
+            await JS.InvokeVoidAsync("schedulerInterop.initialize", "fullcalendar-container", _dotNetRef, new
+            {
+                initialView = _currentView,
+                locale = locale
+            });
+            _calendarInitialized = true;
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnDatesSet(string startStr, string endStr, string viewType)
+    {
+        _viewStart = DateTime.Parse(startStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+        _viewEnd = DateTime.Parse(endStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+        _currentView = viewType;
+
+        // Update selected date from calendar without triggering DatePicker callback
+        var dateStr = await JS.InvokeAsync<string>("schedulerInterop.getDate");
+        _suppressDatePickerCallback = true;
+        _selectedDate = DateTime.Parse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind).Date;
+
+        await RefreshEvents();
         StateHasChanged();
+        _suppressDatePickerCallback = false;
     }
 
-    private bool ItemSelector(Meeting item, string dropzone)
+    [JSInvokable]
+    public async Task OnDateClick(string dateStr, bool allDay)
     {
-        // dropzone format: "{WorkerId}_{Hour}"
-        // Check if meeting belongs to this zone
-        if (item.ConsultantId == null) return false;
-        
-        var parts = dropzone.Split('_');
-        if (parts.Length != 2) return false;
-        
-        if (int.TryParse(parts[0], out int workerId) && int.TryParse(parts[1], out int hour))
+        DateTime clickedDate;
+        if (DateTime.TryParse(dateStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out var parsed))
+            clickedDate = parsed;
+        else
+            clickedDate = DateTime.Now;
+
+        // For month view all-day clicks, default to 9:00
+        if (allDay || _currentView == "dayGridMonth")
         {
-            return item.ConsultantId == workerId && item.From.Hour == hour;
+            clickedDate = clickedDate.Date.AddHours(9);
         }
-        
-        return false;
+
+        var meeting = new Meeting
+        {
+            From = clickedDate,
+            To = clickedDate.AddHours(1),
+            MeetingTypeId = _meetingTypes.FirstOrDefault()?.Id ?? 0,
+            MeetingStateId = _meetingStates.FirstOrDefault()?.Id ?? 0
+        };
+
+        var parameters = new DialogParameters<MeetingDialog>
+        {
+            { x => x.Meeting, meeting },
+            { x => x.IsNew, true },
+            { x => x.Workers, _workers },
+            { x => x.MeetingTypes, _meetingTypes },
+            { x => x.MeetingStates, _meetingStates }
+        };
+
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<MeetingDialog>(Loc["NewMeeting"], parameters, options);
+        var result = await dialog.Result;
+
+        if (result != null && !result.Canceled && result.Data is Meeting newMeeting)
+        {
+            try
+            {
+                await MeetingService.CreateAsync(newMeeting, _userName);
+                Snackbar.Add(string.Format(Loc["CreatedSuccess"], Loc["Meeting"]), Severity.Success);
+                await RefreshEvents();
+            }
+            catch (Exception ex)
+            {
+                Snackbar.Add(string.Format(Loc["ErrorCreating"], ex.Message), Severity.Error);
+            }
+        }
     }
 
-    private async Task ItemDropped(MudItemDropInfo<Meeting> dropItem)
+    [JSInvokable]
+    public async Task OnEventClick(int id)
     {
-        // Update meeting
-        var parts = dropItem.DropzoneIdentifier.Split('_');
-        if (parts.Length == 2 && int.TryParse(parts[0], out int workerId) && int.TryParse(parts[1], out int hour))
+        var meeting = await MeetingService.GetByIdAsync(id);
+        if (meeting == null) return;
+
+        var parameters = new DialogParameters<MeetingDialog>
         {
-             if (_selectedDate.HasValue)
-             {
-                 var meeting = dropItem.Item;
-                 if (meeting == null) return;
-                 
-                 // Calculate difference in time to keep duration
-                 var duration = meeting.To - meeting.From;
-                 
-                 var newStart = _selectedDate.Value.Date.AddHours(hour).AddMinutes(meeting.From.Minute); // Keep minute offset? Or snap to hour? 
-                 // Snapping to hour is better for this grid.
-                 newStart = _selectedDate.Value.Date.AddHours(hour); 
+            { x => x.Meeting, meeting },
+            { x => x.IsNew, false },
+            { x => x.Workers, _workers },
+            { x => x.MeetingTypes, _meetingTypes },
+            { x => x.MeetingStates, _meetingStates }
+        };
 
-                 meeting.ConsultantId = workerId;
-                 meeting.From = newStart;
-                 meeting.To = newStart + duration;
+        var options = new DialogOptions { MaxWidth = MaxWidth.Medium, FullWidth = true, CloseOnEscapeKey = true };
+        var dialog = await DialogService.ShowAsync<MeetingDialog>(Loc["EditMeeting"], parameters, options);
+        var result = await dialog.Result;
 
-                 var authState = await AuthStateProvider.GetAuthenticationStateAsync();
-                 var userName = authState.User.Identity?.Name ?? "System";
-                 
-                 try 
-                 {
-                     await MeetingService.UpdateAsync(meeting, userName);
-                     Snackbar.Add("Schůzka přesunuta", Severity.Success);
-                     // Refresh to ensure sort order? MudDropContainer handles UI update locally usually, but reload is safer for DB sync
-                     await LoadMeetings(); 
-                 }
-                 catch (Exception ex)
-                 {
-                     Snackbar.Add($"Chyba: {ex.Message}", Severity.Error);
-                     await LoadMeetings(); // Revert UI
-                 }
-             }
+        if (result != null && !result.Canceled)
+        {
+            if (result.Data is string action && action == "delete")
+            {
+                var confirm = await DialogService.ShowMessageBox(
+                    string.Format(Loc["DeleteTitle"], Loc["Meeting"]),
+                    string.Format(Loc["DeleteConfirmation"], Loc["Meeting"], meeting.Title ?? ""),
+                    yesText: Loc["Yes"], cancelText: Loc["No"]);
+
+                if (confirm == true)
+                {
+                    try
+                    {
+                        await MeetingService.DeleteAsync(id, _userName);
+                        Snackbar.Add(string.Format(Loc["DeletedSuccess"], Loc["Meeting"]), Severity.Success);
+                        await RefreshEvents();
+                    }
+                    catch (Exception ex)
+                    {
+                        Snackbar.Add(string.Format(Loc["ErrorDeleting"], ex.Message), Severity.Error);
+                    }
+                }
+            }
+            else if (result.Data is Meeting updatedMeeting)
+            {
+                try
+                {
+                    await MeetingService.UpdateAsync(updatedMeeting, _userName);
+                    Snackbar.Add(string.Format(Loc["UpdatedSuccess"], Loc["Meeting"]), Severity.Success);
+                    await RefreshEvents();
+                }
+                catch (Exception ex)
+                {
+                    Snackbar.Add(string.Format(Loc["ErrorUpdating"], ex.Message), Severity.Error);
+                }
+            }
         }
+        else
+        {
+            // Dialog was cancelled - refresh to revert any UI changes
+            await RefreshEvents();
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnEventDrop(int id, string startStr, string endStr)
+    {
+        try
+        {
+            var meeting = await MeetingService.GetByIdAsync(id);
+            if (meeting == null) return;
+
+            var newStart = DateTime.Parse(startStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+            var newEnd = DateTime.Parse(endStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+
+            meeting.From = newStart.ToLocalTime();
+            meeting.To = newEnd.ToLocalTime();
+
+            await MeetingService.UpdateAsync(meeting, _userName);
+            Snackbar.Add(Loc["MeetingMoved"], Severity.Success);
+            await RefreshEvents();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(string.Format(Loc["ErrorUpdating"], ex.Message), Severity.Error);
+            await RefreshEvents();
+        }
+    }
+
+    [JSInvokable]
+    public async Task OnEventResize(int id, string startStr, string endStr)
+    {
+        try
+        {
+            var meeting = await MeetingService.GetByIdAsync(id);
+            if (meeting == null) return;
+
+            var newStart = DateTime.Parse(startStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+            var newEnd = DateTime.Parse(endStr, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind);
+
+            meeting.From = newStart.ToLocalTime();
+            meeting.To = newEnd.ToLocalTime();
+
+            await MeetingService.UpdateAsync(meeting, _userName);
+            Snackbar.Add(Loc["MeetingMoved"], Severity.Success);
+            await RefreshEvents();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add(string.Format(Loc["ErrorUpdating"], ex.Message), Severity.Error);
+            await RefreshEvents();
+        }
+    }
+
+    private async Task RefreshEvents()
+    {
+        var selectedWorkerIds = _workerFilters
+            .Where(w => w.Selected && w.WorkerId.HasValue)
+            .Select(w => w.WorkerId!.Value)
+            .ToArray();
+
+        if (selectedWorkerIds.Length == 0)
+        {
+            // Show no events when no workers selected
+            if (_calendarInitialized)
+                await JS.InvokeVoidAsync("schedulerInterop.setEvents", Array.Empty<object>());
+            return;
+        }
+
+        _meetings = await MeetingService.GetByDateRangeAsync(_viewStart, _viewEnd, selectedWorkerIds);
+
+        var events = _meetings.Select(m => MapToFullCalendarEvent(m)).ToArray();
+
+        if (_calendarInitialized)
+            await JS.InvokeVoidAsync("schedulerInterop.setEvents", (object)events);
+    }
+
+    private object MapToFullCalendarEvent(Meeting m)
+    {
+        var bgColor = GetMeetingTypeColor(m.MeetingType?.Color);
+        var borderColor = GetWorkerColor(m.ConsultantId);
+
+        var title = "";
+        if (m.Consultant != null)
+            title += m.Consultant.SurName;
+        if (m.MeetingType != null)
+            title += (title.Length > 0 ? " " : "") + m.MeetingType.Abbreviation;
+
+        var tooltipHtml = BuildTooltipHtml(m);
+
+        return new
+        {
+            id = m.Id.ToString(),
+            title = title,
+            start = m.From.ToString("yyyy-MM-ddTHH:mm:ss"),
+            end = m.To.ToString("yyyy-MM-ddTHH:mm:ss"),
+            backgroundColor = bgColor,
+            borderColor = borderColor,
+            textColor = bgColor == "#d1d3d3" ? "#333" : "#fff",
+            extendedProps = new { tooltipHtml = tooltipHtml }
+        };
+    }
+
+    private string GetMeetingTypeColor(string? colorName)
+    {
+        return colorName switch
+        {
+            "green" => "#7df921",
+            "orange" => "#f97921",
+            "blue" => "#2187f9",
+            "red" => "#f92142",
+            "white" => "#d1d3d3",
+            _ => "#d1d3d3"
+        };
+    }
+
+    private string GetWorkerColor(int? consultantId)
+    {
+        if (!consultantId.HasValue) return "#999";
+        var index = _workers.FindIndex(w => w.Id == consultantId.Value);
+        if (index < 0) return "#999";
+        return WorkerColors[index % WorkerColors.Length];
+    }
+
+    private string BuildTooltipHtml(Meeting m)
+    {
+        var lines = new System.Text.StringBuilder();
+        lines.Append($"<div><b>{m.From:HH:mm}</b> - <b>{m.To:HH:mm}</b></div>");
+        if (m.Client != null)
+            lines.Append($"<div><b>{Loc["Client"]}:</b> {System.Net.WebUtility.HtmlEncode(m.ClientFullName)}</div>");
+        if (m.Consultant != null)
+            lines.Append($"<div><b>{Loc["Consultant"]}:</b> {System.Net.WebUtility.HtmlEncode(m.ConsultantFullName)}</div>");
+        if (m.MeetingType != null)
+            lines.Append($"<div><b>{Loc["MeetingType"]}:</b> {System.Net.WebUtility.HtmlEncode(m.MeetingType.Name)}</div>");
+        if (m.MeetingState != null)
+            lines.Append($"<div><b>{Loc["MeetingState"]}:</b> {System.Net.WebUtility.HtmlEncode(m.MeetingState.Name)}</div>");
+        if (!string.IsNullOrEmpty(m.Title))
+            lines.Append($"<div><b>{Loc["Name"]}:</b> {System.Net.WebUtility.HtmlEncode(m.Title)}</div>");
+        if (!string.IsNullOrEmpty(m.Description))
+            lines.Append($"<div><b>{Loc["Description"]}:</b> {System.Net.WebUtility.HtmlEncode(m.Description)}</div>");
+        return lines.ToString();
+    }
+
+    private async Task ChangeView(string viewName)
+    {
+        _currentView = viewName;
+        if (_calendarInitialized)
+            await JS.InvokeVoidAsync("schedulerInterop.changeView", viewName);
+    }
+
+    private async Task Prev()
+    {
+        if (_calendarInitialized)
+            await JS.InvokeVoidAsync("schedulerInterop.prev");
+    }
+
+    private async Task Next()
+    {
+        if (_calendarInitialized)
+            await JS.InvokeVoidAsync("schedulerInterop.next");
+    }
+
+    private async Task GoToToday()
+    {
+        _selectedDate = DateTime.Today;
+        if (_calendarInitialized)
+            await JS.InvokeVoidAsync("schedulerInterop.today");
+    }
+
+    private async Task OnDatePickerChanged(DateTime? date)
+    {
+        if (_suppressDatePickerCallback) return;
+        if (date.HasValue && _calendarInitialized)
+        {
+            _selectedDate = date;
+            await JS.InvokeVoidAsync("schedulerInterop.gotoDate", date.Value.ToString("yyyy-MM-dd"));
+        }
+    }
+
+    private async Task OnWorkerFilterChanged(WorkerSchedulerFilter worker, bool selected)
+    {
+        worker.Selected = selected;
+        await RefreshEvents();
+    }
+
+    public void Dispose()
+    {
+        if (_calendarInitialized)
+        {
+            _ = JS.InvokeVoidAsync("schedulerInterop.destroy");
+        }
+        _dotNetRef?.Dispose();
     }
 }

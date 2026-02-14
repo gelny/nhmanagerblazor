@@ -1,0 +1,95 @@
+@inject IStringLocalizer<SharedResource> Loc
+
+@if (_hasData && _hasRecData)
+{
+    <ApexChart TItem="ChartDataPoint" Options="_optionsWithRec" Height="400">
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_data"
+                         Name="@Loc["MetabolicAge"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_recData"
+                         Name="@Loc["Recommended"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+    </ApexChart>
+}
+else if (_hasData)
+{
+    <ApexChart TItem="ChartDataPoint" Options="_options" Height="400">
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_data"
+                         Name="@Loc["MetabolicAge"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+    </ApexChart>
+}
+else
+{
+    <MudAlert Severity="Severity.Info">@Loc["Graph_NoData"]</MudAlert>
+}
+
+@code {
+    [Parameter] public Client? Client { get; set; }
+
+    private List<ChartDataPoint> _data = new();
+    private List<ChartDataPoint> _recData = new();
+    private bool _hasData;
+    private bool _hasRecData;
+    private ApexChartOptions<ChartDataPoint> _options = new();
+    private ApexChartOptions<ChartDataPoint> _optionsWithRec = new();
+
+    protected override void OnParametersSet()
+    {
+        _data.Clear();
+        _recData.Clear();
+
+        if (Client?.Measurements == null)
+        {
+            _hasData = false;
+            _hasRecData = false;
+            return;
+        }
+
+        var measurements = Client.Measurements
+            .Where(m => m.Results != null && m.Results.Any(r => r.MetabolicAge > 0))
+            .OrderBy(m => m.Date)
+            .ToList();
+
+        foreach (var m in measurements)
+        {
+            var result = m.Results!.First(r => r.MetabolicAge > 0);
+            _data.Add(new ChartDataPoint(m.Date, result.MetabolicAge));
+            if (result.MetabolicAge_Recommended > 0)
+                _recData.Add(new ChartDataPoint(m.Date, result.MetabolicAge_Recommended));
+        }
+
+        _data = ChartDataPoint.DeduplicateByDate(_data);
+        _recData = ChartDataPoint.DeduplicateByDate(_recData);
+
+        _hasData = _data.Count > 0;
+        _hasRecData = _recData.Count > 0;
+
+        _options = new ApexChartOptions<ChartDataPoint>
+        {
+            Chart = new Chart { Type = ApexCharts.ChartType.Line },
+            Xaxis = new XAxis { Type = XAxisType.Category },
+            Stroke = new Stroke { Curve = Curve.Smooth }
+        };
+
+        _optionsWithRec = new ApexChartOptions<ChartDataPoint>
+        {
+            Chart = new Chart { Type = ApexCharts.ChartType.Line },
+            Xaxis = new XAxis { Type = XAxisType.Category },
+            Stroke = new Stroke
+            {
+                Curve = Curve.Smooth,
+                DashArray = new List<double> { 0, 6 }
+            }
+        };
+    }
+}

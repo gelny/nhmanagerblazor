@@ -1,0 +1,91 @@
+@inject IStringLocalizer<SharedResource> Loc
+
+@if (_hasData)
+{
+    <ApexChart TItem="ChartDataPoint" Options="_options" Height="400">
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_totalCholData"
+                         Name="@Loc["TotalCholesterol"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_ldlData"
+                         Name="LDL"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_hdlData"
+                         Name="HDL"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_trigData"
+                         Name="@Loc["Triglycerides"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+    </ApexChart>
+}
+else
+{
+    <MudAlert Severity="Severity.Info">@Loc["Graph_NoData"]</MudAlert>
+}
+
+@code {
+    [Parameter] public Client? Client { get; set; }
+
+    private List<ChartDataPoint> _totalCholData = new();
+    private List<ChartDataPoint> _ldlData = new();
+    private List<ChartDataPoint> _hdlData = new();
+    private List<ChartDataPoint> _trigData = new();
+    private bool _hasData;
+    private ApexChartOptions<ChartDataPoint> _options = new();
+
+    protected override void OnParametersSet()
+    {
+        _totalCholData.Clear();
+        _ldlData.Clear();
+        _hdlData.Clear();
+        _trigData.Clear();
+
+        if (Client?.Analysis == null)
+        {
+            _hasData = false;
+            return;
+        }
+
+        var analyses = Client.Analysis
+            .Where(a => a.TotalCholesterol > 0 || a.LDLCholesterol > 0 || a.HDLCholesterol > 0 || a.Triglycerides > 0)
+            .OrderBy(a => a.Date)
+            .ToList();
+
+        foreach (var a in analyses)
+        {
+            if (a.TotalCholesterol > 0)
+                _totalCholData.Add(new ChartDataPoint(a.Date, a.TotalCholesterol));
+            if (a.LDLCholesterol > 0)
+                _ldlData.Add(new ChartDataPoint(a.Date, a.LDLCholesterol));
+            if (a.HDLCholesterol > 0)
+                _hdlData.Add(new ChartDataPoint(a.Date, a.HDLCholesterol));
+            if (a.Triglycerides > 0)
+                _trigData.Add(new ChartDataPoint(a.Date, a.Triglycerides));
+        }
+
+        _totalCholData = ChartDataPoint.DeduplicateByDate(_totalCholData);
+        _ldlData = ChartDataPoint.DeduplicateByDate(_ldlData);
+        _hdlData = ChartDataPoint.DeduplicateByDate(_hdlData);
+        _trigData = ChartDataPoint.DeduplicateByDate(_trigData);
+
+        _hasData = _totalCholData.Count > 0 || _ldlData.Count > 0 || _hdlData.Count > 0 || _trigData.Count > 0;
+
+        _options = new ApexChartOptions<ChartDataPoint>
+        {
+            Chart = new Chart { Type = ApexCharts.ChartType.Line },
+            Xaxis = new XAxis { Type = XAxisType.Category },
+            Stroke = new Stroke { Curve = Curve.Smooth }
+        };
+    }
+}

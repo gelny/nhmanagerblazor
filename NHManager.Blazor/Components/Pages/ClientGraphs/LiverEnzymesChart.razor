@@ -1,0 +1,91 @@
+@inject IStringLocalizer<SharedResource> Loc
+
+@if (_hasData)
+{
+    <ApexChart TItem="ChartDataPoint" Options="_options" Height="400">
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_alpData"
+                         Name="ALP"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_altData"
+                         Name="ALT"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_astData"
+                         Name="AST"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_ggtData"
+                         Name="GGT"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+    </ApexChart>
+}
+else
+{
+    <MudAlert Severity="Severity.Info">@Loc["Graph_NoData"]</MudAlert>
+}
+
+@code {
+    [Parameter] public Client? Client { get; set; }
+
+    private List<ChartDataPoint> _alpData = new();
+    private List<ChartDataPoint> _altData = new();
+    private List<ChartDataPoint> _astData = new();
+    private List<ChartDataPoint> _ggtData = new();
+    private bool _hasData;
+    private ApexChartOptions<ChartDataPoint> _options = new();
+
+    protected override void OnParametersSet()
+    {
+        _alpData.Clear();
+        _altData.Clear();
+        _astData.Clear();
+        _ggtData.Clear();
+
+        if (Client?.Biochemistry == null)
+        {
+            _hasData = false;
+            return;
+        }
+
+        var records = Client.Biochemistry
+            .Where(b => b.ALP > 0 || b.ALT > 0 || b.AST > 0 || b.GGT > 0)
+            .OrderBy(b => b.Date)
+            .ToList();
+
+        foreach (var b in records)
+        {
+            if (b.ALP > 0)
+                _alpData.Add(new ChartDataPoint(b.Date, b.ALP));
+            if (b.ALT > 0)
+                _altData.Add(new ChartDataPoint(b.Date, b.ALT));
+            if (b.AST > 0)
+                _astData.Add(new ChartDataPoint(b.Date, b.AST));
+            if (b.GGT > 0)
+                _ggtData.Add(new ChartDataPoint(b.Date, b.GGT));
+        }
+
+        _alpData = ChartDataPoint.DeduplicateByDate(_alpData);
+        _altData = ChartDataPoint.DeduplicateByDate(_altData);
+        _astData = ChartDataPoint.DeduplicateByDate(_astData);
+        _ggtData = ChartDataPoint.DeduplicateByDate(_ggtData);
+
+        _hasData = _alpData.Count > 0 || _altData.Count > 0 || _astData.Count > 0 || _ggtData.Count > 0;
+
+        _options = new ApexChartOptions<ChartDataPoint>
+        {
+            Chart = new Chart { Type = ApexCharts.ChartType.Line },
+            Xaxis = new XAxis { Type = XAxisType.Category },
+            Stroke = new Stroke { Curve = Curve.Smooth }
+        };
+    }
+}

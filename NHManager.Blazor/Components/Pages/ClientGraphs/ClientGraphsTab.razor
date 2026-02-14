@@ -1,0 +1,110 @@
+@inject IStringLocalizer<SharedResource> Loc
+
+@if (string.IsNullOrEmpty(_selectedGraph))
+{
+    <GraphSelector OnGraphSelected="SelectGraph" />
+}
+else
+{
+    <MudButton Variant="Variant.Text"
+               StartIcon="@Icons.Material.Filled.ArrowBack"
+               Color="MudBlazor.Color.Primary"
+               OnClick="BackToList"
+               Class="mb-4">
+        @Loc["Back"]
+    </MudButton>
+
+    <MudText Typo="Typo.h6" Class="mb-4">@GetGraphTitle()</MudText>
+
+    @switch (_selectedGraph)
+    {
+        case "weight":
+            <WeightChart Client="Client" />
+            break;
+        case "bmi":
+            <BMIChart Client="Client" />
+            break;
+        case "fat":
+            <FatPercentageChart Client="Client" />
+            break;
+        case "bodycomposition":
+            <BodyCompositionChart Client="Client" />
+            break;
+        case "circumferences":
+            <CircumferencesChart Client="Client" />
+            break;
+        case "bloodpressure":
+            <BloodPressureChart Client="Client" />
+            break;
+        case "visceralfat":
+            <VisceralFatChart Client="Client" />
+            break;
+        case "metabolicage":
+            <MetabolicAgeChart Client="Client" />
+            break;
+        case "bmr":
+            <BMRChart Client="Client" />
+            break;
+        case "lipidanalysis":
+            <LipidProfileAnalysisChart Client="Client" />
+            break;
+        case "glucoseanalysis":
+            <GlucoseAnalysisChart Client="Client" />
+            break;
+        case "whr":
+            <WHRChart Client="Client" />
+            break;
+        case "atherogenic":
+            <AtherogenicIndexChart Client="Client" />
+            break;
+        case "lipidbiochem":
+            <LipidProfileBiochemistryChart Client="Client" />
+            break;
+        case "liverenzymes":
+            <LiverEnzymesChart Client="Client" />
+            break;
+        case "metabolicvalues":
+            <MetabolicValuesChart Client="Client" />
+            break;
+    }
+}
+
+@code {
+    [Parameter] public Client? Client { get; set; }
+
+    private string? _selectedGraph;
+
+    private void SelectGraph(string graphKey)
+    {
+        _selectedGraph = graphKey;
+    }
+
+    private void BackToList()
+    {
+        _selectedGraph = null;
+    }
+
+    private string GetGraphTitle()
+    {
+        return _selectedGraph switch
+        {
+            "weight" => Loc["Weight"],
+            "bmi" => "BMI",
+            "fat" => Loc["FatPercentage"],
+            "bodycomposition" => Loc["Graph_BodyComposition"],
+            "circumferences" => Loc["BodyCircumferences"],
+            "bloodpressure" => Loc["Graph_BloodPressure"],
+            "visceralfat" => Loc["VisceralFat"],
+            "metabolicage" => Loc["MetabolicAge"],
+            "bmr" => Loc["BMR_KCAL"],
+            "lipidanalysis" => Loc["Graph_LipidProfileAnalysis"],
+            "glucoseanalysis" => Loc["Graph_GlucoseAnalysis"],
+            "whr" => Loc["Graph_WHR"],
+            "atherogenic" => Loc["Graph_AtherogenicIndex"],
+            "lipidbiochem" => Loc["Graph_LipidProfileBiochemistry"],
+            "liverenzymes" => Loc["LiverEnzymes"],
+            "metabolicvalues" => Loc["Graph_MetabolicValues"],
+            _ => ""
+        };
+    }
+}

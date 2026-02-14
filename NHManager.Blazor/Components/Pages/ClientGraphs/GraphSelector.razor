@@ -1,0 +1,177 @@
+@inject IStringLocalizer<SharedResource> Loc
+
+<MudText Typo="Typo.h6" Class="mb-3">@Loc["Measurements"]</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("weight"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.MonitorWeight" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Weight"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("bmi"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Speed" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">BMI</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("fat"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Percent" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["FatPercentage"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("bodycomposition"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Accessibility" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_BodyComposition"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("circumferences"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Straighten" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["BodyCircumferences"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("bloodpressure"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Favorite" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_BloodPressure"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("visceralfat"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.FitnessCenter" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["VisceralFat"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("metabolicage"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Elderly" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["MetabolicAge"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("bmr"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.LocalFireDepartment" Color="MudBlazor.Color.Primary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["BMR_KCAL"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudText Typo="Typo.h6" Class="mt-6 mb-3">@Loc["Analysis"]</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("lipidanalysis"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Bloodtype" Color="MudBlazor.Color.Secondary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_LipidProfileAnalysis"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("glucoseanalysis"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.WaterDrop" Color="MudBlazor.Color.Secondary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_GlucoseAnalysis"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("whr"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.CompareArrows" Color="MudBlazor.Color.Secondary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_WHR"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("atherogenic"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Analytics" Color="MudBlazor.Color.Secondary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_AtherogenicIndex"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+<MudText Typo="Typo.h6" Class="mt-6 mb-3">@Loc["Biochemistry"]</MudText>
+<MudGrid>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("lipidbiochem"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Science" Color="MudBlazor.Color.Tertiary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_LipidProfileBiochemistry"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("liverenzymes"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.Biotech" Color="MudBlazor.Color.Tertiary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["LiverEnzymes"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+    <MudItem xs="12" sm="6" md="4">
+        <MudCard Class="cursor-pointer" @onclick="@(() => OnGraphSelected.InvokeAsync("metabolicvalues"))">
+            <MudCardContent>
+                <MudStack Row="true" AlignItems="AlignItems.Center" Spacing="2">
+                    <MudIcon Icon="@Icons.Material.Filled.BarChart" Color="MudBlazor.Color.Tertiary" />
+                    <MudText Typo="Typo.subtitle1">@Loc["Graph_MetabolicValues"]</MudText>
+                </MudStack>
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
+@code {
+    [Parameter] public EventCallback<string> OnGraphSelected { get; set; }
+}

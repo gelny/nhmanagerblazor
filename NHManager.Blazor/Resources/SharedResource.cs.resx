@@ -1150,5 +1150,38 @@
   <data name="QuickActions" xml:space="preserve">
     <value>Rychlé akce</value>
   </data>
+  <data name="Graphs" xml:space="preserve">
+    <value>Grafy</value>
+  </data>
+  <data name="Graph_BodyComposition" xml:space="preserve">
+    <value>Složení těla</value>
+  </data>
+  <data name="Graph_BloodPressure" xml:space="preserve">
+    <value>Krevní tlak</value>
+  </data>
+  <data name="Graph_LipidProfileAnalysis" xml:space="preserve">
+    <value>Lipidový profil (Analýza)</value>
+  </data>
+  <data name="Graph_GlucoseAnalysis" xml:space="preserve">
+    <value>Glukóza (Analýza)</value>
+  </data>
+  <data name="Graph_WHR" xml:space="preserve">
+    <value>WHR (pas/boky)</value>
+  </data>
+  <data name="Graph_AtherogenicIndex" xml:space="preserve">
+    <value>Aterogenní index</value>
+  </data>
+  <data name="Graph_LipidProfileBiochemistry" xml:space="preserve">
+    <value>Lipidový profil (Biochemie)</value>
+  </data>
+  <data name="Graph_MetabolicValues" xml:space="preserve">
+    <value>Metabolické hodnoty</value>
+  </data>
+  <data name="Graph_SelectValue" xml:space="preserve">
+    <value>Vyberte hodnotu</value>
+  </data>
+  <data name="Graph_NoData" xml:space="preserve">
+    <value>Nedostatek dat pro zobrazení grafu</value>
+  </data>
 </root>
 

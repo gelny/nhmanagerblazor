@@ -559,6 +559,10 @@ else
                 <MudAlert Severity="Severity.Info">@Loc["NoRecordsFound"]</MudAlert>
             }
         </MudTabPanel>
+
+        <MudTabPanel Text="@Loc["Graphs"]" Icon="@Icons.Material.Filled.ShowChart">
+            <NHManager.Blazor.Components.Pages.ClientGraphs.ClientGraphsTab Client="_client" />
+        </MudTabPanel>
     </MudTabs>
 }
 
@@ -590,6 +594,7 @@ else
             "biochemistry" => 7,
             "analysis" => 8,
             "cookbooks" => 9,
+            "graphs" => 10,
             _ => 0
         };
     }

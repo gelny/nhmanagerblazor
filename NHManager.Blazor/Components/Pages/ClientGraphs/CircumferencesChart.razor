@@ -1,0 +1,91 @@
+@inject IStringLocalizer<SharedResource> Loc
+
+@if (_hasData)
+{
+    <ApexChart TItem="ChartDataPoint" Options="_options" Height="400">
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_waistData"
+                         Name="@Loc["WaistCircumference"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_hipData"
+                         Name="@Loc["HipCircumference"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_armData"
+                         Name="@Loc["ArmCircumference"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+        <ApexPointSeries TItem="ChartDataPoint"
+                         Items="_thighData"
+                         Name="@Loc["ThighCircumference"]"
+                         SeriesType="SeriesType.Line"
+                         XValue="@(e => e.Date.ToString("dd.MM.yyyy"))"
+                         YValue="@(e => (decimal)e.Value)" />
+    </ApexChart>
+}
+else
+{
+    <MudAlert Severity="Severity.Info">@Loc["Graph_NoData"]</MudAlert>
+}
+
+@code {
+    [Parameter] public Client? Client { get; set; }
+
+    private List<ChartDataPoint> _waistData = new();
+    private List<ChartDataPoint> _hipData = new();
+    private List<ChartDataPoint> _armData = new();
+    private List<ChartDataPoint> _thighData = new();
+    private bool _hasData;
+    private ApexChartOptions<ChartDataPoint> _options = new();
+
+    protected override void OnParametersSet()
+    {
+        _waistData.Clear();
+        _hipData.Clear();
+        _armData.Clear();
+        _thighData.Clear();
+
+        if (Client?.Measurements == null)
+        {
+            _hasData = false;
+            return;
+        }
+
+        var measurements = Client.Measurements
+            .Where(m => m.WaistCircumference > 0 || m.HipCircumference > 0 || m.ArmCircumference > 0 || m.ThighCircumference > 0)
+            .OrderBy(m => m.Date)
+            .ToList();
+
+        foreach (var m in measurements)
+        {
+            if (m.WaistCircumference > 0)
+                _waistData.Add(new ChartDataPoint(m.Date, m.WaistCircumference));
+            if (m.HipCircumference > 0)
+                _hipData.Add(new ChartDataPoint(m.Date, m.HipCircumference));
+            if (m.ArmCircumference > 0)
+                _armData.Add(new ChartDataPoint(m.Date, m.ArmCircumference));
+            if (m.ThighCircumference > 0)
+                _thighData.Add(new ChartDataPoint(m.Date, m.ThighCircumference));
+        }
+
+        _waistData = ChartDataPoint.DeduplicateByDate(_waistData);
+        _hipData = ChartDataPoint.DeduplicateByDate(_hipData);
+        _armData = ChartDataPoint.DeduplicateByDate(_armData);
+        _thighData = ChartDataPoint.DeduplicateByDate(_thighData);
+
+        _hasData = _waistData.Count > 0 || _hipData.Count > 0 || _armData.Count > 0 || _thighData.Count > 0;
+
+        _options = new ApexChartOptions<ChartDataPoint>
+        {
+            Chart = new Chart { Type = ApexCharts.ChartType.Line },
+            Xaxis = new XAxis { Type = XAxisType.Category },
+            Stroke = new Stroke { Curve = Curve.Smooth }
+        };
+    }
+}

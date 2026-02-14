@@ -1069,5 +1069,38 @@
   <data name="QuickActions" xml:space="preserve">
     <value>Szybkie akcje</value>
   </data>
+  <data name="Graphs" xml:space="preserve">
+    <value>Wykresy</value>
+  </data>
+  <data name="Graph_BodyComposition" xml:space="preserve">
+    <value>Skład ciała</value>
+  </data>
+  <data name="Graph_BloodPressure" xml:space="preserve">
+    <value>Ciśnienie krwi</value>
+  </data>
+  <data name="Graph_LipidProfileAnalysis" xml:space="preserve">
+    <value>Profil lipidowy (Analiza)</value>
+  </data>
+  <data name="Graph_GlucoseAnalysis" xml:space="preserve">
+    <value>Glukoza (Analiza)</value>
+  </data>
+  <data name="Graph_WHR" xml:space="preserve">
+    <value>WHR (talia/biodra)</value>
+  </data>
+  <data name="Graph_AtherogenicIndex" xml:space="preserve">
+    <value>Indeks aterogenny</value>
+  </data>
+  <data name="Graph_LipidProfileBiochemistry" xml:space="preserve">
+    <value>Profil lipidowy (Biochemia)</value>
+  </data>
+  <data name="Graph_MetabolicValues" xml:space="preserve">
+    <value>Wartości metaboliczne</value>
+  </data>
+  <data name="Graph_SelectValue" xml:space="preserve">
+    <value>Wybierz wartość</value>
+  </data>
+  <data name="Graph_NoData" xml:space="preserve">
+    <value>Niewystarczające dane do wyświetlenia wykresu</value>
+  </data>
 </root>
 

@@ -199,3 +199,33 @@ h1:focus {
 ::selection {
     background: rgba(46, 125, 111, 0.2);
 }
+
+/* ===== Client detail tabs – multi-row wrapping ===== */
+.client-detail-tabs .mud-tabs-tabbar-content {
+    overflow: visible !important;
+    white-space: normal !important;
+}
+
+.client-detail-tabs .mud-tabs-tabbar-wrapper {
+    width: auto !important;
+    flex-wrap: wrap !important;
+    display: flex !important;
+    transform: none !important;
+}
+
+.client-detail-tabs .mud-tabs-tabbar-inner {
+    min-height: auto !important;
+}
+
+.client-detail-tabs .mud-tab {
+    flex-shrink: 0;
+    white-space: nowrap;
+}
+
+.client-detail-tabs .mud-tabs-scroll-button {
+    display: none !important;
+}
+
+.client-detail-tabs .mud-tab-slider {
+    display: none !important;
+}

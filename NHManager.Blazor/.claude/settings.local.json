@@ -6,7 +6,11 @@
       "Bash(do sed -i '/Elevation/!s/<MudTable /<MudTable Elevation=\"\"0\"\" /' \"$f\")",
       "Bash(done)",
       "WebSearch",
-      "Bash(dotnet add package:*)"
+      "Bash(dotnet add package:*)",
+      "Bash(unzip:*)",
+      "Bash(tr:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebFetch(domain:mudblazor.com)"
     ]
   }
 }

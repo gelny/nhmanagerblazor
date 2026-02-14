@@ -47,45 +47,51 @@ else
             
             <MudGrid>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@Loc["Weight"]" 
-                                     @bind-Value="_measurement.Weight" 
-                                     Min="0" Step="0.1M"
+                    <MudNumericField Label="@Loc["Weight"]"
+                                     @bind-Value="_measurement.Weight"
+                                     Min="0m" Step="0.1m"
+                                     Format="F2" Immediate="true"
                                      Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@Loc["Height"]" 
-                                     @bind-Value="_measurement.Height" 
+                    <MudNumericField Label="@Loc["Height"]"
+                                     @bind-Value="_measurement.Height"
                                      Min="0"
                                      Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@Loc["FatPercentage"]" 
-                                     @bind-Value="_measurement.FatPercentage" 
-                                     Min="0" Max="100" Step="0.1M"
+                    <MudNumericField Label="@Loc["FatPercentage"]"
+                                     @bind-Value="_measurement.FatPercentage"
+                                     Min="0m" Max="100m" Step="0.1m"
+                                     Format="F2" Immediate="true"
                                      Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@Loc["WaterPercentage"]" 
-                                     @bind-Value="_measurement.WaterPercentage" 
-                                     Min="0" Max="100" Step="0.1M"
+                    <MudNumericField Label="@Loc["WaterPercentage"]"
+                                     @bind-Value="_measurement.WaterPercentage"
+                                     Min="0m" Max="100m" Step="0.1m"
+                                     Format="F2" Immediate="true"
                                      Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@Loc["BoneMass"]" 
-                                     @bind-Value="_measurement.BoneMass" 
-                                     Min="0" Step="0.1M"
+                    <MudNumericField Label="@Loc["BoneMass"]"
+                                     @bind-Value="_measurement.BoneMass"
+                                     Min="0m" Step="0.1m"
+                                     Format="F2" Immediate="true"
                                      Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@Loc["VisceralFat"]" 
-                                     @bind-Value="_measurement.VisceralFat" 
-                                     Min="0" Step="0.1M"
+                    <MudNumericField Label="@Loc["VisceralFat"]"
+                                     @bind-Value="_measurement.VisceralFat"
+                                     Min="0m" Step="0.1m"
+                                     Format="F2" Immediate="true"
                                      Variant="Variant.Outlined" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@Loc["LeanBodyMass"]" 
-                                     @bind-Value="_measurement.LeanBodyMass" 
-                                     Min="0" Step="0.1M"
+                    <MudNumericField Label="@Loc["LeanBodyMass"]"
+                                     @bind-Value="_measurement.LeanBodyMass"
+                                     Min="0m" Step="0.1m"
+                                     Format="F2" Immediate="true"
                                      Variant="Variant.Outlined" />
                 </MudItem>
             </MudGrid>

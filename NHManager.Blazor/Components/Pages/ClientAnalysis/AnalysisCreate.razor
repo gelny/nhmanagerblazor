@@ -34,34 +34,34 @@
             <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["BloodValues"]</MudText>
             <MudGrid>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@($"{Loc["Glucose"]} (mmol/l)")" 
-                                     @bind-Value="_analysis.Glucose" 
+                    <MudNumericField Label="@($"{Loc["Glucose"]} (mmol/l)")"
+                                     @bind-Value="_analysis.Glucose"
                                      Variant="Variant.Outlined"
-                                     Step="0.1M" />
+                                     Step="0.1m" Format="F2" Immediate="true" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@($"{Loc["TotalCholesterol"]} (mmol/l)")" 
-                                     @bind-Value="_analysis.TotalCholesterol" 
+                    <MudNumericField Label="@($"{Loc["TotalCholesterol"]} (mmol/l)")"
+                                     @bind-Value="_analysis.TotalCholesterol"
                                      Variant="Variant.Outlined"
-                                     Step="0.1M" />
+                                     Step="0.1m" Format="F2" Immediate="true" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="@($"{Loc["Triglycerides"]} (mmol/l)")" 
-                                     @bind-Value="_analysis.Triglycerides" 
+                    <MudNumericField Label="@($"{Loc["Triglycerides"]} (mmol/l)")"
+                                     @bind-Value="_analysis.Triglycerides"
                                      Variant="Variant.Outlined"
-                                     Step="0.1M" />
+                                     Step="0.1m" Format="F2" Immediate="true" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="LDL (mmol/l)" 
-                                     @bind-Value="_analysis.LDLCholesterol" 
+                    <MudNumericField Label="LDL (mmol/l)"
+                                     @bind-Value="_analysis.LDLCholesterol"
                                      Variant="Variant.Outlined"
-                                     Step="0.1M" />
+                                     Step="0.1m" Format="F2" Immediate="true" />
                 </MudItem>
                 <MudItem xs="12" md="4">
-                    <MudNumericField Label="HDL (mmol/l)" 
-                                     @bind-Value="_analysis.HDLCholesterol" 
+                    <MudNumericField Label="HDL (mmol/l)"
+                                     @bind-Value="_analysis.HDLCholesterol"
                                      Variant="Variant.Outlined"
-                                     Step="0.1M" />
+                                     Step="0.1m" Format="F2" Immediate="true" />
                 </MudItem>
             </MudGrid>
             

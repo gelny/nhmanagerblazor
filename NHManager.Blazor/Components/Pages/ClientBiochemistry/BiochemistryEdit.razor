@@ -44,108 +44,108 @@
                 <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["BasicValues"]</MudText>
                 <MudGrid>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["Glucose"]} (mmol/l)")" 
-                                         @bind-Value="_biochemistry.Glucose" 
+                        <MudNumericField Label="@($"{Loc["Glucose"]} (mmol/l)")"
+                                         @bind-Value="_biochemistry.Glucose"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["TotalCholesterol"]} (mmol/l)")" 
-                                         @bind-Value="_biochemistry.TotalCholesterol" 
+                        <MudNumericField Label="@($"{Loc["TotalCholesterol"]} (mmol/l)")"
+                                         @bind-Value="_biochemistry.TotalCholesterol"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["Triglycerides"]} (mmol/l)")" 
-                                         @bind-Value="_biochemistry.Triglycerides" 
+                        <MudNumericField Label="@($"{Loc["Triglycerides"]} (mmol/l)")"
+                                         @bind-Value="_biochemistry.Triglycerides"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="LDL (mmol/l)" 
-                                         @bind-Value="_biochemistry.LDLCholesterol" 
+                        <MudNumericField Label="LDL (mmol/l)"
+                                         @bind-Value="_biochemistry.LDLCholesterol"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="HDL (mmol/l)" 
-                                         @bind-Value="_biochemistry.HDLCholesterol" 
+                        <MudNumericField Label="HDL (mmol/l)"
+                                         @bind-Value="_biochemistry.HDLCholesterol"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                 </MudGrid>
-                
+
                 <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["LiverEnzymes"]</MudText>
                 <MudGrid>
                     <MudItem xs="12" md="3">
-                        <MudNumericField Label="ALP (ukat/l)" 
-                                         @bind-Value="_biochemistry.ALP" 
+                        <MudNumericField Label="ALP (ukat/l)"
+                                         @bind-Value="_biochemistry.ALP"
                                          Variant="Variant.Outlined"
-                                         Step="0.01M" />
+                                         Step="0.01m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="3">
-                        <MudNumericField Label="ALT (ukat/l)" 
-                                         @bind-Value="_biochemistry.ALT" 
+                        <MudNumericField Label="ALT (ukat/l)"
+                                         @bind-Value="_biochemistry.ALT"
                                          Variant="Variant.Outlined"
-                                         Step="0.01M" />
+                                         Step="0.01m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="3">
-                        <MudNumericField Label="AST (ukat/l)" 
-                                         @bind-Value="_biochemistry.AST" 
+                        <MudNumericField Label="AST (ukat/l)"
+                                         @bind-Value="_biochemistry.AST"
                                          Variant="Variant.Outlined"
-                                         Step="0.01M" />
+                                         Step="0.01m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="3">
-                        <MudNumericField Label="GGT (ukat/l)" 
-                                         @bind-Value="_biochemistry.GGT" 
+                        <MudNumericField Label="GGT (ukat/l)"
+                                         @bind-Value="_biochemistry.GGT"
                                          Variant="Variant.Outlined"
-                                         Step="0.01M" />
+                                         Step="0.01m" Format="F2" Immediate="true" />
                     </MudItem>
                 </MudGrid>
-                
+
                 <MudText Typo="Typo.h6" Class="mt-6 mb-4">@Loc["OtherValues"]</MudText>
                 <MudGrid>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["GlycatedHemoglobin"]} (mmol/mol)")" 
-                                         @bind-Value="_biochemistry.GlycatedHemoglobin" 
+                        <MudNumericField Label="@($"{Loc["GlycatedHemoglobin"]} (mmol/mol)")"
+                                         @bind-Value="_biochemistry.GlycatedHemoglobin"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["Homocysteine"]} (umol/l)")" 
-                                         @bind-Value="_biochemistry.Homocysteine" 
+                        <MudNumericField Label="@($"{Loc["Homocysteine"]} (umol/l)")"
+                                         @bind-Value="_biochemistry.Homocysteine"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["Creatinine"]} (umol/l)")" 
-                                         @bind-Value="_biochemistry.Creatinine" 
+                        <MudNumericField Label="@($"{Loc["Creatinine"]} (umol/l)")"
+                                         @bind-Value="_biochemistry.Creatinine"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["UricAcid"]} (umol/l)")" 
-                                         @bind-Value="_biochemistry.UricAcid" 
+                        <MudNumericField Label="@($"{Loc["UricAcid"]} (umol/l)")"
+                                         @bind-Value="_biochemistry.UricAcid"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="@($"{Loc["Urea"]} (mmol/l)")" 
-                                         @bind-Value="_biochemistry.Urea" 
+                        <MudNumericField Label="@($"{Loc["Urea"]} (mmol/l)")"
+                                         @bind-Value="_biochemistry.Urea"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="CRP (mg/l)" 
-                                         @bind-Value="_biochemistry.CRP" 
+                        <MudNumericField Label="CRP (mg/l)"
+                                         @bind-Value="_biochemistry.CRP"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                     <MudItem xs="12" md="4">
-                        <MudNumericField Label="TSH (mlU/l)" 
-                                         @bind-Value="_biochemistry.TSH" 
+                        <MudNumericField Label="TSH (mlU/l)"
+                                         @bind-Value="_biochemistry.TSH"
                                          Variant="Variant.Outlined"
-                                         Step="0.1M" />
+                                         Step="0.1m" Format="F2" Immediate="true" />
                     </MudItem>
                 </MudGrid>
                 

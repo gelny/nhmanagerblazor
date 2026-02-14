@@ -41,52 +41,12 @@ namespace NHManager.Blazor.Services
         {
             _context.ClientMeasurements.Add(measurement);
             await _context.SaveChangesAsync();
-
-            // Compute and save the result
-            var client = await _context.Clients.FindAsync(measurement.ClientId);
-            if (client != null)
-            {
-                var result = new ClientMeasurementResult
-                {
-                    ClientId = measurement.ClientId,
-                    ClientMeasurementId = measurement.Id,
-                    Date = measurement.Date
-                };
-                ComputeResults(measurement, result, client);
-                _context.ClientMeasurementResults.Add(result);
-                await _context.SaveChangesAsync();
-            }
         }
 
         public async Task UpdateAsync(ClientMeasurement measurement)
         {
             _context.ClientMeasurements.Update(measurement);
             await _context.SaveChangesAsync();
-
-            // Recompute the result
-            var client = await _context.Clients.FindAsync(measurement.ClientId);
-            var existingResult = await _context.ClientMeasurementResults
-                .FirstOrDefaultAsync(r => r.ClientMeasurementId == measurement.Id);
-
-            if (client != null)
-            {
-                if (existingResult == null)
-                {
-                    existingResult = new ClientMeasurementResult
-                    {
-                        ClientId = measurement.ClientId,
-                        ClientMeasurementId = measurement.Id,
-                        Date = measurement.Date
-                    };
-                    _context.ClientMeasurementResults.Add(existingResult);
-                }
-                else
-                {
-                    existingResult.Date = measurement.Date;
-                }
-                ComputeResults(measurement, existingResult, client);
-                await _context.SaveChangesAsync();
-            }
         }
 
         public async Task DeleteAsync(int id)

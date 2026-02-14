@@ -44,7 +44,7 @@
             <MudTd DataLabel="Klient">
                 @if (context.Client != null)
                 {
-                   <MudLink Href="@($"/clients/edit/{context.ClientId}")">@context.ClientFullName</MudLink>
+                   <MudLink Href="@($"/clients/{context.ClientId}")">@context.ClientFullName</MudLink>
                 }
             </MudTd>
             <MudTd DataLabel="Název">@context.Title</MudTd>

@@ -1,7 +1,11 @@
-﻿@using NHManager.Blazor.Constants
+@using NHManager.Blazor.Constants
+@using NHManager.Blazor.Services
 @using Microsoft.Extensions.Localization
 @using NHManager.Blazor.Resources
 @inject IStringLocalizer<SharedResource> Loc
+@inject IDemoDataService DemoDataService
+@inject IDialogService DialogService
+@inject ISnackbar Snackbar
 
 <MudNavMenu>
     <AuthorizeView Roles="@Roles.AllEmployees">
@@ -22,6 +26,12 @@
             <MudNavLink Href="/foods" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Restaurant">@Loc["Foods"]</MudNavLink>
             <MudNavLink Href="/workers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">@Loc["Workers"]</MudNavLink>
             <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ManageAccounts">@Loc["Users"]</MudNavLink>
+            <MudDivider Class="my-2" />
+            <MudNavLink OnClick="GenerateDemoData"
+                        Icon="@(_generating ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.AutoFixHigh)"
+                        Disabled="@_generating">
+                @(_generating ? Loc["DemoDataGenerating"] : Loc["DemoDataGenerate"])
+            </MudNavLink>
         </Authorized>
     </AuthorizeView>
 
@@ -36,3 +46,37 @@
         </Authorized>
     </AuthorizeView>
 </MudNavMenu>
+
+@code {
+    private bool _generating;
+
+    private async Task GenerateDemoData()
+    {
+        var result = await DialogService.ShowMessageBox(
+            Loc["DemoDataGenerate"],
+            Loc["DemoDataConfirm"],
+            yesText: Loc["Yes"],
+            cancelText: Loc["Cancel"]);
+
+        if (result != true)
+            return;
+
+        _generating = true;
+        StateHasChanged();
+
+        try
+        {
+            await DemoDataService.GenerateAsync();
+            Snackbar.Add(Loc["DemoDataSuccess"], Severity.Success);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["DemoDataError"]}: {ex.Message}", Severity.Error);
+        }
+        finally
+        {
+            _generating = false;
+            StateHasChanged();
+        }
+    }
+}

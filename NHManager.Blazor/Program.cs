@@ -66,6 +66,7 @@ try
     builder.Services.AddScoped<IClientQuestionnaireService, ClientQuestionnaireService>();
     builder.Services.AddScoped<IClientCookBookService, ClientCookBookService>();
     builder.Services.AddScoped<IClientRecipeService, ClientRecipeService>();
+    builder.Services.AddScoped<IDemoDataService, DemoDataService>();
     builder.Services.AddLocalization();
     var supportedCultures = new[] { "cs", "pl" };
     builder.Services.Configure<RequestLocalizationOptions>(options =>

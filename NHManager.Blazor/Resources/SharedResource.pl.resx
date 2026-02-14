@@ -1024,5 +1024,20 @@
   <data name="Back" xml:space="preserve">
     <value>Wróć</value>
   </data>
+  <data name="DemoDataGenerate" xml:space="preserve">
+    <value>Generuj dane demo</value>
+  </data>
+  <data name="DemoDataGenerating" xml:space="preserve">
+    <value>Generowanie...</value>
+  </data>
+  <data name="DemoDataConfirm" xml:space="preserve">
+    <value>Czy na pewno chcesz wygenerować dane demo? Zostaną utworzeni nowi klienci, pracownicy, produkty spożywcze, przepisy i zamówienia.</value>
+  </data>
+  <data name="DemoDataSuccess" xml:space="preserve">
+    <value>Dane demo zostały pomyślnie wygenerowane</value>
+  </data>
+  <data name="DemoDataError" xml:space="preserve">
+    <value>Błąd podczas generowania danych demo</value>
+  </data>
 </root>
 

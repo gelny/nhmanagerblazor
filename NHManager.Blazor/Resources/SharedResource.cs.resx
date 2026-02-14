@@ -1159,5 +1159,20 @@
   <data name="TemplateLoaded" xml:space="preserve">
     <value>Vzor úspěšně načten</value>
   </data>
+  <data name="DemoDataGenerate" xml:space="preserve">
+    <value>Generovat demo data</value>
+  </data>
+  <data name="DemoDataGenerating" xml:space="preserve">
+    <value>Generuji...</value>
+  </data>
+  <data name="DemoDataConfirm" xml:space="preserve">
+    <value>Opravdu chcete vygenerovat demo data? Budou vytvořeni noví klienti, zaměstnanci, potraviny, recepty a objednávky.</value>
+  </data>
+  <data name="DemoDataSuccess" xml:space="preserve">
+    <value>Demo data byla úspěšně vygenerována</value>
+  </data>
+  <data name="DemoDataError" xml:space="preserve">
+    <value>Chyba při generování demo dat</value>
+  </data>
 </root>
 

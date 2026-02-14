@@ -1129,5 +1129,26 @@
   <data name="MeetingMoved" xml:space="preserve">
     <value>Schůzka přesunuta</value>
   </data>
+  <data name="TodaysMeetings" xml:space="preserve">
+    <value>Dnešní schůzky</value>
+  </data>
+  <data name="TotalClients" xml:space="preserve">
+    <value>Celkem klientů</value>
+  </data>
+  <data name="ActiveOrders" xml:space="preserve">
+    <value>Objednávky</value>
+  </data>
+  <data name="TotalRecipes" xml:space="preserve">
+    <value>Recepty</value>
+  </data>
+  <data name="UpcomingMeetings" xml:space="preserve">
+    <value>Nadcházející schůzky</value>
+  </data>
+  <data name="NoUpcomingMeetings" xml:space="preserve">
+    <value>Žádné nadcházející schůzky</value>
+  </data>
+  <data name="QuickActions" xml:space="preserve">
+    <value>Rychlé akce</value>
+  </data>
 </root>
 

@@ -15,54 +15,102 @@
         @{ NavigateToReturnUrl(); }
     </Authorized>
     <NotAuthorized>
-        <MudContainer MaxWidth="MaxWidth.Small" Class="d-flex align-center" Style="height: 100vh;">
-            <MudPaper Class="pa-8 mx-auto" Elevation="3" Style="width: 100%; max-width: 400px;">
-                <MudText Typo="Typo.h4" Align="Align.Center" Class="mb-6">NHManager</MudText>
-                <MudText Typo="Typo.h6" Align="Align.Center" Class="mb-6">@Loc["Login"]</MudText>
-                
-                <MudTextField @bind-Value="_username" 
-                              Label="@Loc["Username"]" 
+        <div class="login-wrapper">
+            <div class="login-bg"></div>
+            <MudPaper Class="login-card pa-8 pa-md-10" Elevation="4">
+                <div class="d-flex flex-column align-center mb-6">
+                    <MudAvatar Size="Size.Large" Style="background: linear-gradient(135deg, #264653, #2E7D6F); width: 64px; height: 64px;" Class="mb-3">
+                        <MudIcon Icon="@Icons.Material.Rounded.Spa" Size="Size.Large" Style="color: white;" />
+                    </MudAvatar>
+                    <MudText Typo="Typo.h4" Style="font-weight: 700; letter-spacing: -0.5px;">NHManager</MudText>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-1">@Loc["Login"]</MudText>
+                </div>
+
+                <MudTextField @bind-Value="_username"
+                              Label="@Loc["Username"]"
                               Variant="Variant.Outlined"
                               Class="mb-4"
                               Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Filled.Person" />
-                
-                <MudTextField @bind-Value="_password" 
-                              Label="@Loc["Password"]" 
+                              AdornmentIcon="@Icons.Material.Rounded.Person" />
+
+                <MudTextField @bind-Value="_password"
+                              Label="@Loc["Password"]"
                               Variant="Variant.Outlined"
                               Class="mb-4"
                               InputType="@_passwordInputType"
                               Adornment="Adornment.End"
                               AdornmentIcon="@_passwordInputIcon"
                               OnAdornmentClick="TogglePasswordVisibility" />
-                
-                <MudCheckBox @bind-Value="_rememberMe" Label="@Loc["RememberMe"]" Class="mb-4" />
-                
+
+                <MudCheckBox @bind-Value="_rememberMe" Label="@Loc["RememberMe"]" Class="mb-4" Color="Color.Primary" />
+
                 @if (!string.IsNullOrEmpty(_errorMessage))
                 {
-                    <MudAlert Severity="Severity.Error" Class="mb-4">@_errorMessage</MudAlert>
+                    <MudAlert Severity="Severity.Error" Class="mb-4" Variant="Variant.Filled" Dense="true">@_errorMessage</MudAlert>
                 }
-                
+
                 <MudButton OnClick="HandleLogin"
-                           Variant="Variant.Filled" 
-                           Color="Color.Primary" 
+                           Variant="Variant.Filled"
+                           Color="Color.Primary"
                            FullWidth="true"
-                           Disabled="_loading">
+                           Size="Size.Large"
+                           Disabled="_loading"
+                           Class="login-btn">
                     @if (_loading)
                     {
-                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" />
+                        <MudProgressCircular Size="Size.Small" Indeterminate="true" Class="mr-2" Color="Color.Surface" />
                     }
                     @Loc["LoginAction"]
                 </MudButton>
             </MudPaper>
-        </MudContainer>
+        </div>
     </NotAuthorized>
 </AuthorizeView>
+
+<style>
+    .login-wrapper {
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        overflow: hidden;
+    }
+    .login-bg {
+        position: fixed;
+        inset: 0;
+        background: linear-gradient(135deg, #264653 0%, #2E7D6F 40%, #4CA695 70%, #F4A261 100%);
+        z-index: 0;
+    }
+    .login-bg::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background:
+            radial-gradient(ellipse at 20% 50%, rgba(255,255,255,0.08) 0%, transparent 60%),
+            radial-gradient(ellipse at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+    }
+    .login-card {
+        position: relative;
+        z-index: 1;
+        width: 100%;
+        max-width: 420px;
+        border-radius: 16px !important;
+        backdrop-filter: blur(10px);
+    }
+    .login-btn {
+        text-transform: none !important;
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        padding: 12px !important;
+        letter-spacing: 0.02em;
+    }
+</style>
 
 @code {
     [SupplyParameterFromQuery(Name = "returnUrl")]
     public string? ReturnUrl { get; set; }
-    
+
     private string _username = "";
     private string _password = "";
     private bool _rememberMe = false;
@@ -76,16 +124,14 @@
         var url = GetSafeReturnUrl();
         Navigation.NavigateTo(url);
     }
-    
+
     private string GetSafeReturnUrl()
     {
         if (!string.IsNullOrEmpty(ReturnUrl))
         {
             var decodedUrl = Uri.UnescapeDataString(ReturnUrl);
-            // Ensure it's a relative URL to prevent open redirect attacks
             if (Uri.TryCreate(decodedUrl, UriKind.Absolute, out var uri))
             {
-                // If it's an absolute URL, extract the path
                 if (uri.Host == new Uri(Navigation.BaseUri).Host)
                 {
                     return uri.PathAndQuery;
@@ -158,4 +204,3 @@
         }
     }
 }
-

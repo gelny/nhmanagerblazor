@@ -1,106 +1,261 @@
-﻿@page "/"
+@page "/"
 @attribute [Authorize(Roles = Roles.AllEmployees)]
 @using Microsoft.Extensions.Localization
 @using NHManager.Blazor.Resources
 @inject IStringLocalizer<SharedResource> Loc
+@inject IMeetingService MeetingService
+@inject IClientService ClientService
+@inject IOrderService OrderService
+@inject IRecipeService RecipeService
+@inject NavigationManager Navigation
 
 <PageTitle>NHManager</PageTitle>
 
-<MudText Typo="Typo.h3" Class="mb-4">@Loc["WelcomeTitle"]</MudText>
+<MudText Typo="Typo.h4" Class="mb-1">@Loc["WelcomeTitle"]</MudText>
+<MudText Typo="Typo.body2" Color="Color.Secondary" Class="mb-6">@DateTime.Now.ToString("dddd, d. MMMM yyyy")</MudText>
 
-<MudGrid>
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">
-                        <MudIcon Icon="@Icons.Material.Filled.CalendarMonth" Class="mr-2" />
-                        @Loc["Scheduler"]
+@* Stat Cards *@
+<MudGrid Spacing="4" Class="mb-6">
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4 stat-card" Elevation="0">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc["TodaysMeetings"]</MudText>
+                    <MudText Typo="Typo.h4" Class="mt-1" Style="font-weight: 700;">
+                        @if (_loading) { <MudSkeleton Width="40px" Height="36px" /> } else { @_todayMeetings }
                     </MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@Loc["CalendarDesc"]</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/scheduler">@Loc["OpenCalendar"]</MudButton>
-            </MudCardActions>
-        </MudCard>
+                </div>
+                <MudAvatar Color="Color.Primary" Variant="Variant.Filled" Size="Size.Large" Class="stat-icon">
+                    <MudIcon Icon="@Icons.Material.Rounded.EventNote" />
+                </MudAvatar>
+            </div>
+        </MudPaper>
     </MudItem>
-
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">
-                        <MudIcon Icon="@Icons.Material.Filled.People" Class="mr-2" />
-                        @Loc["Clients"]
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4 stat-card" Elevation="0">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc["TotalClients"]</MudText>
+                    <MudText Typo="Typo.h4" Class="mt-1" Style="font-weight: 700;">
+                        @if (_loading) { <MudSkeleton Width="40px" Height="36px" /> } else { @_totalClients }
                     </MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@Loc["ClientsDesc"]</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/clients">@Loc["ViewClients"]</MudButton>
-            </MudCardActions>
-        </MudCard>
+                </div>
+                <MudAvatar Style="background: #5CA4C9;" Variant="Variant.Filled" Size="Size.Large" Class="stat-icon">
+                    <MudIcon Icon="@Icons.Material.Rounded.PeopleAlt" />
+                </MudAvatar>
+            </div>
+        </MudPaper>
     </MudItem>
-
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">
-                        <MudIcon Icon="@Icons.Material.Filled.Event" Class="mr-2" />
-                        @Loc["Meetings"]
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4 stat-card" Elevation="0">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc["ActiveOrders"]</MudText>
+                    <MudText Typo="Typo.h4" Class="mt-1" Style="font-weight: 700;">
+                        @if (_loading) { <MudSkeleton Width="40px" Height="36px" /> } else { @_totalOrders }
                     </MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@Loc["MeetingsDesc"]</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/meetings">@Loc["ViewMeetings"]</MudButton>
-            </MudCardActions>
-        </MudCard>
+                </div>
+                <MudAvatar Color="Color.Secondary" Variant="Variant.Filled" Size="Size.Large" Class="stat-icon">
+                    <MudIcon Icon="@Icons.Material.Rounded.ShoppingBag" />
+                </MudAvatar>
+            </div>
+        </MudPaper>
     </MudItem>
-
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">
-                        <MudIcon Icon="@Icons.Material.Filled.ShoppingCart" Class="mr-2" />
-                        @Loc["Orders"]
+    <MudItem xs="12" sm="6" md="3">
+        <MudPaper Class="pa-4 stat-card" Elevation="0">
+            <div class="d-flex align-center justify-space-between">
+                <div>
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc["TotalRecipes"]</MudText>
+                    <MudText Typo="Typo.h4" Class="mt-1" Style="font-weight: 700;">
+                        @if (_loading) { <MudSkeleton Width="40px" Height="36px" /> } else { @_totalRecipes }
                     </MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@Loc["OrdersDesc"]</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/orders">@Loc["ViewOrders"]</MudButton>
-            </MudCardActions>
-        </MudCard>
-    </MudItem>
-
-    <MudItem xs="12" sm="6" md="4">
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">
-                        <MudIcon Icon="@Icons.Material.Filled.MenuBook" Class="mr-2" />
-                        @Loc["Recipes"]
-                    </MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@Loc["RecipesDesc"]</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/recipes">@Loc["ViewRecipes"]</MudButton>
-            </MudCardActions>
-        </MudCard>
+                </div>
+                <MudAvatar Style="background: #E76F51;" Variant="Variant.Filled" Size="Size.Large" Class="stat-icon">
+                    <MudIcon Icon="@Icons.Material.Rounded.MenuBook" />
+                </MudAvatar>
+            </div>
+        </MudPaper>
     </MudItem>
 </MudGrid>
+
+<MudGrid Spacing="4">
+    @* Upcoming Meetings *@
+    <MudItem xs="12" md="7">
+        <MudPaper Class="pa-5" Elevation="0" Style="border: 1px solid var(--mud-palette-divider);">
+            <div class="d-flex align-center justify-space-between mb-4">
+                <MudText Typo="Typo.h6">@Loc["UpcomingMeetings"]</MudText>
+                <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/scheduler" EndIcon="@Icons.Material.Rounded.ArrowForward" Size="Size.Small">
+                    @Loc["OpenCalendar"]
+                </MudButton>
+            </div>
+
+            @if (_loading)
+            {
+                @for (int i = 0; i < 3; i++)
+                {
+                    <MudSkeleton Height="56px" Class="mb-2" />
+                }
+            }
+            else if (_upcomingMeetings == null || !_upcomingMeetings.Any())
+            {
+                <div class="d-flex flex-column align-center py-8">
+                    <MudIcon Icon="@Icons.Material.Rounded.EventAvailable" Size="Size.Large" Color="Color.Secondary" Class="mb-2" />
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc["NoUpcomingMeetings"]</MudText>
+                </div>
+            }
+            else
+            {
+                <MudList T="string" Dense="true">
+                    @foreach (var meeting in _upcomingMeetings)
+                    {
+                        <MudListItem Class="rounded-lg mb-1" Style="background: var(--mud-palette-background);">
+                            <div class="d-flex align-center gap-3">
+                                <MudAvatar Size="Size.Medium" Style="@($"background: {(meeting.MeetingType?.Color ?? "#2E7D6F")}20; color: {meeting.MeetingType?.Color ?? "#2E7D6F"};")">
+                                    <MudIcon Icon="@Icons.Material.Rounded.Event" Size="Size.Small" />
+                                </MudAvatar>
+                                <div class="flex-grow-1">
+                                    <MudText Typo="Typo.body1" Style="font-weight: 600;">
+                                        @(meeting.Title ?? meeting.MeetingTypeName)
+                                    </MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                        @meeting.ClientFullName &bull; @meeting.From.ToString("dd.MM. HH:mm") - @meeting.To.ToString("HH:mm")
+                                    </MudText>
+                                </div>
+                                @if (meeting.MeetingState != null)
+                                {
+                                    <MudChip T="string" Size="Size.Small" Color="Color.Default">
+                                        @meeting.MeetingStateName
+                                    </MudChip>
+                                }
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+        </MudPaper>
+    </MudItem>
+
+    @* Quick Actions *@
+    <MudItem xs="12" md="5">
+        <MudPaper Class="pa-5" Elevation="0" Style="border: 1px solid var(--mud-palette-divider);">
+            <MudText Typo="Typo.h6" Class="mb-4">@Loc["QuickActions"]</MudText>
+
+            <div class="d-flex flex-column gap-3">
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                           StartIcon="@Icons.Material.Rounded.PersonAdd" Href="/clients/create"
+                           Class="justify-start quick-action-btn" Size="Size.Large">
+                    @Loc["NewClient"]
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                           StartIcon="@Icons.Material.Rounded.EventNote" Href="/meetings/create"
+                           Class="justify-start quick-action-btn" Size="Size.Large">
+                    @Loc["NewMeeting"]
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                           StartIcon="@Icons.Material.Rounded.ShoppingBag" Href="/orders/create"
+                           Class="justify-start quick-action-btn" Size="Size.Large">
+                    @Loc["NewOrder"]
+                </MudButton>
+                <MudButton Variant="Variant.Outlined" Color="Color.Primary" FullWidth="true"
+                           StartIcon="@Icons.Material.Rounded.MenuBook" Href="/recipes/create"
+                           Class="justify-start quick-action-btn" Size="Size.Large">
+                    @Loc["NewRecipe"]
+                </MudButton>
+            </div>
+        </MudPaper>
+
+        @* Navigation Cards *@
+        <MudPaper Class="pa-5 mt-4" Elevation="0" Style="border: 1px solid var(--mud-palette-divider);">
+            <MudGrid Spacing="2">
+                <MudItem xs="6">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Rounded.CalendarMonth" Href="/scheduler"
+                               Class="nav-card-btn" Size="Size.Large">
+                        @Loc["Scheduler"]
+                    </MudButton>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Rounded.PeopleAlt" Href="/clients"
+                               Class="nav-card-btn" Size="Size.Large">
+                        @Loc["Clients"]
+                    </MudButton>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Rounded.EventNote" Href="/meetings"
+                               Class="nav-card-btn" Size="Size.Large">
+                        @Loc["Meetings"]
+                    </MudButton>
+                </MudItem>
+                <MudItem xs="6">
+                    <MudButton Variant="Variant.Filled" Color="Color.Primary" FullWidth="true"
+                               StartIcon="@Icons.Material.Rounded.ShoppingBag" Href="/orders"
+                               Class="nav-card-btn" Size="Size.Large">
+                        @Loc["Orders"]
+                    </MudButton>
+                </MudItem>
+            </MudGrid>
+        </MudPaper>
+    </MudItem>
+</MudGrid>
+
+<style>
+    .stat-card {
+        border: 1px solid var(--mud-palette-divider);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .stat-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+    }
+    .stat-icon {
+        width: 52px;
+        height: 52px;
+    }
+    .quick-action-btn {
+        text-transform: none !important;
+        padding: 12px 16px !important;
+        border-style: dashed !important;
+    }
+    .quick-action-btn:hover {
+        border-style: solid !important;
+    }
+    .nav-card-btn {
+        text-transform: none !important;
+        padding: 12px 16px !important;
+    }
+</style>
+
+@code {
+    private bool _loading = true;
+    private int _todayMeetings;
+    private int _totalClients;
+    private int _totalOrders;
+    private int _totalRecipes;
+    private List<Meeting>? _upcomingMeetings;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var today = DateTime.Today;
+        var todayEnd = today.AddDays(1);
+        var weekEnd = today.AddDays(7);
+
+        var todayMeetings = await MeetingService.GetByDateRangeAsync(today, todayEnd);
+        _todayMeetings = todayMeetings.Count;
+
+        var upcoming = await MeetingService.GetByDateRangeAsync(today, weekEnd);
+        _upcomingMeetings = upcoming.OrderBy(m => m.From).Take(5).ToList();
+
+        var clients = await ClientService.GetAllAsync();
+        _totalClients = clients.Count;
+
+        var orders = await OrderService.GetAllAsync();
+        _totalOrders = orders.Count;
+
+        var recipes = await RecipeService.GetAllAsync();
+        _totalRecipes = recipes.Count;
+
+        _loading = false;
+    }
+}

@@ -28,7 +28,7 @@
         </MudGrid>
     </MudPaper>
 
-    <MudTable Items="@_meetingTypes" Filter="new Func<MeetingType,bool>(FilterFunc)" Dense="true" Hover="true" @ref="_table">
+    <MudTable Elevation="0" Items="@_meetingTypes" Filter="new Func<MeetingType,bool>(FilterFunc)" Dense="true" Hover="true" @ref="_table">
         <HeaderContent>
             <MudTh>@Loc["Name"]</MudTh>
             <MudTh>@Loc["Abbreviation"]</MudTh>

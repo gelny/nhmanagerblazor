@@ -25,7 +25,7 @@
         </MudGrid>
     </MudPaper>
 
-    <MudTable ServerData="@(new Func<TableState, CancellationToken, Task<TableData<Meeting>>>(ServerReload))"
+    <MudTable Elevation="0" ServerData="@(new Func<TableState, CancellationToken, Task<TableData<Meeting>>>(ServerReload))"
               Dense="true" Hover="true" @ref="_table"
               CurrentPage="@_currentPage">
         <HeaderContent>

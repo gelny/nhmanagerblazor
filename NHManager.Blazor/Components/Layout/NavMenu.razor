@@ -7,45 +7,52 @@
 @inject IDialogService DialogService
 @inject ISnackbar Snackbar
 
-<MudNavMenu>
-    <AuthorizeView Roles="@Roles.AllEmployees">
-        <Authorized>
-            <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Home">@Loc["Dashboard"]</MudNavLink>
-            <MudNavLink Href="/scheduler" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.CalendarMonth">@Loc["Scheduler"]</MudNavLink>
-            <MudNavLink Href="/meetings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Event">@Loc["Meetings"]</MudNavLink>
-            <MudNavLink Href="/clients" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">@Loc["Clients"]</MudNavLink>
-            <MudNavLink Href="/orders" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ShoppingCart">@Loc["Orders"]</MudNavLink>
-            <MudNavLink Href="/recipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.MenuBook">@Loc["Recipes"]</MudNavLink>
-        </Authorized>
-    </AuthorizeView>
+<div class="nav-menu-container">
+    <MudNavMenu Bordered="true" Color="Color.Primary" Class="pt-2">
+        <AuthorizeView Roles="@Roles.AllEmployees">
+            <Authorized>
+                <MudText Typo="Typo.overline" Class="nav-section-header">@Loc["Dashboard"]</MudText>
+                <MudNavLink Href="/" Match="NavLinkMatch.All" Icon="@Icons.Material.Rounded.Dashboard">@Loc["Dashboard"]</MudNavLink>
+                <MudNavLink Href="/scheduler" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.CalendarMonth">@Loc["Scheduler"]</MudNavLink>
+                <MudNavLink Href="/meetings" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.EventNote">@Loc["Meetings"]</MudNavLink>
 
-    <AuthorizeView Roles="@Roles.SuperEmployee">
-        <Authorized>
-            <MudDivider Class="my-2" />
-            <MudNavLink Href="/products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Inventory">@Loc["Products"]</MudNavLink>
-            <MudNavLink Href="/foods" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Restaurant">@Loc["Foods"]</MudNavLink>
-            <MudNavLink Href="/workers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.Badge">@Loc["Workers"]</MudNavLink>
-            <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.ManageAccounts">@Loc["Users"]</MudNavLink>
-            <MudDivider Class="my-2" />
-            <MudNavLink OnClick="GenerateDemoData"
-                        Icon="@(_generating ? Icons.Material.Filled.HourglassEmpty : Icons.Material.Filled.AutoFixHigh)"
-                        Disabled="@_generating">
-                @(_generating ? Loc["DemoDataGenerating"] : Loc["DemoDataGenerate"])
-            </MudNavLink>
-        </Authorized>
-    </AuthorizeView>
+                <MudDivider Class="my-2 mx-3" />
+                <MudText Typo="Typo.overline" Class="nav-section-header">@Loc["Clients"]</MudText>
+                <MudNavLink Href="/clients" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.PeopleAlt">@Loc["Clients"]</MudNavLink>
+                <MudNavLink Href="/orders" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.ShoppingBag">@Loc["Orders"]</MudNavLink>
+                <MudNavLink Href="/recipes" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.MenuBook">@Loc["Recipes"]</MudNavLink>
+            </Authorized>
+        </AuthorizeView>
 
-    <AuthorizeView Roles="@Roles.AdminAndSuper">
-        <Authorized>
-            <MudDivider Class="my-2" />
-            <MudNavGroup Title="@Loc["Settings"]" Icon="@Icons.Material.Filled.Settings">
-                <MudNavLink Href="/settings/meeting-types" Match="NavLinkMatch.Prefix">@Loc["MeetingTypes"]</MudNavLink>
-                <MudNavLink Href="/settings/meeting-states" Match="NavLinkMatch.Prefix">@Loc["MeetingStates"]</MudNavLink>
-                <MudNavLink Href="/settings/activity-types" Match="NavLinkMatch.Prefix">@Loc["ActivityTypes"]</MudNavLink>
-            </MudNavGroup>
-        </Authorized>
-    </AuthorizeView>
-</MudNavMenu>
+        <AuthorizeView Roles="@Roles.SuperEmployee">
+            <Authorized>
+                <MudDivider Class="my-2 mx-3" />
+                <MudText Typo="Typo.overline" Class="nav-section-header">@Loc["Settings"]</MudText>
+                <MudNavLink Href="/products" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Inventory2">@Loc["Products"]</MudNavLink>
+                <MudNavLink Href="/foods" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Restaurant">@Loc["Foods"]</MudNavLink>
+                <MudNavLink Href="/workers" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Badge">@Loc["Workers"]</MudNavLink>
+                <MudNavLink Href="/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.ManageAccounts">@Loc["Users"]</MudNavLink>
+                <MudDivider Class="my-2 mx-3" />
+                <MudNavLink OnClick="GenerateDemoData"
+                            Icon="@(_generating ? Icons.Material.Rounded.HourglassTop : Icons.Material.Rounded.AutoFixHigh)"
+                            Disabled="@_generating">
+                    @(_generating ? Loc["DemoDataGenerating"] : Loc["DemoDataGenerate"])
+                </MudNavLink>
+            </Authorized>
+        </AuthorizeView>
+
+        <AuthorizeView Roles="@Roles.AdminAndSuper">
+            <Authorized>
+                <MudDivider Class="my-2 mx-3" />
+                <MudNavGroup Title="@Loc["Settings"]" Icon="@Icons.Material.Rounded.Tune" Expanded="false">
+                    <MudNavLink Href="/settings/meeting-types" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Category">@Loc["MeetingTypes"]</MudNavLink>
+                    <MudNavLink Href="/settings/meeting-states" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.Flag">@Loc["MeetingStates"]</MudNavLink>
+                    <MudNavLink Href="/settings/activity-types" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Rounded.FitnessCenter">@Loc["ActivityTypes"]</MudNavLink>
+                </MudNavGroup>
+            </Authorized>
+        </AuthorizeView>
+    </MudNavMenu>
+</div>
 
 @code {
     private bool _generating;

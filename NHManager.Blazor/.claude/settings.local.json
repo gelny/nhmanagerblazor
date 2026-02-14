@@ -1,7 +1,11 @@
 {
   "permissions": {
     "allow": [
-      "Bash(dotnet build:*)"
+      "Bash(dotnet build:*)",
+      "Bash(for f in ClientMeasurements/MeasurementList.razor Foods/FoodList.razor Meetings/MeetingList.razor Orders/OrderList.razor Products/ProductList.razor Recipes/RecipeList.razor Settings/ActivityTypes/ActivityTypeList.razor Settings/MeetingStates/MeetingStateList.razor Settings/MeetingTypes/MeetingTypeList.razor Users/UserList.razor Workers/WorkerList.razor)",
+      "Bash(do sed -i '/Elevation/!s/<MudTable /<MudTable Elevation=\"\"0\"\" /' \"$f\")",
+      "Bash(done)",
+      "WebSearch"
     ]
   }
 }

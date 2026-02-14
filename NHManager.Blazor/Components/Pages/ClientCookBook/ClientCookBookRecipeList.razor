@@ -16,7 +16,7 @@
 
 @if (Recipes != null && Recipes.Any())
 {
-    <MudTable Items="Recipes" Hover="true" Dense="true">
+    <MudTable Elevation="0" Items="Recipes" Hover="true" Dense="true">
         <HeaderContent>
             <MudTh>@Loc["Name"]</MudTh>
             <MudTh>@Loc["Description"]</MudTh>

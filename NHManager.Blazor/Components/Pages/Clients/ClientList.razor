@@ -42,7 +42,7 @@ else if (_clients == null || !_clients.Any())
 }
 else
 {
-    <MudDataGrid Items="@_clients" Dense="true" Hover="true" Striped="true" Bordered="true" QuickFilter="@_quickFilter">
+    <MudDataGrid Items="@_clients" Dense="true" Hover="true" Striped="true" QuickFilter="@_quickFilter" Elevation="0" Class="border-1" Style="border-color: var(--mud-palette-divider);">
         <Columns>
             <PropertyColumn Property="x => x.FullName" Title="@Loc["Name"]" />
             <PropertyColumn Property="x => x.Phone" Title="@Loc["Phone"]" />

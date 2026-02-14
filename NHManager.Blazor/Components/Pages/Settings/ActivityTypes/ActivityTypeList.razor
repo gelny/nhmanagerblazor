@@ -28,7 +28,7 @@
         </MudGrid>
     </MudPaper>
 
-    <MudTable Items="@_activityTypes" Filter="new Func<PhysicalActivityType,bool>(FilterFunc)" Dense="true" Hover="true" @ref="_table">
+    <MudTable Elevation="0" Items="@_activityTypes" Filter="new Func<PhysicalActivityType,bool>(FilterFunc)" Dense="true" Hover="true" @ref="_table">
         <HeaderContent>
             <MudTh>@Loc["Name"]</MudTh>
             <MudTh Style="width: 120px;">@Loc["Actions"]</MudTh>

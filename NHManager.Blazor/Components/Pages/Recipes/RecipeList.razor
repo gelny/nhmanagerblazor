@@ -28,7 +28,7 @@
         </MudGrid>
     </MudPaper>
 
-    <MudTable ServerData="@(new Func<TableState, CancellationToken, Task<TableData<Recipe>>>(ServerData))" Dense="true" Hover="true" @ref="_table">
+    <MudTable Elevation="0" ServerData="@(new Func<TableState, CancellationToken, Task<TableData<Recipe>>>(ServerData))" Dense="true" Hover="true" @ref="_table">
         <HeaderContent>
             <MudTh><MudTableSortLabel SortLabel="Name" T="Recipe">@Loc["Name"]</MudTableSortLabel></MudTh>
              <MudTh>@Loc["Items"]</MudTh>

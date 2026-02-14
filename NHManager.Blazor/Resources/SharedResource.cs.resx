@@ -569,7 +569,7 @@
     <value>Hmotnost kosti (kg)</value>
   </data>
   <data name="VisceralFat" xml:space="preserve">
-    <value>Visceralni tuk</value>
+    <value>Visceralní tuk</value>
   </data>
   <data name="LeanBodyMass" xml:space="preserve">
     <value>Beztukova hmota (kg)</value>
@@ -694,17 +694,11 @@
   <data name="ClientDetail" xml:space="preserve">
     <value>Detail klienta</value>
   </data>
-  <data name="DeleteClient" xml:space="preserve">
-    <value>Smazat klienta</value>
-  </data>
   <data name="DeleteMeasurement" xml:space="preserve">
     <value>Smazat mereni</value>
   </data>
   <data name="ConfirmDeleteMeasurement" xml:space="preserve">
     <value>Opravdu chcete smazat toto mereni?</value>
-  </data>
-  <data name="DeletedSuccess" xml:space="preserve">
-    <value>Uspesne smazano</value>
   </data>
   <data name="Overview" xml:space="preserve">
     <value>Prehled</value>
@@ -833,10 +827,7 @@
     <value>Vyhodnotit</value>
   </data>
   <data name="EvaluationSuccess" xml:space="preserve">
-    <value>Vyhodnoceni uspesne</value>
-  </data>
-  <data name="MeasurementResults" xml:space="preserve">
-    <value>Vysledky mereni</value>
+    <value>Vyhodnocení proběhlo úspěšně</value>
   </data>
   <data name="AnalysisResults" xml:space="preserve">
     <value>Vysledky analyzy</value>
@@ -849,12 +840,6 @@
   </data>
   <data name="Result" xml:space="preserve">
     <value>Vysledek</value>
-  </data>
-  <data name="MetabolicAge" xml:space="preserve">
-    <value>Metabolicky vek</value>
-  </data>
-  <data name="VisceralFat" xml:space="preserve">
-    <value>Visceralní tuk</value>
   </data>
   <data name="WaistHipRatio" xml:space="preserve">
     <value>Pomer pas/boky</value>
@@ -1033,9 +1018,6 @@
   <data name="DietProportions" xml:space="preserve">
     <value>Poměr živin</value>
   </data>
-  <data name="DietType" xml:space="preserve">
-    <value>Typ stravy</value>
-  </data>
   <data name="DietType1" xml:space="preserve">
     <value>Nízký glykemický index</value>
   </data>
@@ -1047,12 +1029,6 @@
   </data>
   <data name="DietType4" xml:space="preserve">
     <value>Nízkosacharidová strava</value>
-  </data>
-  <data name="Evaluate" xml:space="preserve">
-    <value>Vyhodnotit</value>
-  </data>
-  <data name="EvaluationSuccess" xml:space="preserve">
-    <value>Vyhodnocení proběhlo úspěšně</value>
   </data>
   <data name="CreateCookBook" xml:space="preserve">
     <value>Vytvořit kuchařku</value>
@@ -1072,32 +1048,14 @@
   <data name="CookBook" xml:space="preserve">
     <value>Kuchařka</value>
   </data>
-  <data name="Protein" xml:space="preserve">
-    <value>Bílkoviny</value>
-  </data>
-  <data name="Carbohydrate" xml:space="preserve">
-    <value>Sacharidy</value>
-  </data>
-  <data name="Fat" xml:space="preserve">
-    <value>Tuky</value>
-  </data>
-  <data name="Energy" xml:space="preserve">
-    <value>Energie</value>
-  </data>
   <data name="BRMFromAnalysis" xml:space="preserve">
     <value>BRM (Analýza)</value>
   </data>
   <data name="BRMFromQuestionnaire" xml:space="preserve">
     <value>BRM (Dotazník)</value>
   </data>
-  <data name="TotalFat" xml:space="preserve">
-    <value>Celkem tuky</value>
-  </data>
   <data name="TotalCarbohydrate" xml:space="preserve">
     <value>Celkem sacharidy</value>
-  </data>
-  <data name="TotalProtein" xml:space="preserve">
-    <value>Celkem bílkoviny</value>
   </data>
   <data name="TotalEnergy" xml:space="preserve">
     <value>Celková energie</value>
@@ -1105,29 +1063,8 @@
   <data name="TotalProportion" xml:space="preserve">
     <value>Celkový poměr</value>
   </data>
-  <data name="Unit" xml:space="preserve">
-    <value>Jednotka</value>
-  </data>
-  <data name="Amount" xml:space="preserve">
-    <value>Množství</value>
-  </data>
-  <data name="Ingredient" xml:space="preserve">
-    <value>Ingredience</value>
-  </data>
-  <data name="SelectIngredient" xml:space="preserve">
-    <value>Vybrat ingredienci</value>
-  </data>
-  <data name="AddIngredient" xml:space="preserve">
-    <value>Přidat ingredienci</value>
-  </data>
-  <data name="TotalEnergyKcal" xml:space="preserve">
-    <value>Energie celkem (kcal)</value>
-  </data>
   <data name="TotalEnergyKJ" xml:space="preserve">
     <value>Energie celkem (kJ)</value>
-  </data>
-  <data name="Kcal" xml:space="preserve">
-    <value>kcal</value>
   </data>
   <data name="FormInvalid" xml:space="preserve">
     <value>Formulář obsahuje chyby. Zkontrolujte prosím zadané údaje.</value>
@@ -1143,12 +1080,6 @@
   </data>
   <data name="SavedToCatalog" xml:space="preserve">
     <value>Uloženo do katalogu</value>
-  </data>
-  <data name="Yes" xml:space="preserve">
-    <value>Ano</value>
-  </data>
-  <data name="No" xml:space="preserve">
-    <value>Ne</value>
   </data>
   <data name="LoadFromTemplate" xml:space="preserve">
     <value>Načíst ze vzoru</value>

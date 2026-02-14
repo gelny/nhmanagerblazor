@@ -694,17 +694,11 @@
   <data name="ClientDetail" xml:space="preserve">
     <value>Szczegoly klienta</value>
   </data>
-  <data name="DeleteClient" xml:space="preserve">
-    <value>Usun klienta</value>
-  </data>
   <data name="DeleteMeasurement" xml:space="preserve">
     <value>Usun pomiar</value>
   </data>
   <data name="ConfirmDeleteMeasurement" xml:space="preserve">
     <value>Czy na pewno chcesz usunac ten pomiar?</value>
-  </data>
-  <data name="DeletedSuccess" xml:space="preserve">
-    <value>Pomyslnie usunieto</value>
   </data>
   <data name="Overview" xml:space="preserve">
     <value>Przeglad</value>
@@ -835,9 +829,6 @@
   <data name="EvaluationSuccess" xml:space="preserve">
     <value>Ocena zakonczona sukcesem</value>
   </data>
-  <data name="MeasurementResults" xml:space="preserve">
-    <value>Wyniki pomiaru</value>
-  </data>
   <data name="AnalysisResults" xml:space="preserve">
     <value>Wyniki analizy</value>
   </data>
@@ -849,12 +840,6 @@
   </data>
   <data name="Result" xml:space="preserve">
     <value>Wynik</value>
-  </data>
-  <data name="MetabolicAge" xml:space="preserve">
-    <value>Wiek metaboliczny</value>
-  </data>
-  <data name="VisceralFat" xml:space="preserve">
-    <value>Tluszcz trzewny</value>
   </data>
   <data name="WaistHipRatio" xml:space="preserve">
     <value>Stosunek talia/biodra</value>

@@ -569,7 +569,7 @@
     <value>Hmotnost kosti (kg)</value>
   </data>
   <data name="VisceralFat" xml:space="preserve">
-    <value>Visceralni tuk</value>
+    <value>Visceralní tuk</value>
   </data>
   <data name="LeanBodyMass" xml:space="preserve">
     <value>Beztukova hmota (kg)</value>
@@ -694,17 +694,11 @@
   <data name="ClientDetail" xml:space="preserve">
     <value>Detail klienta</value>
   </data>
-  <data name="DeleteClient" xml:space="preserve">
-    <value>Smazat klienta</value>
-  </data>
   <data name="DeleteMeasurement" xml:space="preserve">
     <value>Smazat mereni</value>
   </data>
   <data name="ConfirmDeleteMeasurement" xml:space="preserve">
     <value>Opravdu chcete smazat toto mereni?</value>
-  </data>
-  <data name="DeletedSuccess" xml:space="preserve">
-    <value>Uspesne smazano</value>
   </data>
   <data name="Overview" xml:space="preserve">
     <value>Prehled</value>
@@ -835,9 +829,6 @@
   <data name="EvaluationSuccess" xml:space="preserve">
     <value>Vyhodnoceni uspesne</value>
   </data>
-  <data name="MeasurementResults" xml:space="preserve">
-    <value>Vysledky mereni</value>
-  </data>
   <data name="AnalysisResults" xml:space="preserve">
     <value>Vysledky analyzy</value>
   </data>
@@ -849,12 +840,6 @@
   </data>
   <data name="Result" xml:space="preserve">
     <value>Vysledek</value>
-  </data>
-  <data name="MetabolicAge" xml:space="preserve">
-    <value>Metabolicky vek</value>
-  </data>
-  <data name="VisceralFat" xml:space="preserve">
-    <value>Visceralní tuk</value>
   </data>
   <data name="WaistHipRatio" xml:space="preserve">
     <value>Pomer pas/boky</value>
@@ -1032,9 +1017,6 @@
   </data>
   <data name="DietProportions" xml:space="preserve">
     <value>Poměr živin</value>
-  </data>
-  <data name="DietType" xml:space="preserve">
-    <value>Typ stravy</value>
   </data>
   <data name="DietType1" xml:space="preserve">
     <value>Nízký glykemický index</value>

@@ -1,0 +1,144 @@
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject INotificationService NotificationService
+@inject IStringLocalizer<SharedResource> Loc
+@inject NavigationManager Navigation
+@implements IDisposable
+
+<MudMenu AnchorOrigin="Origin.BottomRight" TransformOrigin="Origin.TopRight">
+    <ActivatorContent>
+        <MudBadge Content="@_unreadCount" Visible="@(_unreadCount > 0)" Color="Color.Error" Overlap="true">
+            <MudIconButton Icon="@Icons.Material.Rounded.Notifications" Color="Color.Inherit" OnClick="LoadNotifications" />
+        </MudBadge>
+    </ActivatorContent>
+    <ChildContent>
+        <div style="min-width: 320px; max-height: 400px; overflow-y: auto;">
+            <div class="d-flex align-center justify-space-between pa-3">
+                <MudText Typo="Typo.subtitle1" Style="font-weight: 600;">@Loc["Notifications"]</MudText>
+                @if (_unreadCount > 0)
+                {
+                    <MudButton Size="Size.Small" Color="Color.Primary" Variant="Variant.Text" OnClick="MarkAllRead">
+                        @Loc["MarkAllAsRead"]
+                    </MudButton>
+                }
+            </div>
+            <MudDivider />
+            @if (_notifications == null || !_notifications.Any())
+            {
+                <div class="pa-4 d-flex flex-column align-center">
+                    <MudIcon Icon="@Icons.Material.Rounded.NotificationsNone" Color="Color.Secondary" />
+                    <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-1">@Loc["NoNotifications"]</MudText>
+                </div>
+            }
+            else
+            {
+                @foreach (var notification in _notifications)
+                {
+                    <MudMenuItem OnClick="@(() => HandleNotificationClick(notification))"
+                                 Style="@(!notification.IsRead ? "background: var(--mud-palette-background-grey);" : "")">
+                        <div class="d-flex flex-column" style="max-width: 280px;">
+                            <MudText Typo="Typo.body2" Style="font-weight: 600;">@notification.Title</MudText>
+                            @if (!string.IsNullOrEmpty(notification.Message))
+                            {
+                                <MudText Typo="Typo.caption" Color="Color.Secondary">@notification.Message</MudText>
+                            }
+                            <MudText Typo="Typo.caption" Color="Color.Secondary">@notification.CreatedAt.ToString("dd.MM. HH:mm")</MudText>
+                        </div>
+                    </MudMenuItem>
+                }
+            }
+        </div>
+    </ChildContent>
+</MudMenu>
+
+@code {
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
+
+    private int _unreadCount;
+    private List<Notification>? _notifications;
+    private int? _userId;
+    private Timer? _timer;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            await ResolveUserId();
+            if (_userId.HasValue)
+            {
+                await RefreshCount();
+                _timer = new Timer(async _ =>
+                {
+                    await RefreshCount();
+                    await InvokeAsync(StateHasChanged);
+                }, null, TimeSpan.FromMinutes(5), TimeSpan.FromMinutes(5));
+            }
+            StateHasChanged();
+        }
+    }
+
+    private async Task ResolveUserId()
+    {
+        if (AuthState != null)
+        {
+            var state = await AuthState;
+            var claim = state.User.FindFirst("UserId");
+            if (claim != null && int.TryParse(claim.Value, out var uid))
+                _userId = uid;
+        }
+    }
+
+    private async Task RefreshCount()
+    {
+        if (_userId.HasValue)
+        {
+            try
+            {
+                _unreadCount = await NotificationService.GetUnreadCountAsync(_userId.Value);
+            }
+            catch { /* Ignore errors in background refresh */ }
+        }
+    }
+
+    private async Task LoadNotifications()
+    {
+        if (_userId.HasValue)
+        {
+            _notifications = await NotificationService.GetNotificationsAsync(_userId.Value);
+            _unreadCount = _notifications.Count(n => !n.IsRead);
+        }
+    }
+
+    private async Task MarkAllRead()
+    {
+        if (_userId.HasValue)
+        {
+            await NotificationService.MarkAllAsReadAsync(_userId.Value);
+            _unreadCount = 0;
+            if (_notifications != null)
+            {
+                foreach (var n in _notifications)
+                    n.IsRead = true;
+            }
+        }
+    }
+
+    private async Task HandleNotificationClick(Notification notification)
+    {
+        if (!notification.IsRead)
+        {
+            await NotificationService.MarkAsReadAsync(notification.Id);
+            notification.IsRead = true;
+            _unreadCount = Math.Max(0, _unreadCount - 1);
+        }
+
+        if (!string.IsNullOrEmpty(notification.LinkUrl))
+            Navigation.NavigateTo(notification.LinkUrl);
+    }
+
+    public void Dispose()
+    {
+        _timer?.Dispose();
+    }
+}

@@ -13,6 +13,8 @@ public interface IMeetingService
     Task<Meeting> CreateAsync(Meeting meeting, string userName);
     Task<Meeting> UpdateAsync(Meeting meeting, string userName);
     Task DeleteAsync(int id, string userName);
+    Task<List<Meeting>> GetTodaysMeetingsAsync();
+    Task<List<WeeklyMeetingCount>> GetMeetingStatsAsync(int monthsBack = 3);
 }
 
 public class MeetingService : IMeetingService
@@ -122,5 +124,38 @@ public class MeetingService : IMeetingService
             meeting.UpdatedBy = userName;
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<List<Meeting>> GetTodaysMeetingsAsync()
+    {
+        var today = DateTime.Today;
+        var tomorrow = today.AddDays(1);
+        return await _context.Meetings
+            .Where(m => m.Valid && m.From >= today && m.From < tomorrow)
+            .Include(m => m.Client)
+            .Include(m => m.MeetingType)
+            .Include(m => m.MeetingState)
+            .Include(m => m.Consultant)
+            .OrderBy(m => m.From)
+            .ToListAsync();
+    }
+
+    public async Task<List<WeeklyMeetingCount>> GetMeetingStatsAsync(int monthsBack = 3)
+    {
+        var startDate = DateTime.Today.AddMonths(-monthsBack);
+        var meetings = await _context.Meetings
+            .Where(m => m.Valid && m.From >= startDate)
+            .Select(m => m.From)
+            .ToListAsync();
+
+        return meetings
+            .GroupBy(d => d.Date.AddDays(-(int)d.DayOfWeek + (int)DayOfWeek.Monday))
+            .Select(g => new WeeklyMeetingCount
+            {
+                WeekStart = g.Key,
+                Count = g.Count()
+            })
+            .OrderBy(w => w.WeekStart)
+            .ToList();
     }
 }

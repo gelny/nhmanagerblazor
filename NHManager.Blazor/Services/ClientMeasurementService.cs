@@ -17,7 +17,7 @@ namespace NHManager.Blazor.Services
         public async Task<List<ClientMeasurement>> GetByClientIdAsync(int clientId)
         {
             return await _context.ClientMeasurements
-                .Where(m => m.ClientId == clientId)
+                .Where(m => m.ClientId == clientId && m.Valid)
                 .Include(m => m.PhysicalActivity)
                 .OrderByDescending(m => m.Date)
                 .ToListAsync();
@@ -28,7 +28,7 @@ namespace NHManager.Blazor.Services
             return await _context.ClientMeasurements
                 .Include(m => m.Client)
                 .Include(m => m.PhysicalActivity)
-                .FirstOrDefaultAsync(m => m.Id == id);
+                .FirstOrDefaultAsync(m => m.Id == id && m.Valid);
         }
 
         public async Task<ClientMeasurementResult?> GetResultByMeasurementIdAsync(int measurementId)
@@ -54,14 +54,19 @@ namespace NHManager.Blazor.Services
             var measurement = await _context.ClientMeasurements.FindAsync(id);
             if (measurement != null)
             {
-                // Delete associated result first
-                var result = await _context.ClientMeasurementResults
-                    .FirstOrDefaultAsync(r => r.ClientMeasurementId == id);
-                if (result != null)
+                measurement.Valid = false;
+                measurement.UpdatedAt = DateTime.Now;
+
+                // Soft delete associated results
+                var results = await _context.ClientMeasurementResults
+                    .Where(r => r.ClientMeasurementId == id && r.Valid)
+                    .ToListAsync();
+                foreach (var result in results)
                 {
-                    _context.ClientMeasurementResults.Remove(result);
+                    result.Valid = false;
+                    result.UpdatedAt = DateTime.Now;
                 }
-                _context.ClientMeasurements.Remove(measurement);
+
                 await _context.SaveChangesAsync();
             }
         }

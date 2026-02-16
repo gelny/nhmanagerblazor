@@ -1129,5 +1129,59 @@
   <data name="Graph_NoData" xml:space="preserve">
     <value>Nedostatek dat pro zobrazení grafu</value>
   </data>
+  <data name="ClientsNeedingAttention" xml:space="preserve">
+    <value>Klienti vyžadující pozornost</value>
+  </data>
+  <data name="AllClientsOk" xml:space="preserve">
+    <value>Všichni klienti jsou v pořádku</value>
+  </data>
+  <data name="MeetingTrends" xml:space="preserve">
+    <value>Trendy schůzek</value>
+  </data>
+  <data name="ExportPDF" xml:space="preserve">
+    <value>Export PDF</value>
+  </data>
+  <data name="ExportExcel" xml:space="preserve">
+    <value>Export Excel</value>
+  </data>
+  <data name="ExportExcelMeasurements" xml:space="preserve">
+    <value>Export měření (Excel)</value>
+  </data>
+  <data name="ExportClientList" xml:space="preserve">
+    <value>Export klientů</value>
+  </data>
+  <data name="Notifications" xml:space="preserve">
+    <value>Notifikace</value>
+  </data>
+  <data name="MarkAllAsRead" xml:space="preserve">
+    <value>Označit vše jako přečtené</value>
+  </data>
+  <data name="NoNotifications" xml:space="preserve">
+    <value>Žádné notifikace</value>
+  </data>
+  <data name="GlobalSearch" xml:space="preserve">
+    <value>Hledat klienty, schůzky, recepty...</value>
+  </data>
+  <data name="Timeline" xml:space="preserve">
+    <value>Časová osa</value>
+  </data>
+  <data name="ConfirmDelete" xml:space="preserve">
+    <value>Opravdu chcete smazat tento záznam?</value>
+  </data>
+  <data name="DeleteQuestionnaire" xml:space="preserve">
+    <value>Smazat dotazník</value>
+  </data>
+  <data name="ConfirmDeleteQuestionnaire" xml:space="preserve">
+    <value>Opravdu chcete smazat tento dotazník?</value>
+  </data>
+  <data name="Error" xml:space="preserve">
+    <value>Chyba</value>
+  </data>
+  <data name="MeetingReminder" xml:space="preserve">
+    <value>Připomínka schůzky</value>
+  </data>
+  <data name="FollowUpReminder" xml:space="preserve">
+    <value>Připomínka follow-upu</value>
+  </data>
 </root>
 

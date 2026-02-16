@@ -12,6 +12,8 @@ public interface IClientService
     Task<Client> CreateAsync(Client client, string userName);
     Task<Client> UpdateAsync(Client client, string userName);
     Task DeleteAsync(int id, string userName);
+    Task<List<Client>> GetClientsNeedingAttentionAsync(int days = 30);
+    Task<int> GetNewClientsCountAsync(int monthsBack = 3);
 }
 
 public class ClientService : IClientService
@@ -107,5 +109,26 @@ public class ClientService : IClientService
             client.UpdatedBy = userName;
             await _context.SaveChangesAsync();
         }
+    }
+
+    public async Task<List<Client>> GetClientsNeedingAttentionAsync(int days = 30)
+    {
+        var cutoff = DateTime.Now.AddDays(-days);
+        return await _context.Clients
+            .Where(c => c.Valid)
+            .Where(c => !c.Meetings.Any(m => m.Valid && m.From >= cutoff))
+            .Include(c => c.Consultant)
+            .OrderBy(c => c.SurName)
+            .ThenBy(c => c.FirstName)
+            .Take(10)
+            .ToListAsync();
+    }
+
+    public async Task<int> GetNewClientsCountAsync(int monthsBack = 3)
+    {
+        var startDate = DateTime.Now.AddMonths(-monthsBack);
+        return await _context.Clients
+            .Where(c => c.Valid && c.CreatedAt >= startDate)
+            .CountAsync();
     }
 }

@@ -10,5 +10,6 @@ namespace NHManager.Blazor.Services
         Task UpdateAsync(ClientDocument document);
         Task DeleteAsync(int id);
         Task<byte[]?> DownloadFileAsync(int id);
+        Task<int> CleanupDeletedFilesAsync(int daysOld = 30);
     }
 }

@@ -47,6 +47,9 @@ public class AppDbContext : DbContext
     // Documents
     public DbSet<WorkerDocument> WorkerDocuments { get; set; }
 
+    // Notifications
+    public DbSet<Notification> Notifications { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

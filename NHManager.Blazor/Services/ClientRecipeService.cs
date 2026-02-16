@@ -132,20 +132,8 @@ public class ClientRecipeService : IClientRecipeService
         var recipe = await _context.ClientRecipes.FindAsync(id);
         if (recipe != null)
         {
-            recipe.Valid = false; // Soft delete
-             _context.ClientRecipes.Remove(recipe); // Or actually remove if preferred? 
-             // Controller used Remove() which sets state to Deleted. 
-             // But existing code seems to support Valid flag.
-             // Controller: `m_unitOfWork.ClientRecipe.Remove(recipe)` -> Repository -> DbSet.Remove
-             // If generic repo uses Remove, it's hard delete unless override.
-             // But usually BaseController or Repo handles soft delete if Valid property exists.
-             // Let's do hard delete for now or soft if following pattern.
-             // RecipeService uses Valid=false.
-             // But ClientRecipiesController calls Remove().
-             // I'll stick to Remove() if that's what EF does, or Valid=false if soft delete is implied.
-             // The RecipeService logic uses Valid=false. I'll use soft delete logic (Valid=false) to be safe or consistent with Blazor App.
-             recipe.Valid = false;
-             await _context.SaveChangesAsync();
+            recipe.Valid = false;
+            await _context.SaveChangesAsync();
         }
     }
 

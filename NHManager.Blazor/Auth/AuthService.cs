@@ -22,11 +22,13 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _context;
     private readonly CustomAuthStateProvider _authStateProvider;
+    private readonly ILogger<AuthService> _logger;
 
-    public AuthService(AppDbContext context, CustomAuthStateProvider authStateProvider)
+    public AuthService(AppDbContext context, CustomAuthStateProvider authStateProvider, ILogger<AuthService> logger)
     {
         _context = context;
         _authStateProvider = authStateProvider;
+        _logger = logger;
     }
 
     public async Task<(bool Success, string Message, UserSession? Session)> LoginAsync(LoginModel model)
@@ -59,7 +61,7 @@ public class AuthService : IAuthService
             WorkerFullName = user.Worker?.FullName
         };
 
-        Console.WriteLine($"LoginAsync: Logging in user {user.UserName}, RememberMe: {model.RememberMe}");
+        _logger.LogInformation("LoginAsync: Logging in user {UserName}, RememberMe: {RememberMe}", user.UserName, model.RememberMe);
 
         await _authStateProvider.UpdateAuthenticationState(session, model.RememberMe);
 

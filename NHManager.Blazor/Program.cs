@@ -17,6 +17,8 @@ try
 {
     Log.Information("Starting NHManager.Blazor");
 
+    QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
     var builder = WebApplication.CreateBuilder(args);
 
     // Serilog
@@ -67,6 +69,8 @@ try
     builder.Services.AddScoped<IClientCookBookService, ClientCookBookService>();
     builder.Services.AddScoped<IClientRecipeService, ClientRecipeService>();
     builder.Services.AddScoped<IDemoDataService, DemoDataService>();
+    builder.Services.AddScoped<IReportService, ReportService>();
+    builder.Services.AddScoped<INotificationService, NotificationService>();
     builder.Services.AddLocalization();
     var supportedCultures = new[] { "cs", "pl" };
     builder.Services.Configure<RequestLocalizationOptions>(options =>

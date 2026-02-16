@@ -10,6 +10,7 @@
 @inject IClientAnalysisService AnalysisService
 @inject IClientQuestionnaireService QuestionnaireService
 @inject IClientCookBookService CookBookService
+@inject IReportService ReportService
 @inject NavigationManager Navigation
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
@@ -43,8 +44,12 @@ else
                        Href="@($"/clients/{Id}/edit")">
                 Upravit
             </MudButton>
-            <MudButton Variant="Variant.Filled" 
-                       Color="Color.Error" 
+            <MudMenu Icon="@Icons.Material.Filled.FileDownload" Variant="Variant.Filled" Color="Color.Info">
+                <MudMenuItem OnClick="ExportPdf" Icon="@Icons.Material.Filled.PictureAsPdf">@Loc["ExportPDF"]</MudMenuItem>
+                <MudMenuItem OnClick="ExportExcelMeasurements" Icon="@Icons.Material.Filled.TableChart">@Loc["ExportExcelMeasurements"]</MudMenuItem>
+            </MudMenu>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Error"
                        StartIcon="@Icons.Material.Filled.Delete"
                        OnClick="HandleDelete">
                 Smazat
@@ -563,6 +568,10 @@ else
         <MudTabPanel Text="@Loc["Graphs"]" Icon="@Icons.Material.Filled.ShowChart">
             <NHManager.Blazor.Components.Pages.ClientGraphs.ClientGraphsTab Client="_client" />
         </MudTabPanel>
+
+        <MudTabPanel Text="@Loc["Timeline"]" Icon="@Icons.Material.Filled.Timeline">
+            <NHManager.Blazor.Components.Pages.ClientTimeline.ClientTimeline Client="_client" />
+        </MudTabPanel>
     </MudTabs>
 }
 
@@ -595,6 +604,7 @@ else
             "analysis" => 8,
             "cookbooks" => 9,
             "graphs" => 10,
+            "timeline" => 11,
             _ => 0
         };
     }
@@ -829,6 +839,36 @@ else
                 Snackbar.Add(Loc["EvaluationSuccess"], Severity.Success);
                 await LoadClient();
             }
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ExportPdf()
+    {
+        try
+        {
+            var pdfBytes = await ReportService.GenerateClientSummaryPdfAsync(Id);
+            using var stream = new MemoryStream(pdfBytes);
+            using var streamRef = new DotNetStreamReference(stream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"{_client?.FullName ?? "client"}_summary.pdf", streamRef);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"{Loc["Error"]}: {ex.Message}", Severity.Error);
+        }
+    }
+
+    private async Task ExportExcelMeasurements()
+    {
+        try
+        {
+            var excelBytes = await ReportService.ExportMeasurementsToExcelAsync(Id);
+            using var stream = new MemoryStream(excelBytes);
+            using var streamRef = new DotNetStreamReference(stream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", $"{_client?.FullName ?? "client"}_measurements.xlsx", streamRef);
         }
         catch (Exception ex)
         {

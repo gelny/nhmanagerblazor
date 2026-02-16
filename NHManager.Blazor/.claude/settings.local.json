@@ -10,7 +10,13 @@
       "Bash(unzip:*)",
       "Bash(tr:*)",
       "WebFetch(domain:raw.githubusercontent.com)",
-      "WebFetch(domain:mudblazor.com)"
+      "WebFetch(domain:mudblazor.com)",
+      "Bash(ls:*)",
+      "Bash(dotnet restore:*)",
+      "Bash(dotnet tool install:*)",
+      "Bash(dotnet tool update:*)",
+      "Bash(export PATH=\"$PATH:/c/Users/ai_petrge/.dotnet/tools\")",
+      "Bash(dotnet ef migrations add:*)"
     ]
   }
 }

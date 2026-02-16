@@ -3,8 +3,11 @@
 @using Microsoft.Extensions.Localization
 @using NHManager.Blazor.Resources
 @inject IClientService ClientService
+@inject IReportService ReportService
 @inject NavigationManager Navigation
 @inject IStringLocalizer<SharedResource> Loc
+@inject IJSRuntime JS
+@inject ISnackbar Snackbar
 
 <PageTitle>@Loc["Clients"] - NHManager</PageTitle>
 
@@ -21,9 +24,15 @@
                           DebounceInterval="300"
                           OnDebounceIntervalElapsed="OnSearch" />
         </MudItem>
-        <MudItem xs="12" sm="4" md="6" Class="d-flex justify-end">
-            <MudButton Variant="Variant.Filled" 
-                       Color="Color.Primary" 
+        <MudItem xs="12" sm="4" md="6" Class="d-flex justify-end gap-2">
+            <MudButton Variant="Variant.Outlined"
+                       Color="Color.Info"
+                       StartIcon="@Icons.Material.Filled.FileDownload"
+                       OnClick="ExportClientList">
+                @Loc["ExportExcel"]
+            </MudButton>
+            <MudButton Variant="Variant.Filled"
+                       Color="Color.Primary"
                        StartIcon="@Icons.Material.Filled.Add"
                        Href="/clients/create">
                 @Loc["NewClient"]
@@ -104,5 +113,20 @@ else
     private async Task OnSearch()
     {
         await LoadClients();
+    }
+
+    private async Task ExportClientList()
+    {
+        try
+        {
+            var excelBytes = await ReportService.ExportClientListToExcelAsync(_searchString);
+            using var stream = new MemoryStream(excelBytes);
+            using var streamRef = new DotNetStreamReference(stream);
+            await JS.InvokeVoidAsync("downloadFileFromStream", "clients.xlsx", streamRef);
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Error: {ex.Message}", Severity.Error);
+        }
     }
 }

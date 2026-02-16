@@ -1,0 +1,108 @@
+@using Microsoft.Extensions.Localization
+@using NHManager.Blazor.Resources
+@inject IClientService ClientService
+@inject IMeetingService MeetingService
+@inject IRecipeService RecipeService
+@inject IStringLocalizer<SharedResource> Loc
+@inject NavigationManager Navigation
+
+<AuthorizeView>
+    <Authorized>
+        <div style="min-width: 280px; max-width: 400px;">
+            <MudAutocomplete T="SearchResult"
+                             Placeholder="@Loc["GlobalSearch"]"
+                             SearchFunc="SearchAsync"
+                             DebounceInterval="300"
+                             MinCharacters="2"
+                             Dense="true"
+                             Variant="Variant.Outlined"
+                             Margin="Margin.Dense"
+                             Adornment="Adornment.Start"
+                             AdornmentIcon="@Icons.Material.Rounded.Search"
+                             AdornmentColor="Color.Inherit"
+                             ToStringFunc="@(r => r?.DisplayText ?? "")"
+                             ValueChanged="OnResultSelected"
+                             Class="global-search"
+                             Style="color: inherit;" />
+        </div>
+    </Authorized>
+</AuthorizeView>
+
+<style>
+    .global-search .mud-input-outlined {
+        border-color: rgba(255,255,255,0.3) !important;
+        color: inherit !important;
+    }
+    .global-search .mud-input-outlined:hover {
+        border-color: rgba(255,255,255,0.5) !important;
+    }
+    .global-search input {
+        color: inherit !important;
+    }
+    .global-search input::placeholder {
+        color: rgba(255,255,255,0.6) !important;
+    }
+</style>
+
+@code {
+    private async Task<IEnumerable<SearchResult>> SearchAsync(string value, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(value) || value.Length < 2)
+            return Enumerable.Empty<SearchResult>();
+
+        var results = new List<SearchResult>();
+
+        try
+        {
+            // Search clients
+            var clients = await ClientService.GetAllAsync(value);
+            foreach (var client in clients.Take(5))
+            {
+                results.Add(new SearchResult
+                {
+                    DisplayText = $"{client.FullName} ({client.Phone ?? client.Email ?? "-"})",
+                    Category = "Klient",
+                    Icon = Icons.Material.Rounded.Person,
+                    NavigateUrl = $"/clients/{client.Id}"
+                });
+            }
+
+            // Search meetings
+            var meetings = await MeetingService.GetAllAsync(value);
+            foreach (var meeting in meetings.Take(5))
+            {
+                results.Add(new SearchResult
+                {
+                    DisplayText = $"{meeting.Title ?? meeting.MeetingTypeName} - {meeting.ClientFullName} ({meeting.From:dd.MM.yyyy})",
+                    Category = "Schůzka",
+                    Icon = Icons.Material.Rounded.Event,
+                    NavigateUrl = $"/meetings/{meeting.Id}"
+                });
+            }
+
+            // Search recipes
+            var recipesResult = await RecipeService.GetRecipesAsync(1, 5, value, null, null);
+            foreach (var recipe in recipesResult.Items)
+            {
+                results.Add(new SearchResult
+                {
+                    DisplayText = recipe.Name,
+                    Category = "Recept",
+                    Icon = Icons.Material.Rounded.MenuBook,
+                    NavigateUrl = $"/recipes/{recipe.Id}"
+                });
+            }
+        }
+        catch { /* Ignore search errors */ }
+
+        return results;
+    }
+
+    private void OnResultSelected(SearchResult? result)
+    {
+        if (result != null && !string.IsNullOrEmpty(result.NavigateUrl))
+        {
+            Navigation.NavigateTo(result.NavigateUrl);
+        }
+    }
+}

@@ -83,5 +83,29 @@ namespace NHManager.Blazor.Services
             }
             return null;
         }
+
+        public async Task<int> CleanupDeletedFilesAsync(int daysOld = 30)
+        {
+            var cutoff = DateTime.Now.AddDays(-daysOld);
+            var deletedDocuments = await _context.ClientDocuments
+                .Where(d => !d.Valid && d.UpdatedAt < cutoff && d.FileNameWithPath != null)
+                .ToListAsync();
+
+            int cleaned = 0;
+            foreach (var doc in deletedDocuments)
+            {
+                if (doc.FileNameWithPath != null && File.Exists(doc.FileNameWithPath))
+                {
+                    File.Delete(doc.FileNameWithPath);
+                    doc.FileNameWithPath = null;
+                    cleaned++;
+                }
+            }
+
+            if (cleaned > 0)
+                await _context.SaveChangesAsync();
+
+            return cleaned;
+        }
     }
 }

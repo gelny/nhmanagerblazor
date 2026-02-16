@@ -7,6 +7,7 @@
 @inject IClientService ClientService
 @inject IOrderService OrderService
 @inject IRecipeService RecipeService
+@inject INotificationService NotificationService
 @inject NavigationManager Navigation
 
 <PageTitle>NHManager</PageTitle>
@@ -79,11 +80,11 @@
 </MudGrid>
 
 <MudGrid Spacing="4">
-    @* Upcoming Meetings *@
+    @* Today's Full Schedule *@
     <MudItem xs="12" md="7">
         <MudPaper Class="pa-5" Elevation="0" Style="border: 1px solid var(--mud-palette-divider);">
             <div class="d-flex align-center justify-space-between mb-4">
-                <MudText Typo="Typo.h6">@Loc["UpcomingMeetings"]</MudText>
+                <MudText Typo="Typo.h6">@Loc["TodaysMeetings"]</MudText>
                 <MudButton Variant="Variant.Text" Color="Color.Primary" Href="/scheduler" EndIcon="@Icons.Material.Rounded.ArrowForward" Size="Size.Small">
                     @Loc["OpenCalendar"]
                 </MudButton>
@@ -96,7 +97,7 @@
                     <MudSkeleton Height="56px" Class="mb-2" />
                 }
             }
-            else if (_upcomingMeetings == null || !_upcomingMeetings.Any())
+            else if (_todayMeetingsList == null || !_todayMeetingsList.Any())
             {
                 <div class="d-flex flex-column align-center py-8">
                     <MudIcon Icon="@Icons.Material.Rounded.EventAvailable" Size="Size.Large" Color="Color.Secondary" Class="mb-2" />
@@ -106,7 +107,7 @@
             else
             {
                 <MudList T="string" Dense="true">
-                    @foreach (var meeting in _upcomingMeetings)
+                    @foreach (var meeting in _todayMeetingsList)
                     {
                         <MudListItem Class="rounded-lg mb-1" Style="background: var(--mud-palette-background);">
                             <div class="d-flex align-center gap-3">
@@ -118,7 +119,11 @@
                                         @(meeting.Title ?? meeting.MeetingTypeName)
                                     </MudText>
                                     <MudText Typo="Typo.body2" Color="Color.Secondary">
-                                        @meeting.ClientFullName &bull; @meeting.From.ToString("dd.MM. HH:mm") - @meeting.To.ToString("HH:mm")
+                                        @meeting.ClientFullName &bull; @meeting.From.ToString("HH:mm") - @meeting.To.ToString("HH:mm")
+                                        @if (meeting.Consultant != null)
+                                        {
+                                            <text> &bull; @meeting.ConsultantFullName</text>
+                                        }
                                     </MudText>
                                 </div>
                                 @if (meeting.MeetingState != null)
@@ -133,10 +138,59 @@
                 </MudList>
             }
         </MudPaper>
+
+        @* Clients Needing Attention *@
+        <MudPaper Class="pa-5 mt-4" Elevation="0" Style="border: 1px solid var(--mud-palette-divider);">
+            <div class="d-flex align-center justify-space-between mb-4">
+                <MudText Typo="Typo.h6">@Loc["ClientsNeedingAttention"]</MudText>
+            </div>
+
+            @if (_loading)
+            {
+                @for (int i = 0; i < 3; i++)
+                {
+                    <MudSkeleton Height="48px" Class="mb-2" />
+                }
+            }
+            else if (_attentionClients == null || !_attentionClients.Any())
+            {
+                <div class="d-flex flex-column align-center py-6">
+                    <MudIcon Icon="@Icons.Material.Rounded.CheckCircle" Size="Size.Large" Color="Color.Success" Class="mb-2" />
+                    <MudText Typo="Typo.body2" Color="Color.Secondary">@Loc["AllClientsOk"]</MudText>
+                </div>
+            }
+            else
+            {
+                <MudList T="string" Dense="true">
+                    @foreach (var client in _attentionClients)
+                    {
+                        <MudListItem Class="rounded-lg mb-1" Style="background: var(--mud-palette-background);">
+                            <div class="d-flex align-center gap-3">
+                                <MudAvatar Size="Size.Medium" Color="Color.Warning" Variant="Variant.Filled">
+                                    @(client.FirstName.Substring(0, 1))@(client.SurName.Substring(0, 1))
+                                </MudAvatar>
+                                <div class="flex-grow-1">
+                                    <MudText Typo="Typo.body1" Style="font-weight: 600;">@client.FullName</MudText>
+                                    <MudText Typo="Typo.body2" Color="Color.Secondary">
+                                        @(client.Phone ?? client.Email ?? "-")
+                                    </MudText>
+                                </div>
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                                           Href="@($"/meetings/create?clientId={client.Id}")"
+                                           StartIcon="@Icons.Material.Rounded.EventNote">
+                                    @Loc["NewMeeting"]
+                                </MudButton>
+                            </div>
+                        </MudListItem>
+                    }
+                </MudList>
+            }
+        </MudPaper>
     </MudItem>
 
-    @* Quick Actions *@
+    @* Right column *@
     <MudItem xs="12" md="5">
+        @* Quick Actions *@
         <MudPaper Class="pa-5" Elevation="0" Style="border: 1px solid var(--mud-palette-divider);">
             <MudText Typo="Typo.h6" Class="mb-4">@Loc["QuickActions"]</MudText>
 
@@ -162,6 +216,31 @@
                     @Loc["NewRecipe"]
                 </MudButton>
             </div>
+        </MudPaper>
+
+        @* Meeting Trends Chart *@
+        <MudPaper Class="pa-5 mt-4" Elevation="0" Style="border: 1px solid var(--mud-palette-divider);">
+            <MudText Typo="Typo.h6" Class="mb-4">@Loc["MeetingTrends"]</MudText>
+            @if (!_loading && _meetingStats != null && _meetingStats.Any())
+            {
+                <ApexCharts.ApexChart TItem="WeeklyMeetingCount"
+                           Height="250">
+                    <ApexCharts.ApexPointSeries TItem="WeeklyMeetingCount"
+                                     Items="_meetingStats"
+                                     SeriesType="ApexCharts.SeriesType.Area"
+                                     Name="@Loc["Meetings"]"
+                                     XValue="@(e => e.WeekStart.ToString("dd.MM"))"
+                                     YValue="@(e => (decimal)e.Count)" />
+                </ApexCharts.ApexChart>
+            }
+            else if (!_loading)
+            {
+                <MudText Typo="Typo.body2" Color="Color.Secondary" Align="Align.Center" Class="py-4">@Loc["NoRecordsFound"]</MudText>
+            }
+            else
+            {
+                <MudSkeleton Height="250px" />
+            }
         </MudPaper>
 
         @* Navigation Cards *@
@@ -233,19 +312,18 @@
     private int _totalClients;
     private int _totalOrders;
     private int _totalRecipes;
-    private List<Meeting>? _upcomingMeetings;
+    private List<Meeting>? _todayMeetingsList;
+    private List<Client>? _attentionClients;
+    private List<WeeklyMeetingCount>? _meetingStats;
+
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthState { get; set; }
 
     protected override async Task OnInitializedAsync()
     {
-        var today = DateTime.Today;
-        var todayEnd = today.AddDays(1);
-        var weekEnd = today.AddDays(7);
-
-        var todayMeetings = await MeetingService.GetByDateRangeAsync(today, todayEnd);
-        _todayMeetings = todayMeetings.Count;
-
-        var upcoming = await MeetingService.GetByDateRangeAsync(today, weekEnd);
-        _upcomingMeetings = upcoming.OrderBy(m => m.From).Take(5).ToList();
+        // DbContext is not thread-safe - must run queries sequentially
+        _todayMeetingsList = await MeetingService.GetTodaysMeetingsAsync();
+        _todayMeetings = _todayMeetingsList.Count;
 
         var clients = await ClientService.GetAllAsync();
         _totalClients = clients.Count;
@@ -256,6 +334,25 @@
         var recipes = await RecipeService.GetAllAsync();
         _totalRecipes = recipes.Count;
 
+        _attentionClients = await ClientService.GetClientsNeedingAttentionAsync();
+        _meetingStats = await MeetingService.GetMeetingStatsAsync();
+
         _loading = false;
+
+        // Generate notifications after loading is done
+        try
+        {
+            if (AuthState != null)
+            {
+                var state = await AuthState;
+                var claim = state.User.FindFirst("UserId");
+                if (claim != null && int.TryParse(claim.Value, out var userId))
+                {
+                    await NotificationService.GenerateMeetingRemindersAsync(userId);
+                    await NotificationService.GenerateFollowUpRemindersAsync(userId);
+                }
+            }
+        }
+        catch { /* Non-critical, ignore */ }
     }
 }

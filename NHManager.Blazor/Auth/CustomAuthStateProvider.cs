@@ -8,45 +8,47 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
 {
     private readonly ProtectedSessionStorage _sessionStorage;
     private readonly ProtectedLocalStorage _localStorage;
+    private readonly ILogger<CustomAuthStateProvider> _logger;
     private readonly ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
 
-    public CustomAuthStateProvider(ProtectedSessionStorage sessionStorage, ProtectedLocalStorage localStorage)
+    public CustomAuthStateProvider(ProtectedSessionStorage sessionStorage, ProtectedLocalStorage localStorage, ILogger<CustomAuthStateProvider> logger)
     {
         _sessionStorage = sessionStorage;
         _localStorage = localStorage;
+        _logger = logger;
     }
 
     public override async Task<AuthenticationState> GetAuthenticationStateAsync()
     {
         try
         {
-            Console.WriteLine("GetAuthenticationStateAsync: Checking SessionStorage...");
+            _logger.LogDebug("GetAuthenticationStateAsync: Checking SessionStorage...");
             var userSessionResult = await _sessionStorage.GetAsync<UserSession>("UserSession");
             var userSession = userSessionResult.Success ? userSessionResult.Value : null;
 
             if (userSession == null)
             {
-                Console.WriteLine("GetAuthenticationStateAsync: Session empty, checking LocalStorage...");
+                _logger.LogDebug("GetAuthenticationStateAsync: Session empty, checking LocalStorage...");
                 try 
                 {
                     var userSessionLocalResult = await _localStorage.GetAsync<UserSession>("UserSession");
                     userSession = userSessionLocalResult.Success ? userSessionLocalResult.Value : null;
-                    Console.WriteLine($"GetAuthenticationStateAsync: LocalStorage result: {(userSession != null ? "Found" : "Not Found")}");
+                    _logger.LogDebug("GetAuthenticationStateAsync: LocalStorage result: {Result}", userSession != null ? "Found" : "Not Found");
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"GetAuthenticationStateAsync: LocalStorage error: {ex.Message}");
+                    _logger.LogWarning(ex, "GetAuthenticationStateAsync: LocalStorage error");
                 }
                 
                 if (userSession != null)
                 {
-                    Console.WriteLine($"GetAuthenticationStateAsync: Restored user {userSession.Username} with role {userSession.Role}");
+                    _logger.LogInformation("GetAuthenticationStateAsync: Restored user {Username} with role {Role}", userSession.Username, userSession.Role);
                     await _sessionStorage.SetAsync("UserSession", userSession);
                 }
             }
             else
             {
-                Console.WriteLine("GetAuthenticationStateAsync: Found in SessionStorage");
+                _logger.LogDebug("GetAuthenticationStateAsync: Found in SessionStorage");
             }
 
             if (userSession == null)
@@ -74,7 +76,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"GetAuthenticationStateAsync: Error: {ex.Message}");
+            _logger.LogError(ex, "GetAuthenticationStateAsync: Error retrieving auth state");
             return new AuthenticationState(_anonymous);
         }
     }

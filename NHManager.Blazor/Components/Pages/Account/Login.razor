@@ -26,21 +26,27 @@
                     <MudText Typo="Typo.body2" Color="Color.Secondary" Class="mt-1">@Loc["Login"]</MudText>
                 </div>
 
-                <MudTextField @bind-Value="_username"
-                              Label="@Loc["Username"]"
-                              Variant="Variant.Outlined"
-                              Class="mb-4"
-                              Adornment="Adornment.Start"
-                              AdornmentIcon="@Icons.Material.Rounded.Person" />
+                <div class="d-flex align-center mb-4" style="gap: 12px;">
+                    <MudIcon Icon="@Icons.Material.Rounded.Person" Style="color: var(--mud-palette-text-secondary);" />
+                    <MudTextField @bind-Value="_username"
+                                  Label="@Loc["Username"]"
+                                  Variant="Variant.Outlined"
+                                  ShrinkLabel="true"
+                                  Class="login-field" />
+                </div>
 
-                <MudTextField @bind-Value="_password"
-                              Label="@Loc["Password"]"
-                              Variant="Variant.Outlined"
-                              Class="mb-4"
-                              InputType="@_passwordInputType"
-                              Adornment="Adornment.End"
-                              AdornmentIcon="@_passwordInputIcon"
-                              OnAdornmentClick="TogglePasswordVisibility" />
+                <div class="d-flex align-center mb-4" style="gap: 12px;">
+                    <MudIcon Icon="@Icons.Material.Rounded.Lock" Style="color: var(--mud-palette-text-secondary);" />
+                    <MudTextField @bind-Value="_password"
+                                  Label="@Loc["Password"]"
+                                  Variant="Variant.Outlined"
+                                  ShrinkLabel="true"
+                                  InputType="@_passwordInputType"
+                                  Adornment="Adornment.End"
+                                  AdornmentIcon="@_passwordInputIcon"
+                                  OnAdornmentClick="TogglePasswordVisibility"
+                                  Class="login-field" />
+                </div>
 
                 <MudCheckBox @bind-Value="_rememberMe" Label="@Loc["RememberMe"]" Class="mb-4" Color="Color.Primary" />
 
@@ -97,6 +103,12 @@
         max-width: 420px;
         border-radius: 16px !important;
         backdrop-filter: blur(10px);
+    }
+    .login-field {
+        flex: 1;
+    }
+    .login-field .mud-input.mud-input-outlined {
+        overflow: hidden !important;
     }
     .login-btn {
         text-transform: none !important;

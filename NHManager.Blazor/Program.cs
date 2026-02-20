@@ -47,6 +47,7 @@ try
     builder.Services.AddScoped<CustomAuthStateProvider>();
     builder.Services.AddScoped<AuthenticationStateProvider>(provider =>
         provider.GetRequiredService<CustomAuthStateProvider>());
+    builder.Services.AddSingleton<LoginRateLimiter>();
     builder.Services.AddScoped<IAuthService, AuthService>();
 
     // Services

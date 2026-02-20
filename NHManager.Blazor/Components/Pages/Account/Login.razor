@@ -196,9 +196,16 @@
 
             if (result.Success)
             {
-                Snackbar.Add(Loc["LoginSuccess"], Severity.Success);
-                var url = GetSafeReturnUrl();
-                Navigation.NavigateTo(url);
+                if (result.Session?.ForcePasswordChange == true)
+                {
+                    Navigation.NavigateTo("/force-change-password");
+                }
+                else
+                {
+                    Snackbar.Add(Loc["LoginSuccess"], Severity.Success);
+                    var url = GetSafeReturnUrl();
+                    Navigation.NavigateTo(url);
+                }
             }
             else
             {

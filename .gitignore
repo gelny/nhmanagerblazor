@@ -688,3 +688,6 @@ farsettings.db
 
 ## 
 ## KVADOS-End
+
+## NHManager deployment
+appsettings.Production.json

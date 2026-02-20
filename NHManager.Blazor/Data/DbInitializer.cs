@@ -18,7 +18,8 @@ public static class DbInitializer
                 Email = "admin@nhmanager.com",
                 PasswordHash = HashPassword("Admin123!"),
                 Role = Roles.SuperEmployee,
-                IsLocked = false
+                IsLocked = false,
+                ForcePasswordChange = true
             };
 
             context.Users.Add(adminUser);

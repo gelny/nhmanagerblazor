@@ -32,6 +32,12 @@ public class ApplicationUser
 
     public bool IsLocked { get; set; } = false;
 
+    public int FailedLoginAttempts { get; set; } = 0;
+
+    public DateTime? LockoutEnd { get; set; }
+
+    public bool ForcePasswordChange { get; set; } = false;
+
     [NotMapped]
     public string? WorkerFullName => Worker?.FullName;
 }

@@ -7,6 +7,8 @@ public class UserSession
     public string Role { get; set; } = string.Empty;
     public int? WorkerId { get; set; }
     public string? WorkerFullName { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public bool ForcePasswordChange { get; set; }
 }
 
 public class LoginModel

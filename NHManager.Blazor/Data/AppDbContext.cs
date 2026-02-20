@@ -50,6 +50,9 @@ public class AppDbContext : DbContext
     // Notifications
     public DbSet<Notification> Notifications { get; set; }
 
+    // Audit
+    public DbSet<LoginAuditLog> LoginAuditLogs { get; set; }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);

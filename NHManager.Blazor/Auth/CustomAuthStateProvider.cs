@@ -11,6 +11,8 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
     private readonly ILogger<CustomAuthStateProvider> _logger;
     private readonly ClaimsPrincipal _anonymous = new(new ClaimsIdentity());
 
+    private static readonly TimeSpan RememberMeExpiration = TimeSpan.FromDays(30);
+
     public CustomAuthStateProvider(ProtectedSessionStorage sessionStorage, ProtectedLocalStorage localStorage, ILogger<CustomAuthStateProvider> logger)
     {
         _sessionStorage = sessionStorage;
@@ -29,7 +31,7 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
             if (userSession == null)
             {
                 _logger.LogDebug("GetAuthenticationStateAsync: Session empty, checking LocalStorage...");
-                try 
+                try
                 {
                     var userSessionLocalResult = await _localStorage.GetAsync<UserSession>("UserSession");
                     userSession = userSessionLocalResult.Success ? userSessionLocalResult.Value : null;
@@ -39,7 +41,15 @@ public class CustomAuthStateProvider : AuthenticationStateProvider
                 {
                     _logger.LogWarning(ex, "GetAuthenticationStateAsync: LocalStorage error");
                 }
-                
+
+                // Check Remember Me expiration
+                if (userSession != null && DateTime.UtcNow - userSession.CreatedAt > RememberMeExpiration)
+                {
+                    _logger.LogInformation("GetAuthenticationStateAsync: Remember Me session expired for user {Username}", userSession.Username);
+                    await _localStorage.DeleteAsync("UserSession");
+                    userSession = null;
+                }
+
                 if (userSession != null)
                 {
                     _logger.LogInformation("GetAuthenticationStateAsync: Restored user {Username} with role {Role}", userSession.Username, userSession.Role);

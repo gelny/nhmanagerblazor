@@ -16,7 +16,9 @@
       "Bash(dotnet tool install:*)",
       "Bash(dotnet tool update:*)",
       "Bash(export PATH=\"$PATH:/c/Users/ai_petrge/.dotnet/tools\")",
-      "Bash(dotnet ef migrations add:*)"
+      "Bash(dotnet ef migrations add:*)",
+      "Bash(dotnet publish:*)",
+      "Bash(dotnet tool restore:*)"
     ]
   }
 }

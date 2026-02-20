@@ -2,6 +2,7 @@ using System.Collections.Concurrent;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
+using NHManager.Blazor.Constants;
 using NHManager.Blazor.Data;
 using NHManager.Blazor.Models;
 
@@ -261,6 +262,17 @@ public class AuthService : IAuthService
         if (user == null)
         {
             return (false, "Uživatel nenalezen");
+        }
+
+        // Prevent deleting the last admin/superemployee
+        if (user.Role is Roles.Admin or Roles.SuperEmployee)
+        {
+            var adminCount = await _context.Users
+                .CountAsync(u => u.Id != id && (u.Role == Roles.Admin || u.Role == Roles.SuperEmployee));
+            if (adminCount == 0)
+            {
+                return (false, "Nelze smazat posledního administrátora");
+            }
         }
 
         _context.Users.Remove(user);
